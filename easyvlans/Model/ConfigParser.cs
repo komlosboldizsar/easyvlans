@@ -49,7 +49,7 @@ namespace easyvlans.Model
                     if (root.LocalName != TAG_ROOT)
                         return null;
                     Dictionary<string, Switch> switches = null;
-                    Dictionary<string, Vlan> vlans = null;
+                    Dictionary<int, Vlan> vlans = null;
                     List<Port> ports = null;
                     foreach (XmlNode node in root.ChildNodes)
                     {
@@ -117,14 +117,15 @@ namespace easyvlans.Model
             }
         }
 
-        private Dictionary<string, Vlan> loadVlans(XmlNode parentNode)
+        private Dictionary<int, Vlan> loadVlans(XmlNode parentNode)
         {
-            Dictionary<string, Vlan> vlans = new Dictionary<string, Vlan>();
+            Dictionary<int, Vlan> vlans = new Dictionary<int, Vlan>();
             foreach (XmlNode node in parentNode.ChildNodes)
             {
                 if (node.LocalName != TAG_VLAN)
                     continue;
-                string vlanId = node.Attributes[ATTRIBUTE_VLAN_ID]?.Value;
+                string vlanIdStr = node.Attributes[ATTRIBUTE_VLAN_ID]?.Value;
+                int.TryParse(vlanIdStr, out int vlanId);
                 string vlanName = node.Attributes[ATTRIBUTE_VLAN_NAME]?.Value;
                 Vlan vlan = new Vlan(vlanId, vlanName);
                 vlans.Add(vlanId, vlan);
@@ -132,7 +133,7 @@ namespace easyvlans.Model
             return vlans;
         }
 
-        private List<Port> loadPorts(XmlNode parentNode, Dictionary<string, Switch> switches, Dictionary<string, Vlan> vlans)
+        private List<Port> loadPorts(XmlNode parentNode, Dictionary<string, Switch> switches, Dictionary<int, Vlan> vlans)
         {
             List<Port> ports = new List<Port>();
             foreach (XmlNode node in parentNode.ChildNodes)
@@ -161,7 +162,8 @@ namespace easyvlans.Model
                     }
                     else
                     {
-                        vlans.TryGetValue(vlanId, out Vlan vlan);
+                        int.TryParse(vlanId, out int vlanIdInt);
+                        vlans.TryGetValue(vlanIdInt, out Vlan vlan);
                         if (exclude)
                             vlansForPort.RemoveAll(v => (v == vlan));
                         else

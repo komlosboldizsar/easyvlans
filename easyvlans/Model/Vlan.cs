@@ -10,10 +10,10 @@ namespace easyvlans.Model
     public class Vlan
     {
 
-        public string ID { get; init; }
+        public int ID { get; init; }
         public string Name { get; init; }
 
-        public Vlan(string id, string name)
+        public Vlan(int id, string name)
         {
             ID = id;
             Name = name;
