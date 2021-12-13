@@ -19,7 +19,7 @@ namespace easyvlans
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Config config = (new ConfigParser()).LoadConfig();
-            Application.Run(new MainForm(config));
+            Application.Run(new GUI.MainForm(config));
         }
     }
 }
