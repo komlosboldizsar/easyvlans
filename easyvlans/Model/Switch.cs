@@ -15,6 +15,22 @@ namespace easyvlans.Model
         public string IP { get; init; }
         private List<SwitchAccessMode> accessModes = new List<SwitchAccessMode>();
         private List<Port> ports = new List<Port>();
+        private List<Port> portsWithPendingChange = new List<Port>();
+
+        public delegate void PortsWithPendingChangeCountChangedDelegate(Switch @switch, int newValue);
+        public event PortsWithPendingChangeCountChangedDelegate PortsWithPendingChangeCountChanged;
+        private int _portsWithPendingChangeCount;
+        public int PortsWithPendingChangeCount
+        {
+            get => _portsWithPendingChangeCount;
+            private set
+            {
+                if (value == _portsWithPendingChangeCount)
+                    return;
+                _portsWithPendingChangeCount = value;
+                PortsWithPendingChangeCountChanged?.Invoke(this, value);
+            }
+        }
 
         public Switch(string id, string label, string ip)
         {
@@ -36,7 +52,8 @@ namespace easyvlans.Model
 
         public void PersistChanges()
         {
-            throw new NotImplementedException();
+            portsWithPendingChange.Clear();
+            PortsWithPendingChangeCount = 0;
         }
 
     }
