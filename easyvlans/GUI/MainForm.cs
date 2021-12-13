@@ -1,5 +1,6 @@
 ﻿using easyvlans.GUI;
 using easyvlans.GUI.Helpers;
+using easyvlans.GUI.Helpers.DropDowns;
 using easyvlans.Model;
 using System;
 using System.Collections.Generic;
@@ -78,6 +79,10 @@ namespace easyvlans.GUI
                 portRow++;
 
             }
+
+            portRow = 0;
+            foreach (Port port in config.Ports)
+                rowControls[portRow++].SetVlanTo.CreateAdapterAsDataSource(port.Vlans, v => $"{v.ID} - {v.Name}", true, "");
 
         }
 
