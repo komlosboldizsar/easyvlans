@@ -159,12 +159,33 @@ namespace easyvlans.GUI
                 thisSwitchRowControls.SwitchName.Text = @switch.Label;
                 thisSwitchRowControls.PendingChanges.Text = "no ports changed";
                 thisSwitchRowControls.PersistChanges.Tag = @switch;
+                thisSwitchRowControls.PersistChanges.Enabled = false;
                 thisSwitchRowControls.PersistChanges.Click += switchesPersistChangesButtonClickHandler;
+                @switch.PortsWithPendingChangeCountChanged += switchesPortsWithPendingChangeCountChangedHandler;
 
                 switchRow++;
 
             }
 
+        }
+
+        private void switchesPortsWithPendingChangeCountChangedHandler(Switch @switch, int newValue)
+        {
+            SwitchRowControls thisSwitchRowControls = switchAssociatedRowControls[@switch];
+            string newText = "no ports changed";
+            if (newValue == 0)
+            {
+                thisSwitchRowControls.PendingChanges.Text = newText;
+                thisSwitchRowControls.PendingChanges.ForeColor = COLOR_NO_PENDING_CHANGES;
+                thisSwitchRowControls.PersistChanges.Enabled = false;
+            }
+            else
+            {
+                newText = (newValue > 1) ? $"{newValue} ports changed" : "1 port changed";
+                thisSwitchRowControls.PendingChanges.Text = newText;
+                thisSwitchRowControls.PendingChanges.ForeColor = COLOR_HAS_PENDING_CHANGES;
+                thisSwitchRowControls.PersistChanges.Enabled = true;
+            }
         }
 
         private void switchesPersistChangesButtonClickHandler(object sender, EventArgs e)
@@ -229,6 +250,8 @@ namespace easyvlans.GUI
         }
 
         private const string CURRENT_VLAN_UNKNOWN = "unknown";
+        private Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
+        private Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
 
     }
 }

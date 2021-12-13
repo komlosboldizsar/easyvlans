@@ -348,11 +348,12 @@ namespace easyvlans.GUI
             // 
             this.rowSwitchPendingChanges.AutoSize = true;
             this.rowSwitchPendingChanges.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rowSwitchPendingChanges.ForeColor = System.Drawing.SystemColors.ControlDark;
             this.rowSwitchPendingChanges.Location = new System.Drawing.Point(153, 35);
             this.rowSwitchPendingChanges.Name = "rowSwitchPendingChanges";
-            this.rowSwitchPendingChanges.Size = new System.Drawing.Size(84, 35);
+            this.rowSwitchPendingChanges.Size = new System.Drawing.Size(125, 35);
             this.rowSwitchPendingChanges.TabIndex = 4;
-            this.rowSwitchPendingChanges.Text = "no changes";
+            this.rowSwitchPendingChanges.Text = "no ports changed";
             this.rowSwitchPendingChanges.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // rowSwitchPersistChanges
