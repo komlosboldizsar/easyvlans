@@ -83,9 +83,19 @@ namespace easyvlans.GUI
 
             portRow = 0;
             foreach (Port port in config.Ports)
-                rowControls[portRow++].SetVlanTo.CreateAdapterAsDataSource(port.Vlans, v => $"{v.ID} - {v.Name}", true, "");
+                rowControls[portRow++].SetVlanTo.CreateAdapterAsDataSource(port.Vlans, vlanToStr, true, "");
+
+            foreach (Port port in config.Ports)
+            {
+                port.CurrentVlanChanged += portsCurrentVlanChangedHandler;
+            }
 
         }
+
+        private void portsCurrentVlanChangedHandler(Port port, Vlan newValue)
+            => portsRowControls[port].CurrentVlan.Text = vlanToStr(newValue);
+
+        private string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
 
         public class RowControls
         {

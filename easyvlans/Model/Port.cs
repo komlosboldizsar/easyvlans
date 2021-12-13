@@ -15,6 +15,21 @@ namespace easyvlans.Model
         public string Index { get; init; }
         public List<Vlan> Vlans { get; } = new List<Vlan>();
 
+        public delegate void CurrentVlanChangedDelegate(Port port, Vlan newValue);
+        public event CurrentVlanChangedDelegate CurrentVlanChanged;
+        private Vlan _currentVlan;
+        public Vlan CurrentVlan
+        {
+            get => _currentVlan;
+            set
+            {
+                if (value == _currentVlan)
+                    return;
+                _currentVlan = value;
+                CurrentVlanChanged?.Invoke(this, value);
+            }
+        }
+
         public Port(string label, Switch @switch, string index, IEnumerable<Vlan> vlans)
         {
             Label = label;
