@@ -42,7 +42,8 @@ namespace easyvlans
             this.rowPortId = new System.Windows.Forms.Label();
             this.rowCurrentVlan = new System.Windows.Forms.Label();
             this.rowSetVlanTo = new System.Windows.Forms.ComboBox();
-            this.rowComment = new System.Windows.Forms.Label();
+            this.rowState = new System.Windows.Forms.Label();
+            this.titleState = new System.Windows.Forms.Label();
             this.logTextBox = new System.Windows.Forms.RichTextBox();
             this.tableContainer = new System.Windows.Forms.Panel();
             this.table.SuspendLayout();
@@ -73,7 +74,8 @@ namespace easyvlans
             this.table.Controls.Add(this.rowPortId, 2, 1);
             this.table.Controls.Add(this.rowCurrentVlan, 3, 1);
             this.table.Controls.Add(this.rowSetVlanTo, 4, 1);
-            this.table.Controls.Add(this.rowComment, 7, 1);
+            this.table.Controls.Add(this.rowState, 7, 1);
+            this.table.Controls.Add(this.titleState, 7, 0);
             this.table.Dock = System.Windows.Forms.DockStyle.Fill;
             this.table.Location = new System.Drawing.Point(10, 10);
             this.table.Name = "table";
@@ -220,16 +222,28 @@ namespace easyvlans
             this.rowSetVlanTo.Size = new System.Drawing.Size(144, 28);
             this.rowSetVlanTo.TabIndex = 12;
             // 
-            // rowComment
+            // rowState
             // 
-            this.rowComment.AutoSize = true;
-            this.rowComment.Dock = System.Windows.Forms.DockStyle.Left;
-            this.rowComment.Location = new System.Drawing.Point(803, 35);
-            this.rowComment.Name = "rowComment";
-            this.rowComment.Size = new System.Drawing.Size(91, 35);
-            this.rowComment.TabIndex = 13;
-            this.rowComment.Text = "In progress...";
-            this.rowComment.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.rowState.AutoSize = true;
+            this.rowState.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rowState.Location = new System.Drawing.Point(803, 35);
+            this.rowState.Name = "rowState";
+            this.rowState.Size = new System.Drawing.Size(91, 35);
+            this.rowState.TabIndex = 13;
+            this.rowState.Text = "In progress...";
+            this.rowState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // titleState
+            // 
+            this.titleState.AutoSize = true;
+            this.titleState.Dock = System.Windows.Forms.DockStyle.Left;
+            this.titleState.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.titleState.Location = new System.Drawing.Point(803, 0);
+            this.titleState.Name = "titleState";
+            this.titleState.Size = new System.Drawing.Size(43, 35);
+            this.titleState.TabIndex = 14;
+            this.titleState.Text = "State";
+            this.titleState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // logTextBox
             // 
@@ -288,8 +302,9 @@ namespace easyvlans
         private System.Windows.Forms.Label rowPortId;
         private System.Windows.Forms.Label rowCurrentVlan;
         private System.Windows.Forms.ComboBox rowSetVlanTo;
-        private System.Windows.Forms.Label rowComment;
+        private System.Windows.Forms.Label rowState;
         private System.Windows.Forms.Panel tableContainer;
+        private System.Windows.Forms.Label titleState;
     }
 }
 

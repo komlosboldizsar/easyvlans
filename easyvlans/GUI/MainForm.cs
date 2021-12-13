@@ -64,7 +64,7 @@ namespace easyvlans
                     table.Controls.Add(thisRowControls.SetVlanTo, 4, tableRow);
                     table.Controls.Add(thisRowControls.Set, 5, tableRow);
                     table.Controls.Add(thisRowControls.Persist, 6, tableRow);
-                    table.Controls.Add(thisRowControls.Comment, 7, tableRow);
+                    table.Controls.Add(thisRowControls.State, 7, tableRow);
                     Size = new Size(Size.Width, Size.Height + rowHeight);
                 }
 
@@ -72,7 +72,7 @@ namespace easyvlans
                 thisRowControls.Switch.Text = port.Switch.Label;
                 thisRowControls.PortId.Text = port.Index;
                 thisRowControls.CurrentVlan.Text = CURRENT_VLAN_UNKNOWN;
-                thisRowControls.Comment.Text = "";
+                thisRowControls.State.Text = "";
 
                 portRow++;
 
@@ -89,7 +89,7 @@ namespace easyvlans
             public ComboBox SetVlanTo { get; init; }
             public Button Set { get; init; }
             public Button Persist { get; init; }
-            public Label Comment { get; init; }
+            public Label State { get; init; }
         }
 
         private List<RowControls> rowControls = new List<RowControls>();
@@ -109,7 +109,7 @@ namespace easyvlans
                 SetVlanTo = cloneOrOriginal(rowSetVlanTo, portRow),
                 Set = cloneOrOriginal(rowSet, portRow),
                 Persist = cloneOrOriginal(rowPersist, portRow),
-                Comment = cloneOrOriginal(rowComment, portRow)
+                State = cloneOrOriginal(rowState, portRow)
             };
         }
 
