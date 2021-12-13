@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<easyvlans>
+	<switches>
+		<switch id="maina" label="Main A" ip="192.168.10.1">
+			<telnet/>
+		</switch>
+		<switch id="mainb" label="Main B" ip="192.168.10.2">
+			<ssh_up username="root" password="hello" />
+		</switch>
+	</switches>
+	<vlans>
+		<vlan id="1" name="Main LAN" />
+		<vlan id="4" name="Vutrix" />
+		<vlan id="11" name="NVISION" />
+	</vlans>
+	<ports>
+		<port label="DP B.21" switch="maina" index="Fa0/21" vlans="all" />
+		<port label="DP B.22" switch="maina" index="Fa0/22" vlans="4,1" />
+		<port label="DP B.23" switch="maina" index="Fa0/23" vlans="all,!11" />
+		<port label="DP C.14" switch="mainb" index="Gi0/14" vlans="all,!4,1" />
+	</ports>
+</easyvlans>
