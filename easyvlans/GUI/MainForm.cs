@@ -75,6 +75,11 @@ namespace easyvlans.GUI
                 thisRowControls.Switch.Text = port.Switch.Label;
                 thisRowControls.PortId.Text = port.Index;
                 thisRowControls.CurrentVlan.Text = CURRENT_VLAN_UNKNOWN;
+                thisRowControls.SetVlanTo.Tag = port;
+                thisRowControls.Set.Tag = port;
+                thisRowControls.Set.Enabled = false;
+                thisRowControls.Persist.Tag = port;
+                thisRowControls.Persist.Enabled = false;
                 thisRowControls.State.Text = "";
 
                 portRow++;
@@ -88,12 +93,42 @@ namespace easyvlans.GUI
             foreach (Port port in config.Ports)
             {
                 port.CurrentVlanChanged += portsCurrentVlanChangedHandler;
+                RowControls rowControls = portsRowControls[port];
+                rowControls.SetVlanTo.SelectedIndexChanged += setVlanToSelectedIndexChangedHandler;
+                rowControls.Set.Click += setButtonClickHandler;
+                rowControls.Persist.Click += persistButtonClickHandler;
             }
 
         }
 
         private void portsCurrentVlanChangedHandler(Port port, Vlan newValue)
             => portsRowControls[port].CurrentVlan.Text = vlanToStr(newValue);
+
+        private void setVlanToSelectedIndexChangedHandler(object sender, EventArgs e)
+        {
+            ComboBox typedSender = sender as ComboBox;
+            Port port = typedSender?.Tag as Port;
+            if (port == null)
+                return;
+            portsRowControls[port].Set.Enabled = (typedSender.SelectedIndex > 0);
+        }
+
+        private void setButtonClickHandler(object sender, EventArgs e)
+        {
+            Button typedSender = sender as Button;
+            Port port = typedSender?.Tag as Port;
+            if (port == null)
+                return;
+            Vlan selectedVlan = portsRowControls[port].SetVlanTo.SelectedValue as Vlan;
+            port.SetVlanTo(selectedVlan);
+        }
+
+        private void persistButtonClickHandler(object sender, EventArgs e)
+        {
+            Button typedSender = sender as Button;
+            Port port = typedSender?.Tag as Port;
+            port?.PersistSwitchSettings();
+        }
 
         private string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
 

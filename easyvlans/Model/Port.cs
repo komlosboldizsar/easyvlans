@@ -38,6 +38,16 @@ namespace easyvlans.Model
             Vlans.AddRange(vlans);
         }
 
+        public void SetVlanTo(Vlan vlan)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PersistSwitchSettings()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 
 }
