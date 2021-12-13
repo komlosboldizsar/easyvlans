@@ -1,3 +1,4 @@
+using easyvlans.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,8 @@ namespace easyvlans
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Config config = (new ConfigParser()).LoadConfig();
+            Application.Run(new MainForm(config));
         }
     }
 }

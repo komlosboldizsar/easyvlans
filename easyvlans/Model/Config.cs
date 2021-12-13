@@ -9,9 +9,10 @@ namespace easyvlans.Model
 
     public class Config
     {
-        private Dictionary<string, Switch> Switches = new Dictionary<string, Switch>();
-        private Dictionary<string, Vlan> Vlans = new Dictionary<string, Vlan>();
-        private List<Port> Ports = new List<Port>();
+
+        public Dictionary<string, Switch> Switches { get; } = new Dictionary<string, Switch>();
+        public Dictionary<string, Vlan> Vlans { get; } = new Dictionary<string, Vlan>();
+        public List<Port> Ports { get; } = new List<Port>();
 
         public Config(Dictionary<string, Switch> switches, Dictionary<string, Vlan> vlans, List<Port> ports)
         {
