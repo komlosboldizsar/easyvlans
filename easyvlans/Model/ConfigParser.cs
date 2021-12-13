@@ -37,51 +37,52 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_PORT_INDEX = "index";
         private const string ATTRIBUTE_PORT_VLANS = "vlans";
 
-        private Dictionary<string, Switch> allSwitches = new Dictionary<string, Switch>();
-        private Dictionary<string, Vlan> allVlans = new Dictionary<string, Vlan>();
-
-        public void LoadConfig()
+        public Config LoadConfig()
         {
             if (File.Exists(FILE_CONFIG))
             {
                 try
                 {
-                    allSwitches.Clear();
-                    allVlans.Clear();
                     XmlDocument doc = new XmlDocument();
                     doc.Load(FILE_CONFIG);
                     XmlNode root = doc.DocumentElement;
                     if (root.LocalName != TAG_ROOT)
-                        return;
+                        return null;
+                    Dictionary<string, Switch> switches = null;
+                    Dictionary<string, Vlan> vlans = null;
+                    List<Port> ports = null;
                     foreach (XmlNode node in root.ChildNodes)
                     {
                         switch (node.LocalName)
                         {
                             case TAG_SWITCHES:
-                                loadSwitches(node);
+                                switches = loadSwitches(node);
                                 break;
                             case TAG_VLANS:
-                                loadVlans(node);
+                                vlans = loadVlans(node);
                                 break;
                             case TAG_PORTS:
-                                loadPorts(node);
+                                ports = loadPorts(node, switches, vlans);
                                 break;
                         }
                     }
+                    return new Config(switches, vlans, ports);
                 }
                 catch
                 {
-
+                    return null;
                 }
             }
             else
             {
                 // file not exists
+                return null;
             }
         }
 
-        private void loadSwitches(XmlNode parentNode)
+        private Dictionary<string, Switch> loadSwitches(XmlNode parentNode)
         {
+            Dictionary<string, Switch> switches = new Dictionary<string, Switch>();
             foreach (XmlNode node in parentNode.ChildNodes)
             {
                 if (node.LocalName != TAG_SWITCH)
@@ -91,7 +92,9 @@ namespace easyvlans.Model
                 string switchIp = node.Attributes[ATTRIBUTE_SWITCH_IP]?.Value;
                 Switch @switch = new Switch(switchId, switchLabel, switchIp);
                 loadSwitchAccessData(node, @switch);
+                switches.Add(switchId, @switch);
             }
+            return switches;
         }
 
         private void loadSwitchAccessData(XmlNode switchNode, Switch @switch)
@@ -114,8 +117,9 @@ namespace easyvlans.Model
             }
         }
 
-        private void loadVlans(XmlNode parentNode)
+        private Dictionary<string, Vlan> loadVlans(XmlNode parentNode)
         {
+            Dictionary<string, Vlan> vlans = new Dictionary<string, Vlan>();
             foreach (XmlNode node in parentNode.ChildNodes)
             {
                 if (node.LocalName != TAG_VLAN)
@@ -123,11 +127,14 @@ namespace easyvlans.Model
                 string vlanId = node.Attributes[ATTRIBUTE_VLAN_ID]?.Value;
                 string vlanName = node.Attributes[ATTRIBUTE_VLAN_NAME]?.Value;
                 Vlan vlan = new Vlan(vlanId, vlanName);
+                vlans.Add(vlanId, vlan);
             }
+            return vlans;
         }
 
-        private void loadPorts(XmlNode parentNode)
+        private List<Port> loadPorts(XmlNode parentNode, Dictionary<string, Switch> switches, Dictionary<string, Vlan> vlans)
         {
+            List<Port> ports = new List<Port>();
             foreach (XmlNode node in parentNode.ChildNodes)
             {
                 if (node.LocalName != TAG_PORT)
@@ -136,8 +143,8 @@ namespace easyvlans.Model
                 string portSwitch = node.Attributes[ATTRIBUTE_PORT_SWITCH]?.Value;
                 string portIndex = node.Attributes[ATTRIBUTE_PORT_INDEX]?.Value;
                 string portVlans = node.Attributes[ATTRIBUTE_PORT_VLANS]?.Value;
-                allSwitches.TryGetValue(portSwitch, out Switch @switch);
-                List<Vlan> vlans = new List<Vlan>();
+                switches.TryGetValue(portSwitch, out Switch @switch);
+                List<Vlan> vlansForPort = new List<Vlan>();
                 string[] vlanIds = portVlans.Split(',');
                 foreach (string _vlanId in vlanIds)
                 {
@@ -148,21 +155,23 @@ namespace easyvlans.Model
                     if (vlanId == "all")
                     {
                         if (exclude)
-                            vlans.RemoveAll(v => allVlans.Values.Contains(v));
+                            vlansForPort.RemoveAll(v => vlans.Values.Contains(v));
                         else
-                            vlans.AddRange(allVlans.Values);
+                            vlansForPort.AddRange(vlans.Values);
                     }
                     else
                     {
-                        allVlans.TryGetValue(vlanId, out Vlan vlan);
+                        vlans.TryGetValue(vlanId, out Vlan vlan);
                         if (exclude)
-                            vlans.RemoveAll(v => (v == vlan));
+                            vlansForPort.RemoveAll(v => (v == vlan));
                         else
-                            vlans.Add(vlan);
+                            vlansForPort.Add(vlan);
                     }
                 }
-                Port port = new Port(portLabel, @switch, portIndex, vlans.Distinct().OrderBy(v => v.ID));
+                Port port = new Port(portLabel, @switch, portIndex, vlansForPort.Distinct().OrderBy(v => v.ID));
+                ports.Add(port);
             }
+            return ports;
         }
 
     }
