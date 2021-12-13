@@ -14,6 +14,7 @@ namespace easyvlans.Model
         public string Label { get; init; }
         public string IP { get; init; }
         private List<SwitchAccessMode> accessModes = new List<SwitchAccessMode>();
+        private List<Port> ports = new List<Port>();
 
         public Switch(string id, string label, string ip)
         {
@@ -25,6 +26,12 @@ namespace easyvlans.Model
         public void AddAccessMode(SwitchAccessMode sam)
         {
             accessModes.Add(sam);
+        }
+
+        internal void AssociatePort(Port port)
+        {
+            if ((port.Switch == this) && !ports.Contains(port))
+                ports.Add(port);
         }
 
         public void PersistChanges()

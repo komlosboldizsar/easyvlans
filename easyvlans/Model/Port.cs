@@ -34,6 +34,7 @@ namespace easyvlans.Model
         {
             Label = label;
             Switch = @switch;
+            @switch.AssociatePort(this);
             Index = index;
             Vlans.AddRange(vlans);
         }
