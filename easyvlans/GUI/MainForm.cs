@@ -40,6 +40,14 @@ namespace easyvlans.GUI
                 return;
             }
 
+            showPorts();
+            showSwitches();
+
+        }
+
+        private void showPorts()
+        {
+
             if (config.Ports.Count == 0)
             {
                 // Todo...
@@ -119,6 +127,53 @@ namespace easyvlans.GUI
             port.SetVlanTo(selectedVlan);
         }
 
+        private void showSwitches()
+        {
+
+            if (config.Switches.Count == 0)
+            {
+                // Todo...
+                return;
+            }
+
+            int switchRow = 0;
+            int switchRowHeight = (int)switchTable.RowStyles[1].Height;
+            foreach (Switch @switch in config.Switches.Values)
+            {
+
+                int switchTableRow = switchRow + 1;
+                SwitchRowControls thisSwitchRowControls = getSwitchRowControls(switchRow);
+                switchRowControls.Add(thisSwitchRowControls);
+                switchAssociatedRowControls.Add(@switch, thisSwitchRowControls);
+
+                if (switchRow > 0)
+                {
+                    switchTable.RowCount++;
+                    switchTable.RowStyles.Add(new RowStyle(SizeType.Absolute, switchRowHeight));
+                    switchTable.Controls.Add(thisSwitchRowControls.SwitchName, 0, switchTableRow);
+                    switchTable.Controls.Add(thisSwitchRowControls.PendingChanges, 1, switchTableRow);
+                    switchTable.Controls.Add(thisSwitchRowControls.PersistChanges, 2, switchTableRow);
+                    Size = new Size(Size.Width, Size.Height + switchRowHeight);
+                }
+
+                thisSwitchRowControls.SwitchName.Text = @switch.Label;
+                thisSwitchRowControls.PendingChanges.Text = "no ports changed";
+                thisSwitchRowControls.PersistChanges.Tag = @switch;
+                thisSwitchRowControls.PersistChanges.Click += switchesPersistChangesButtonClickHandler;
+
+                switchRow++;
+
+            }
+
+        }
+
+        private void switchesPersistChangesButtonClickHandler(object sender, EventArgs e)
+        {
+            Button typedSender = sender as Button;
+            Switch @switch = typedSender?.Tag as Switch;
+            @switch?.PersistChanges();
+        }
+
         private string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
 
         public class PortRowControls
@@ -132,8 +187,18 @@ namespace easyvlans.GUI
             public Label State { get; init; }
         }
 
+        public class SwitchRowControls
+        {
+            public Label SwitchName { get; init; }
+            public Label PendingChanges { get; init; }
+            public Button PersistChanges { get; init; }
+        }
+
         private List<PortRowControls> portRowControls = new List<PortRowControls>();
         private Dictionary<Port, PortRowControls> portAssociatedRowControls = new Dictionary<Port, PortRowControls>();
+
+        private List<SwitchRowControls> switchRowControls = new List<SwitchRowControls>();
+        private Dictionary<Switch, SwitchRowControls> switchAssociatedRowControls = new Dictionary<Switch, SwitchRowControls>();
 
         private T cloneOrOriginal<T>(T originalControl, int row)
             where T : Control
@@ -150,6 +215,16 @@ namespace easyvlans.GUI
                 SetVlanTo = cloneOrOriginal(rowPortSetVlanTo, portRow),
                 Set = cloneOrOriginal(rowPortSet, portRow),
                 State = cloneOrOriginal(rowPortState, portRow)
+            };
+        }
+
+        private SwitchRowControls getSwitchRowControls(int switchRow)
+        {
+            return new SwitchRowControls()
+            {
+                SwitchName = cloneOrOriginal(rowSwitchSwitchName, switchRow),
+                PendingChanges = cloneOrOriginal(rowSwitchPendingChanges, switchRow),
+                PersistChanges = cloneOrOriginal(rowSwitchPersistChanges, switchRow)
             };
         }
 

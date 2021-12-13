@@ -27,6 +27,11 @@ namespace easyvlans.Model
             accessModes.Add(sam);
         }
 
+        public void PersistChanges()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 
 }

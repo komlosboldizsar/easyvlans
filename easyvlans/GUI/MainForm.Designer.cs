@@ -45,8 +45,18 @@ namespace easyvlans.GUI
             this.titlePortState = new System.Windows.Forms.Label();
             this.logTextBox = new System.Windows.Forms.RichTextBox();
             this.portTableContainer = new System.Windows.Forms.Panel();
+            this.switchTableContainer = new System.Windows.Forms.Panel();
+            this.switchTable = new System.Windows.Forms.TableLayoutPanel();
+            this.titleSwitchSwitchName = new System.Windows.Forms.Label();
+            this.titleSwitchPendingChanges = new System.Windows.Forms.Label();
+            this.titleSwitchPersistChanges = new System.Windows.Forms.Label();
+            this.rowSwitchSwitchName = new System.Windows.Forms.Label();
+            this.rowSwitchPendingChanges = new System.Windows.Forms.Label();
+            this.rowSwitchPersistChanges = new System.Windows.Forms.Button();
             this.portTable.SuspendLayout();
             this.portTableContainer.SuspendLayout();
+            this.switchTableContainer.SuspendLayout();
+            this.switchTable.SuspendLayout();
             this.SuspendLayout();
             // 
             // portTable
@@ -60,7 +70,6 @@ namespace easyvlans.GUI
             this.portTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.portTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.portTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.portTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.portTable.Controls.Add(this.titlePortPortLabel, 0, 0);
             this.portTable.Controls.Add(this.titlePortSwitch, 1, 0);
             this.portTable.Controls.Add(this.titlePortPortId, 2, 0);
@@ -236,10 +245,10 @@ namespace easyvlans.GUI
             // logTextBox
             // 
             this.logTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logTextBox.Location = new System.Drawing.Point(0, 105);
+            this.logTextBox.Location = new System.Drawing.Point(0, 210);
             this.logTextBox.MinimumSize = new System.Drawing.Size(4, 100);
             this.logTextBox.Name = "logTextBox";
-            this.logTextBox.Size = new System.Drawing.Size(1061, 103);
+            this.logTextBox.Size = new System.Drawing.Size(1061, 148);
             this.logTextBox.TabIndex = 4;
             this.logTextBox.Text = "";
             // 
@@ -254,13 +263,116 @@ namespace easyvlans.GUI
             this.portTableContainer.Size = new System.Drawing.Size(1061, 105);
             this.portTableContainer.TabIndex = 5;
             // 
+            // switchTableContainer
+            // 
+            this.switchTableContainer.AutoSize = true;
+            this.switchTableContainer.Controls.Add(this.switchTable);
+            this.switchTableContainer.Dock = System.Windows.Forms.DockStyle.Top;
+            this.switchTableContainer.Location = new System.Drawing.Point(0, 105);
+            this.switchTableContainer.Name = "switchTableContainer";
+            this.switchTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 25);
+            this.switchTableContainer.Size = new System.Drawing.Size(1061, 105);
+            this.switchTableContainer.TabIndex = 1;
+            // 
+            // switchTable
+            // 
+            this.switchTable.AutoSize = true;
+            this.switchTable.ColumnCount = 4;
+            this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.switchTable.Controls.Add(this.titleSwitchSwitchName, 0, 0);
+            this.switchTable.Controls.Add(this.titleSwitchPendingChanges, 1, 0);
+            this.switchTable.Controls.Add(this.titleSwitchPersistChanges, 2, 0);
+            this.switchTable.Controls.Add(this.rowSwitchSwitchName, 0, 1);
+            this.switchTable.Controls.Add(this.rowSwitchPendingChanges, 1, 1);
+            this.switchTable.Controls.Add(this.rowSwitchPersistChanges, 2, 1);
+            this.switchTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.switchTable.Location = new System.Drawing.Point(10, 10);
+            this.switchTable.Name = "switchTable";
+            this.switchTable.RowCount = 2;
+            this.switchTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.switchTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.switchTable.Size = new System.Drawing.Size(1041, 70);
+            this.switchTable.TabIndex = 0;
+            // 
+            // titleSwitchSwitchName
+            // 
+            this.titleSwitchSwitchName.AutoSize = true;
+            this.titleSwitchSwitchName.Dock = System.Windows.Forms.DockStyle.Left;
+            this.titleSwitchSwitchName.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.titleSwitchSwitchName.Location = new System.Drawing.Point(3, 0);
+            this.titleSwitchSwitchName.Name = "titleSwitchSwitchName";
+            this.titleSwitchSwitchName.Size = new System.Drawing.Size(93, 35);
+            this.titleSwitchSwitchName.TabIndex = 0;
+            this.titleSwitchSwitchName.Text = "Switch name";
+            this.titleSwitchSwitchName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // titleSwitchPendingChanges
+            // 
+            this.titleSwitchPendingChanges.AutoSize = true;
+            this.titleSwitchPendingChanges.Dock = System.Windows.Forms.DockStyle.Left;
+            this.titleSwitchPendingChanges.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.titleSwitchPendingChanges.Location = new System.Drawing.Point(153, 0);
+            this.titleSwitchPendingChanges.Name = "titleSwitchPendingChanges";
+            this.titleSwitchPendingChanges.Size = new System.Drawing.Size(120, 35);
+            this.titleSwitchPendingChanges.TabIndex = 1;
+            this.titleSwitchPendingChanges.Text = "Pending changes";
+            this.titleSwitchPendingChanges.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // titleSwitchPersistChanges
+            // 
+            this.titleSwitchPersistChanges.AutoSize = true;
+            this.titleSwitchPersistChanges.Dock = System.Windows.Forms.DockStyle.Left;
+            this.titleSwitchPersistChanges.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.titleSwitchPersistChanges.Location = new System.Drawing.Point(303, 0);
+            this.titleSwitchPersistChanges.Name = "titleSwitchPersistChanges";
+            this.titleSwitchPersistChanges.Size = new System.Drawing.Size(108, 35);
+            this.titleSwitchPersistChanges.TabIndex = 2;
+            this.titleSwitchPersistChanges.Text = "Persist changes";
+            this.titleSwitchPersistChanges.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // rowSwitchSwitchName
+            // 
+            this.rowSwitchSwitchName.AutoSize = true;
+            this.rowSwitchSwitchName.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rowSwitchSwitchName.Location = new System.Drawing.Point(3, 35);
+            this.rowSwitchSwitchName.Name = "rowSwitchSwitchName";
+            this.rowSwitchSwitchName.Size = new System.Drawing.Size(56, 35);
+            this.rowSwitchSwitchName.TabIndex = 3;
+            this.rowSwitchSwitchName.Text = "Main A";
+            this.rowSwitchSwitchName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // rowSwitchPendingChanges
+            // 
+            this.rowSwitchPendingChanges.AutoSize = true;
+            this.rowSwitchPendingChanges.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rowSwitchPendingChanges.Location = new System.Drawing.Point(153, 35);
+            this.rowSwitchPendingChanges.Name = "rowSwitchPendingChanges";
+            this.rowSwitchPendingChanges.Size = new System.Drawing.Size(84, 35);
+            this.rowSwitchPendingChanges.TabIndex = 4;
+            this.rowSwitchPendingChanges.Text = "no changes";
+            this.rowSwitchPendingChanges.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // rowSwitchPersistChanges
+            // 
+            this.rowSwitchPersistChanges.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rowSwitchPersistChanges.Location = new System.Drawing.Point(303, 38);
+            this.rowSwitchPersistChanges.Name = "rowSwitchPersistChanges";
+            this.rowSwitchPersistChanges.Size = new System.Drawing.Size(144, 29);
+            this.rowSwitchPersistChanges.TabIndex = 5;
+            this.rowSwitchPersistChanges.Text = "running -> startup";
+            this.rowSwitchPersistChanges.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1061, 208);
+            this.ClientSize = new System.Drawing.Size(1061, 358);
             this.Controls.Add(this.logTextBox);
+            this.Controls.Add(this.switchTableContainer);
             this.Controls.Add(this.portTableContainer);
             this.MaximizeBox = false;
             this.Name = "MainForm";
@@ -269,6 +381,10 @@ namespace easyvlans.GUI
             this.portTable.PerformLayout();
             this.portTableContainer.ResumeLayout(false);
             this.portTableContainer.PerformLayout();
+            this.switchTableContainer.ResumeLayout(false);
+            this.switchTableContainer.PerformLayout();
+            this.switchTable.ResumeLayout(false);
+            this.switchTable.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -292,6 +408,14 @@ namespace easyvlans.GUI
         private System.Windows.Forms.Label rowPortState;
         private System.Windows.Forms.Panel portTableContainer;
         private System.Windows.Forms.Label titlePortState;
+        private System.Windows.Forms.Panel switchTableContainer;
+        private System.Windows.Forms.TableLayoutPanel switchTable;
+        private System.Windows.Forms.Label titleSwitchSwitchName;
+        private System.Windows.Forms.Label titleSwitchPendingChanges;
+        private System.Windows.Forms.Label titleSwitchPersistChanges;
+        private System.Windows.Forms.Label rowSwitchSwitchName;
+        private System.Windows.Forms.Label rowSwitchPendingChanges;
+        private System.Windows.Forms.Button rowSwitchPersistChanges;
     }
 }
 
