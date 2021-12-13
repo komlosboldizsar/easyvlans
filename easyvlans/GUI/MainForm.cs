@@ -54,6 +54,7 @@ namespace easyvlans.GUI
                 int tableRow = portRow + 1;
                 RowControls thisRowControls = getRowControls(portRow);
                 rowControls.Add(thisRowControls);
+                portsRowControls.Add(port, thisRowControls);
 
                 if (portRow > 0)
                 {
@@ -99,6 +100,7 @@ namespace easyvlans.GUI
         }
 
         private List<RowControls> rowControls = new List<RowControls>();
+        private Dictionary<Port, RowControls> portsRowControls = new Dictionary<Port, RowControls>();
 
         private T cloneOrOriginal<T>(T originalControl, int portRow)
             where T : Control
