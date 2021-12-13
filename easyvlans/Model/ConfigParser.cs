@@ -22,8 +22,7 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_SWITCH_IP = "ip";
 
         private const string TAG_SWITCHACCESS_TELNET = "telnet";
-        private const string TAG_SWITCHACCESS_SSH_USERNAMEPASSWORD = "ssh_up";
-        private const string TAG_SWITCHACCESS_SSH_KEYPAIR = "ssh_kp";
+        private const string TAG_SWITCHACCESS_SSH_KEYPAIR = "ssh";
         
         private const string TAG_VLANS = "vlans";
         private const string TAG_VLAN = "vlan";
@@ -106,9 +105,6 @@ namespace easyvlans.Model
                 {
                     case TAG_SWITCHACCESS_TELNET:
                         sam = new SamTelnet(/*TODO*/);
-                        break;
-                    case TAG_SWITCHACCESS_SSH_USERNAMEPASSWORD:
-                        sam = new SamSshUsernamePassword(/*TODO*/);
                         break;
                     case TAG_SWITCHACCESS_SSH_KEYPAIR:
                         sam = new SamSshKeypair(/*TODO*/);

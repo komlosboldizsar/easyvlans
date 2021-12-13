@@ -5,7 +5,7 @@
 			<telnet/>
 		</switch>
 		<switch id="mainb" label="Main B" ip="192.168.10.2">
-			<ssh_up username="root" password="hello" />
+			<ssh username="root" privatekey="hello" <!--privatekeyfile="C:\ciscokey"--> />
 		</switch>
 	</switches>
 	<vlans>
