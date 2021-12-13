@@ -47,37 +47,37 @@ namespace easyvlans.GUI
             }
 
             int portRow = 0;
-            int rowHeight = (int)table.RowStyles[1].Height;
+            int portRowHeight = (int)portTable.RowStyles[1].Height;
             foreach (Port port in config.Ports)
             {
 
-                int tableRow = portRow + 1;
-                RowControls thisRowControls = getRowControls(portRow);
-                rowControls.Add(thisRowControls);
-                portsRowControls.Add(port, thisRowControls);
+                int portTableRow = portRow + 1;
+                PortRowControls thisPortRowControls = getPortRowControls(portRow);
+                portRowControls.Add(thisPortRowControls);
+                portAssociatedRowControls.Add(port, thisPortRowControls);
 
                 if (portRow > 0)
                 {
-                    table.RowCount++;
-                    table.RowStyles.Add(new RowStyle(SizeType.Absolute, rowHeight));
-                    table.Controls.Add(thisRowControls.PortLabel, 0, tableRow);
-                    table.Controls.Add(thisRowControls.Switch, 1, tableRow);
-                    table.Controls.Add(thisRowControls.PortId, 2, tableRow);
-                    table.Controls.Add(thisRowControls.CurrentVlan, 3, tableRow);
-                    table.Controls.Add(thisRowControls.SetVlanTo, 4, tableRow);
-                    table.Controls.Add(thisRowControls.Set, 5, tableRow);
-                    table.Controls.Add(thisRowControls.State, 6, tableRow);
-                    Size = new Size(Size.Width, Size.Height + rowHeight);
+                    portTable.RowCount++;
+                    portTable.RowStyles.Add(new RowStyle(SizeType.Absolute, portRowHeight));
+                    portTable.Controls.Add(thisPortRowControls.PortLabel, 0, portTableRow);
+                    portTable.Controls.Add(thisPortRowControls.Switch, 1, portTableRow);
+                    portTable.Controls.Add(thisPortRowControls.PortId, 2, portTableRow);
+                    portTable.Controls.Add(thisPortRowControls.CurrentVlan, 3, portTableRow);
+                    portTable.Controls.Add(thisPortRowControls.SetVlanTo, 4, portTableRow);
+                    portTable.Controls.Add(thisPortRowControls.Set, 5, portTableRow);
+                    portTable.Controls.Add(thisPortRowControls.State, 6, portTableRow);
+                    Size = new Size(Size.Width, Size.Height + portRowHeight);
                 }
 
-                thisRowControls.PortLabel.Text = port.Label;
-                thisRowControls.Switch.Text = port.Switch.Label;
-                thisRowControls.PortId.Text = port.Index;
-                thisRowControls.CurrentVlan.Text = CURRENT_VLAN_UNKNOWN;
-                thisRowControls.SetVlanTo.Tag = port;
-                thisRowControls.Set.Tag = port;
-                thisRowControls.Set.Enabled = false;
-                thisRowControls.State.Text = "";
+                thisPortRowControls.PortLabel.Text = port.Label;
+                thisPortRowControls.Switch.Text = port.Switch.Label;
+                thisPortRowControls.PortId.Text = port.Index;
+                thisPortRowControls.CurrentVlan.Text = CURRENT_VLAN_UNKNOWN;
+                thisPortRowControls.SetVlanTo.Tag = port;
+                thisPortRowControls.Set.Tag = port;
+                thisPortRowControls.Set.Enabled = false;
+                thisPortRowControls.State.Text = "";
 
                 portRow++;
 
@@ -85,43 +85,43 @@ namespace easyvlans.GUI
 
             portRow = 0;
             foreach (Port port in config.Ports)
-                rowControls[portRow++].SetVlanTo.CreateAdapterAsDataSource(port.Vlans, vlanToStr, true, "");
+                portRowControls[portRow++].SetVlanTo.CreateAdapterAsDataSource(port.Vlans, vlanToStr, true, "");
 
             foreach (Port port in config.Ports)
             {
                 port.CurrentVlanChanged += portsCurrentVlanChangedHandler;
-                RowControls rowControls = portsRowControls[port];
-                rowControls.SetVlanTo.SelectedIndexChanged += setVlanToSelectedIndexChangedHandler;
-                rowControls.Set.Click += setButtonClickHandler;
+                PortRowControls rowControls = portAssociatedRowControls[port];
+                rowControls.SetVlanTo.SelectedIndexChanged += portsSetVlanToSelectedIndexChangedHandler;
+                rowControls.Set.Click += portsSetButtonClickHandler;
             }
 
         }
 
         private void portsCurrentVlanChangedHandler(Port port, Vlan newValue)
-            => portsRowControls[port].CurrentVlan.Text = vlanToStr(newValue);
+            => portAssociatedRowControls[port].CurrentVlan.Text = vlanToStr(newValue);
 
-        private void setVlanToSelectedIndexChangedHandler(object sender, EventArgs e)
+        private void portsSetVlanToSelectedIndexChangedHandler(object sender, EventArgs e)
         {
             ComboBox typedSender = sender as ComboBox;
             Port port = typedSender?.Tag as Port;
             if (port == null)
                 return;
-            portsRowControls[port].Set.Enabled = (typedSender.SelectedIndex > 0);
+            portAssociatedRowControls[port].Set.Enabled = (typedSender.SelectedIndex > 0);
         }
 
-        private void setButtonClickHandler(object sender, EventArgs e)
+        private void portsSetButtonClickHandler(object sender, EventArgs e)
         {
             Button typedSender = sender as Button;
             Port port = typedSender?.Tag as Port;
             if (port == null)
                 return;
-            Vlan selectedVlan = portsRowControls[port].SetVlanTo.SelectedValue as Vlan;
+            Vlan selectedVlan = portAssociatedRowControls[port].SetVlanTo.SelectedValue as Vlan;
             port.SetVlanTo(selectedVlan);
         }
 
         private string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
 
-        public class RowControls
+        public class PortRowControls
         {
             public Label PortLabel { get; init; }
             public Label Switch { get; init; }
@@ -132,24 +132,24 @@ namespace easyvlans.GUI
             public Label State { get; init; }
         }
 
-        private List<RowControls> rowControls = new List<RowControls>();
-        private Dictionary<Port, RowControls> portsRowControls = new Dictionary<Port, RowControls>();
+        private List<PortRowControls> portRowControls = new List<PortRowControls>();
+        private Dictionary<Port, PortRowControls> portAssociatedRowControls = new Dictionary<Port, PortRowControls>();
 
-        private T cloneOrOriginal<T>(T originalControl, int portRow)
+        private T cloneOrOriginal<T>(T originalControl, int row)
             where T : Control
-            => (portRow == 0) ? originalControl : originalControl.Clone();
+            => (row == 0) ? originalControl : originalControl.Clone();
 
-        private RowControls getRowControls(int portRow)
+        private PortRowControls getPortRowControls(int portRow)
         {
-            return new RowControls()
+            return new PortRowControls()
             {
-                PortLabel = cloneOrOriginal(rowPortLabel, portRow),
-                Switch = cloneOrOriginal(rowSwitch, portRow),
-                PortId = cloneOrOriginal(rowPortId, portRow),
-                CurrentVlan = cloneOrOriginal(rowCurrentVlan, portRow),
-                SetVlanTo = cloneOrOriginal(rowSetVlanTo, portRow),
-                Set = cloneOrOriginal(rowSet, portRow),
-                State = cloneOrOriginal(rowState, portRow)
+                PortLabel = cloneOrOriginal(rowPortPortLabel, portRow),
+                Switch = cloneOrOriginal(rowPortSwitch, portRow),
+                PortId = cloneOrOriginal(rowPortPortId, portRow),
+                CurrentVlan = cloneOrOriginal(rowPortCurrentVlan, portRow),
+                SetVlanTo = cloneOrOriginal(rowPortSetVlanTo, portRow),
+                Set = cloneOrOriginal(rowPortSet, portRow),
+                State = cloneOrOriginal(rowPortState, portRow)
             };
         }
 
