@@ -157,6 +157,7 @@ namespace easyvlans.GUI
                     switchTable.Controls.Add(thisSwitchRowControls.SwitchName, 0, switchTableRow);
                     switchTable.Controls.Add(thisSwitchRowControls.PendingChanges, 1, switchTableRow);
                     switchTable.Controls.Add(thisSwitchRowControls.PersistChanges, 2, switchTableRow);
+                    switchTable.Controls.Add(thisSwitchRowControls.State, 3, switchTableRow);
                     Size = new Size(Size.Width, Size.Height + switchRowHeight);
                 }
 
@@ -165,6 +166,7 @@ namespace easyvlans.GUI
                 thisSwitchRowControls.PersistChanges.Tag = @switch;
                 thisSwitchRowControls.PersistChanges.Enabled = false;
                 thisSwitchRowControls.PersistChanges.Click += switchesPersistChangesButtonClickHandler;
+                thisSwitchRowControls.State.Text = "";
                 @switch.PortsWithPendingChangeCountChanged += switchesPortsWithPendingChangeCountChangedHandler;
 
                 switchRow++;
@@ -217,6 +219,7 @@ namespace easyvlans.GUI
             public Label SwitchName { get; init; }
             public Label PendingChanges { get; init; }
             public Button PersistChanges { get; init; }
+            public Label State { get; init; }
         }
 
         private List<PortRowControls> portRowControls = new List<PortRowControls>();
@@ -249,7 +252,8 @@ namespace easyvlans.GUI
             {
                 SwitchName = cloneOrOriginal(rowSwitchSwitchName, switchRow),
                 PendingChanges = cloneOrOriginal(rowSwitchPendingChanges, switchRow),
-                PersistChanges = cloneOrOriginal(rowSwitchPersistChanges, switchRow)
+                PersistChanges = cloneOrOriginal(rowSwitchPersistChanges, switchRow),
+                State = cloneOrOriginal(rowSwitchState, switchRow),
             };
         }
 

@@ -53,6 +53,8 @@ namespace easyvlans.GUI
             this.rowSwitchSwitchName = new System.Windows.Forms.Label();
             this.rowSwitchPendingChanges = new System.Windows.Forms.Label();
             this.rowSwitchPersistChanges = new System.Windows.Forms.Button();
+            this.titleSwitchState = new System.Windows.Forms.Label();
+            this.rowSwitchState = new System.Windows.Forms.Label();
             this.portTable.SuspendLayout();
             this.portTableContainer.SuspendLayout();
             this.switchTableContainer.SuspendLayout();
@@ -288,6 +290,8 @@ namespace easyvlans.GUI
             this.switchTable.Controls.Add(this.rowSwitchSwitchName, 0, 1);
             this.switchTable.Controls.Add(this.rowSwitchPendingChanges, 1, 1);
             this.switchTable.Controls.Add(this.rowSwitchPersistChanges, 2, 1);
+            this.switchTable.Controls.Add(this.titleSwitchState, 3, 0);
+            this.switchTable.Controls.Add(this.rowSwitchState, 3, 1);
             this.switchTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.switchTable.Location = new System.Drawing.Point(10, 10);
             this.switchTable.Name = "switchTable";
@@ -366,6 +370,29 @@ namespace easyvlans.GUI
             this.rowSwitchPersistChanges.Text = "running -> startup";
             this.rowSwitchPersistChanges.UseVisualStyleBackColor = true;
             // 
+            // titleSwitchState
+            // 
+            this.titleSwitchState.AutoSize = true;
+            this.titleSwitchState.Dock = System.Windows.Forms.DockStyle.Left;
+            this.titleSwitchState.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.titleSwitchState.Location = new System.Drawing.Point(453, 0);
+            this.titleSwitchState.Name = "titleSwitchState";
+            this.titleSwitchState.Size = new System.Drawing.Size(43, 35);
+            this.titleSwitchState.TabIndex = 6;
+            this.titleSwitchState.Text = "State";
+            this.titleSwitchState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // rowSwitchState
+            // 
+            this.rowSwitchState.AutoSize = true;
+            this.rowSwitchState.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rowSwitchState.Location = new System.Drawing.Point(453, 35);
+            this.rowSwitchState.Name = "rowSwitchState";
+            this.rowSwitchState.Size = new System.Drawing.Size(91, 35);
+            this.rowSwitchState.TabIndex = 7;
+            this.rowSwitchState.Text = "In progress...";
+            this.rowSwitchState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -417,6 +444,8 @@ namespace easyvlans.GUI
         private System.Windows.Forms.Label rowSwitchSwitchName;
         private System.Windows.Forms.Label rowSwitchPendingChanges;
         private System.Windows.Forms.Button rowSwitchPersistChanges;
+        private System.Windows.Forms.Label titleSwitchState;
+        private System.Windows.Forms.Label rowSwitchState;
     }
 }
 
