@@ -66,8 +66,7 @@ namespace easyvlans.GUI
                     table.Controls.Add(thisRowControls.CurrentVlan, 3, tableRow);
                     table.Controls.Add(thisRowControls.SetVlanTo, 4, tableRow);
                     table.Controls.Add(thisRowControls.Set, 5, tableRow);
-                    table.Controls.Add(thisRowControls.Persist, 6, tableRow);
-                    table.Controls.Add(thisRowControls.State, 7, tableRow);
+                    table.Controls.Add(thisRowControls.State, 6, tableRow);
                     Size = new Size(Size.Width, Size.Height + rowHeight);
                 }
 
@@ -78,8 +77,6 @@ namespace easyvlans.GUI
                 thisRowControls.SetVlanTo.Tag = port;
                 thisRowControls.Set.Tag = port;
                 thisRowControls.Set.Enabled = false;
-                thisRowControls.Persist.Tag = port;
-                thisRowControls.Persist.Enabled = false;
                 thisRowControls.State.Text = "";
 
                 portRow++;
@@ -96,7 +93,6 @@ namespace easyvlans.GUI
                 RowControls rowControls = portsRowControls[port];
                 rowControls.SetVlanTo.SelectedIndexChanged += setVlanToSelectedIndexChangedHandler;
                 rowControls.Set.Click += setButtonClickHandler;
-                rowControls.Persist.Click += persistButtonClickHandler;
             }
 
         }
@@ -123,13 +119,6 @@ namespace easyvlans.GUI
             port.SetVlanTo(selectedVlan);
         }
 
-        private void persistButtonClickHandler(object sender, EventArgs e)
-        {
-            Button typedSender = sender as Button;
-            Port port = typedSender?.Tag as Port;
-            port?.PersistSwitchSettings();
-        }
-
         private string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
 
         public class RowControls
@@ -140,7 +129,6 @@ namespace easyvlans.GUI
             public Label CurrentVlan { get; init; }
             public ComboBox SetVlanTo { get; init; }
             public Button Set { get; init; }
-            public Button Persist { get; init; }
             public Label State { get; init; }
         }
 
@@ -161,7 +149,6 @@ namespace easyvlans.GUI
                 CurrentVlan = cloneOrOriginal(rowCurrentVlan, portRow),
                 SetVlanTo = cloneOrOriginal(rowSetVlanTo, portRow),
                 Set = cloneOrOriginal(rowSet, portRow),
-                Persist = cloneOrOriginal(rowPersist, portRow),
                 State = cloneOrOriginal(rowState, portRow)
             };
         }

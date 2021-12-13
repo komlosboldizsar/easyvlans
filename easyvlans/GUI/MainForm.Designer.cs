@@ -35,7 +35,6 @@ namespace easyvlans.GUI
             this.titlePortId = new System.Windows.Forms.Label();
             this.titleCurrentVlan = new System.Windows.Forms.Label();
             this.titleSetVlanTo = new System.Windows.Forms.Label();
-            this.rowPersist = new System.Windows.Forms.Button();
             this.rowSet = new System.Windows.Forms.Button();
             this.rowSwitch = new System.Windows.Forms.Label();
             this.rowPortLabel = new System.Windows.Forms.Label();
@@ -53,29 +52,28 @@ namespace easyvlans.GUI
             // table
             // 
             this.table.AutoSize = true;
-            this.table.ColumnCount = 8;
+            this.table.ColumnCount = 7;
             this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.table.Controls.Add(this.titlePortLabel, 0, 0);
             this.table.Controls.Add(this.titleSwitch, 1, 0);
             this.table.Controls.Add(this.titlePortId, 2, 0);
             this.table.Controls.Add(this.titleCurrentVlan, 3, 0);
             this.table.Controls.Add(this.titleSetVlanTo, 4, 0);
-            this.table.Controls.Add(this.rowPersist, 6, 1);
             this.table.Controls.Add(this.rowSet, 5, 1);
             this.table.Controls.Add(this.rowSwitch, 1, 1);
             this.table.Controls.Add(this.rowPortLabel, 0, 1);
             this.table.Controls.Add(this.rowPortId, 2, 1);
             this.table.Controls.Add(this.rowCurrentVlan, 3, 1);
             this.table.Controls.Add(this.rowSetVlanTo, 4, 1);
-            this.table.Controls.Add(this.rowState, 7, 1);
-            this.table.Controls.Add(this.titleState, 7, 0);
+            this.table.Controls.Add(this.rowState, 6, 1);
+            this.table.Controls.Add(this.titleState, 6, 0);
             this.table.Dock = System.Windows.Forms.DockStyle.Fill;
             this.table.Location = new System.Drawing.Point(10, 10);
             this.table.Name = "table";
@@ -144,16 +142,6 @@ namespace easyvlans.GUI
             this.titleSetVlanTo.TabIndex = 4;
             this.titleSetVlanTo.Text = "Set VLAN to...";
             this.titleSetVlanTo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // rowPersist
-            // 
-            this.rowPersist.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rowPersist.Location = new System.Drawing.Point(703, 38);
-            this.rowPersist.Name = "rowPersist";
-            this.rowPersist.Size = new System.Drawing.Size(94, 29);
-            this.rowPersist.TabIndex = 6;
-            this.rowPersist.Text = "Persist";
-            this.rowPersist.UseVisualStyleBackColor = true;
             // 
             // rowSet
             // 
@@ -226,7 +214,7 @@ namespace easyvlans.GUI
             // 
             this.rowState.AutoSize = true;
             this.rowState.Dock = System.Windows.Forms.DockStyle.Left;
-            this.rowState.Location = new System.Drawing.Point(803, 35);
+            this.rowState.Location = new System.Drawing.Point(703, 35);
             this.rowState.Name = "rowState";
             this.rowState.Size = new System.Drawing.Size(91, 35);
             this.rowState.TabIndex = 13;
@@ -238,7 +226,7 @@ namespace easyvlans.GUI
             this.titleState.AutoSize = true;
             this.titleState.Dock = System.Windows.Forms.DockStyle.Left;
             this.titleState.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.titleState.Location = new System.Drawing.Point(803, 0);
+            this.titleState.Location = new System.Drawing.Point(703, 0);
             this.titleState.Name = "titleState";
             this.titleState.Size = new System.Drawing.Size(43, 35);
             this.titleState.TabIndex = 14;
@@ -295,7 +283,6 @@ namespace easyvlans.GUI
         private System.Windows.Forms.Label titleCurrentVlan;
         private System.Windows.Forms.RichTextBox logTextBox;
         private System.Windows.Forms.Label titleSetVlanTo;
-        private System.Windows.Forms.Button rowPersist;
         private System.Windows.Forms.Button rowSet;
         private System.Windows.Forms.Label rowSwitch;
         private System.Windows.Forms.Label rowPortLabel;

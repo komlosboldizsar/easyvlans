@@ -43,11 +43,6 @@ namespace easyvlans.Model
             throw new NotImplementedException();
         }
 
-        public void PersistSwitchSettings()
-        {
-            throw new NotImplementedException();
-        }
-
     }
 
 }
