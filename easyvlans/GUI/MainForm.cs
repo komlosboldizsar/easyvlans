@@ -106,7 +106,11 @@ namespace easyvlans.GUI
         }
 
         private void portsCurrentVlanChangedHandler(Port port, Vlan newValue)
-            => portAssociatedRowControls[port].CurrentVlan.Text = vlanToStr(newValue);
+        {
+            PortRowControls rowControls = portAssociatedRowControls[port];
+            rowControls.CurrentVlan.Text = vlanToStr(newValue);
+            rowControls.SetVlanTo.SelectedIndex = 0;
+        }
 
         private void portsSetVlanToSelectedIndexChangedHandler(object sender, EventArgs e)
         {
