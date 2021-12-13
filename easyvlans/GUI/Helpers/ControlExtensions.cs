@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace easyvlans.GUI
+namespace easyvlans.GUI.Helpers
 {
     public static class ControlExtensions
     {

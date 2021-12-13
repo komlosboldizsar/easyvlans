@@ -1,5 +1,5 @@
 ﻿
-namespace easyvlans
+namespace easyvlans.GUI
 {
     partial class MainForm
     {
