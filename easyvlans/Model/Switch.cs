@@ -50,6 +50,13 @@ namespace easyvlans.Model
                 ports.Add(port);
         }
 
+        internal void SetPortVlan(Port port, Vlan vlan)
+        {
+            if (!portsWithPendingChange.Contains(port) && ports.Contains(port))
+                portsWithPendingChange.Add(port);
+            PortsWithPendingChangeCount = portsWithPendingChange.Count;
+        }
+
         public void PersistChanges()
         {
             portsWithPendingChange.Clear();
