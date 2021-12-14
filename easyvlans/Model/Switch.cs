@@ -99,7 +99,7 @@ namespace easyvlans.Model
             }
         }
 
-        public async void ReadVlans() => await DoRemoteAction(_readVlans);
+        public async Task ReadVlans() => await DoRemoteAction(_readVlans);
 
         private async Task _readVlans(SwitchAccessMode sam, object tag = null)
         {
@@ -139,7 +139,7 @@ namespace easyvlans.Model
             Status = SwitchStatus.VlansRead;
         }
 
-        public async void SetVlan(Port port, Vlan vlan) => await DoRemoteAction(_setVlan, Tuple.Create<Port, Vlan>(port, vlan));
+        public async Task SetVlan(Port port, Vlan vlan) => await DoRemoteAction(_setVlan, Tuple.Create<Port, Vlan>(port, vlan));
 
         private async Task _setVlan(SwitchAccessMode sam, object tag)
         {
@@ -172,7 +172,7 @@ namespace easyvlans.Model
             port.Status = PortStatus.VlanSetFailed;
         }
 
-        public async void PersistConfig() => await DoRemoteAction(_persistConfig);
+        public async Task PersistConfig() => await DoRemoteAction(_persistConfig);
 
         private async Task _persistConfig(SwitchAccessMode sam, object tag = null)
         {

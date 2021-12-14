@@ -31,7 +31,7 @@ namespace easyvlans.GUI
             InitializeComponent();
         }
 
-        private void loadConfig(object sender, EventArgs e)
+        private async void loadConfig(object sender, EventArgs e)
         {
 
             if (config == null)
@@ -42,6 +42,8 @@ namespace easyvlans.GUI
 
             showPorts();
             showSwitches();
+            foreach (Switch @switch in config.Switches.Values)
+                await @switch.ReadVlans();
 
         }
 
@@ -121,14 +123,14 @@ namespace easyvlans.GUI
             portAssociatedRowControls[port].Set.Enabled = (typedSender.SelectedIndex > 0);
         }
 
-        private void portsSetButtonClickHandler(object sender, EventArgs e)
+        private async void portsSetButtonClickHandler(object sender, EventArgs e)
         {
             Button typedSender = sender as Button;
             Port port = typedSender?.Tag as Port;
             if (port == null)
                 return;
             Vlan selectedVlan = portAssociatedRowControls[port].SetVlanTo.SelectedValue as Vlan;
-            port.SetVlanTo(selectedVlan);
+            await port.SetVlanTo(selectedVlan);
         }
 
         private void showSwitches()
@@ -194,11 +196,11 @@ namespace easyvlans.GUI
             }
         }
 
-        private void switchesPersistChangesButtonClickHandler(object sender, EventArgs e)
+        private async void switchesPersistChangesButtonClickHandler(object sender, EventArgs e)
         {
             Button typedSender = sender as Button;
             Switch @switch = typedSender?.Tag as Switch;
-            @switch?.PersistChanges();
+            await @switch?.PersistConfig();
         }
 
         private string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
