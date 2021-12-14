@@ -31,6 +31,9 @@ namespace easyvlans.Model
                 throw new CouldNotConnectException();
         }
 
+        public override void Authenticate()
+        { }
+
         public async override void WriteLine(string line) => await client.WriteLine(line);
         public async override Task<string[]> ReadLines()
         {
