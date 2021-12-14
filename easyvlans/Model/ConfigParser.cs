@@ -101,7 +101,7 @@ namespace easyvlans.Model
         {
             foreach (XmlNode node in switchNode.ChildNodes)
             {
-                SwitchAccessMode sam;
+                SwitchAccessMode sam = null;
                 switch (node.LocalName)
                 {
                     case TAG_SWITCHACCESS_TELNET:
@@ -116,6 +116,8 @@ namespace easyvlans.Model
                         sam = new SamSshKeypair(/*TODO*/);
                         break;
                 }
+                if (sam != null)
+                    @switch.AddAccessMode(sam);
             }
         }
 

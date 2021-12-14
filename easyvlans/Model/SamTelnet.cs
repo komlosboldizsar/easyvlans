@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace easyvlans.Model
@@ -22,16 +23,25 @@ namespace easyvlans.Model
             this.ip = ip;
             this.port = port ?? DEFAULT_TELNET_PORT;
         }
-        public override void Connect()
+        public async override Task Connect()
         {
             if (client != null)
                 client.Dispose();
-            client = new Client(ip, port, new System.Threading.CancellationToken());
-            if (!client.IsConnected)
+            CancellationTokenSource connectCancellationTokenSource = new CancellationTokenSource();
+            CancellationToken connectCancellationToken = connectCancellationTokenSource.Token;
+            await Task.Run(() => {
+                try
+                {
+                    client = new Client(new TcpByteStream(ip, port), connectCancellationToken, new TimeSpan(0, 0, 2));
+                }
+                catch (InvalidOperationException)
+                { }
+            });
+            if (client?.IsConnected != true)
                 throw new CouldNotConnectException();
         }
 
-        public override void Authenticate()
+        public async override Task Authenticate()
         { }
 
         public async override void WriteLine(string line) => await client.WriteLine(line);

@@ -42,8 +42,11 @@ namespace easyvlans.GUI
 
             showPorts();
             showSwitches();
+            Task[] allReadVlansTask = new Task[config.Switches.Count];
+            int i = 0;
             foreach (Switch @switch in config.Switches.Values)
-                await @switch.ReadVlans();
+                allReadVlansTask[i++] = @switch.ReadVlans();
+            await Task.WhenAll(allReadVlansTask);
 
         }
 

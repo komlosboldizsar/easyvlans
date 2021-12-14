@@ -83,9 +83,9 @@ namespace easyvlans.Model
             {
                 SwitchAccessMode sam = accessModes[0];
                 Status = SwitchStatus.Connecting;
-                sam.Connect();
+                await sam.Connect();
                 Status = SwitchStatus.Authenticating;
-                sam.Authenticate();
+                await sam.Authenticate();
                 Status = SwitchStatus.Connected;
                 await actionBody.Invoke(sam, tag);
             }
