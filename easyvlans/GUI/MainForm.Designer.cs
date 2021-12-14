@@ -261,7 +261,7 @@ namespace easyvlans.GUI
             this.portTableContainer.Dock = System.Windows.Forms.DockStyle.Top;
             this.portTableContainer.Location = new System.Drawing.Point(0, 0);
             this.portTableContainer.Name = "portTableContainer";
-            this.portTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 25);
+            this.portTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
             this.portTableContainer.Size = new System.Drawing.Size(1061, 105);
             this.portTableContainer.TabIndex = 5;
             // 
