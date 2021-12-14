@@ -36,7 +36,7 @@ namespace easyvlans.Model
         public PortStatus Status
         {
             get => _status;
-            private set
+            internal set
             {
                 if (value == _status)
                     return;
@@ -47,6 +47,7 @@ namespace easyvlans.Model
 
         public Port(string label, Switch @switch, string index, IEnumerable<Vlan> vlans)
         {
+            Status = PortStatus.Unknown;
             Label = label;
             Switch = @switch;
             @switch.AssociatePort(this);

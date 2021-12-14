@@ -131,7 +131,7 @@ namespace easyvlans.Model
                             Vlan vlan = null;
                             if (int.TryParse(vlanIdStr, out int vlanId))
                                 config.Vlans.TryGetValue(vlanId, out vlan);
-                            ports.FindAll(p => p.Index == portId).ForEach(p => p.CurrentVlan = vlan);
+                            ports.FindAll(p => p.Index == portId).ForEach(p => { p.CurrentVlan = vlan; p.Status = PortStatus.VlanRead; });
                         }
                     }
                 }
@@ -146,6 +146,7 @@ namespace easyvlans.Model
             Tuple<Port, Vlan> typedTag = tag as Tuple<Port, Vlan>;
             Port port = typedTag.Item1;
             Vlan vlan = typedTag.Item2;
+            port.Status = PortStatus.SettingVlan;
             sam.WriteLine("");
             sam.WriteLine("enable");
             sam.WriteLine("configure terminal");
@@ -160,6 +161,7 @@ namespace easyvlans.Model
                 {
                     Status = SwitchStatus.PortVlanChanged;
                     port.CurrentVlan = vlan;
+                    port.Status = PortStatus.VlanSetNotPersisted;
                     if (!portsWithPendingChange.Contains(port) && ports.Contains(port))
                         portsWithPendingChange.Add(port);
                     PortsWithPendingChangeCount = portsWithPendingChange.Count;
@@ -167,6 +169,7 @@ namespace easyvlans.Model
                 }
             }
             Status = SwitchStatus.PortVlanChangeError;
+            port.Status = PortStatus.VlanSetFailed;
         }
 
         public async void PersistConfig() => await DoRemoteAction(_persistConfig);
@@ -183,6 +186,8 @@ namespace easyvlans.Model
                 if (line.Contains("[OK]"))
                 {
                     Status = SwitchStatus.ConfigSaved;
+                    foreach (Port port in ports)
+                        port.Status = PortStatus.VlanSetPersisted;
                     portsWithPendingChange.Clear();
                     PortsWithPendingChangeCount = 0;
                     return;
