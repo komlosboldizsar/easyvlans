@@ -87,7 +87,9 @@ namespace easyvlans.GUI
                 thisPortRowControls.SetVlanTo.Tag = port;
                 thisPortRowControls.Set.Tag = port;
                 thisPortRowControls.Set.Enabled = false;
-                thisPortRowControls.State.Text = "";
+                thisPortRowControls.State.Text = portStatusStrings[port.Status];
+                thisPortRowControls.State.ForeColor = portStatusColors[port.Status];
+                port.StatusChanged += portsStatusChangedHandler;
 
                 portRow++;
 
@@ -105,6 +107,13 @@ namespace easyvlans.GUI
                 rowControls.Set.Click += portsSetButtonClickHandler;
             }
 
+        }
+
+        private void portsStatusChangedHandler(Port port, PortStatus newValue)
+        {
+            Label thisPortStateControl = portAssociatedRowControls[port].State;
+            thisPortStateControl.Text = portStatusStrings[newValue];
+            thisPortStateControl.ForeColor = portStatusColors[newValue];
         }
 
         private void portsCurrentVlanChangedHandler(Port port, Vlan newValue)
@@ -168,13 +177,22 @@ namespace easyvlans.GUI
                 thisSwitchRowControls.PersistChanges.Tag = @switch;
                 thisSwitchRowControls.PersistChanges.Enabled = false;
                 thisSwitchRowControls.PersistChanges.Click += switchesPersistChangesButtonClickHandler;
-                thisSwitchRowControls.State.Text = "";
+                thisSwitchRowControls.State.Text = switchStatusStrings[@switch.Status];
+                thisSwitchRowControls.State.ForeColor = switchStatusColors[@switch.Status];
+                @switch.StatusChanged += switchesStatusChangedHandler;
                 @switch.PortsWithPendingChangeCountChanged += switchesPortsWithPendingChangeCountChangedHandler;
 
                 switchRow++;
 
             }
 
+        }
+
+        private void switchesStatusChangedHandler(Switch @switch, SwitchStatus newValue)
+        {
+            Label thisSwitchStateControl = switchAssociatedRowControls[@switch].State;
+            thisSwitchStateControl.Text = switchStatusStrings[newValue];
+            thisSwitchStateControl.ForeColor = switchStatusColors[newValue];
         }
 
         private void switchesPortsWithPendingChangeCountChangedHandler(Switch @switch, int newValue)
@@ -262,6 +280,58 @@ namespace easyvlans.GUI
         private const string CURRENT_VLAN_UNKNOWN = "unknown";
         private Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
         private Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
+
+        private Dictionary<PortStatus, string> portStatusStrings = new Dictionary<PortStatus, string>()
+        {
+            { PortStatus.Unknown, "unknown" },
+            { PortStatus.VlanRead, "VLAN setting loaded" },
+            { PortStatus.SettingVlan, "changing VLAN setting..." },
+            { PortStatus.VlanSetNotPersisted, "VLAN set (not permanent)" },
+            { PortStatus.VlanSetFailed, "changing VLAN failed!" },
+            { PortStatus.VlanSetPersisted, "VLAN set (permanent)" }
+        };
+
+        private Dictionary<PortStatus, Color> portStatusColors = new Dictionary<PortStatus, Color>()
+        {
+            { PortStatus.Unknown, Color.Black },
+            { PortStatus.VlanRead, Color.Black },
+            { PortStatus.SettingVlan, Color.DarkGreen },
+            { PortStatus.VlanSetNotPersisted, Color.DarkGreen },
+            { PortStatus.VlanSetFailed, Color.Red },
+            { PortStatus.VlanSetPersisted, Color.DarkGreen }
+        };
+
+        private Dictionary<SwitchStatus, string> switchStatusStrings = new Dictionary<SwitchStatus, string>()
+        {
+            { SwitchStatus.NotConnected, "not connected" },
+            { SwitchStatus.Connecting, "connecting..." },
+            { SwitchStatus.CantConnect, "couldn't connect!" },
+            { SwitchStatus.Authenticating, "authenticating..." },
+            { SwitchStatus.CantAuthenticate, "couldn't authenticate!" },
+            { SwitchStatus.Connected, "connected" },
+            { SwitchStatus.NoAccessMode, "no access method defined!" },
+            { SwitchStatus.VlansRead, "VLAN settings loaded" },
+            { SwitchStatus.PortVlanChanged, "VLAN setting of a port changed" },
+            { SwitchStatus.PortVlanChangeError, "VLAN setting of a port failed!" },
+            { SwitchStatus.ConfigSaved, "configuration saved as startup" },
+            { SwitchStatus.ConfigSaveError, "saving configuration as startup failed!" }
+        };
+
+        private Dictionary<SwitchStatus, Color> switchStatusColors = new Dictionary<SwitchStatus, Color>()
+        {
+            { SwitchStatus.NotConnected, Color.Black },
+            { SwitchStatus.Connecting, Color.Black },
+            { SwitchStatus.CantConnect, Color.Red },
+            { SwitchStatus.Authenticating, Color.Black },
+            { SwitchStatus.CantAuthenticate, Color.Red },
+            { SwitchStatus.Connected, Color.DarkGreen },
+            { SwitchStatus.NoAccessMode, Color.Red },
+            { SwitchStatus.VlansRead, Color.DarkGreen },
+            { SwitchStatus.PortVlanChanged, Color.DarkGreen },
+            { SwitchStatus.PortVlanChangeError, Color.Red },
+            { SwitchStatus.ConfigSaved, Color.DarkGreen },
+            { SwitchStatus.ConfigSaveError, Color.Red }
+        };
 
     }
 }
