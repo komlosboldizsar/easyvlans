@@ -30,6 +30,21 @@ namespace easyvlans.Model
             }
         }
 
+        public delegate void StatusChangedDelegate(Port port, PortStatus newValue);
+        public event StatusChangedDelegate StatusChanged;
+        private PortStatus _status;
+        public PortStatus Status
+        {
+            get => _status;
+            private set
+            {
+                if (value == _status)
+                    return;
+                _status = value;
+                StatusChanged?.Invoke(this, value);
+            }
+        }
+
         public Port(string label, Switch @switch, string index, IEnumerable<Vlan> vlans)
         {
             Label = label;
