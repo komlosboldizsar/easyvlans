@@ -41,7 +41,7 @@ namespace easyvlans.Model
 
         public void SetVlanTo(Vlan vlan)
         {
-            Switch.SetPortVlan(this, vlan);
+            Switch.SetVlan(this, vlan);
             CurrentVlan = vlan;
         }
 

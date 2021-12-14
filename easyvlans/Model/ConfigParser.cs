@@ -22,6 +22,7 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_SWITCH_IP = "ip";
 
         private const string TAG_SWITCHACCESS_TELNET = "telnet";
+        private const string ATTRIBUTE_SWITCHACCESS_TELNET_PORT = "port";
         private const string TAG_SWITCHACCESS_SSH_KEYPAIR = "ssh";
         
         private const string TAG_VLANS = "vlans";
@@ -104,7 +105,12 @@ namespace easyvlans.Model
                 switch (node.LocalName)
                 {
                     case TAG_SWITCHACCESS_TELNET:
-                        sam = new SamTelnet(/*TODO*/);
+                        int? telnetPort = null;
+                        string telnetPortStr = node.Attributes[ATTRIBUTE_SWITCHACCESS_TELNET_PORT]?.Value;
+                        if (telnetPortStr != null)
+                            if (int.TryParse(telnetPortStr, out int _telnetPort))
+                                telnetPort = _telnetPort;
+                        sam = new SamTelnet(@switch.IP, telnetPort);
                         break;
                     case TAG_SWITCHACCESS_SSH_KEYPAIR:
                         sam = new SamSshKeypair(/*TODO*/);

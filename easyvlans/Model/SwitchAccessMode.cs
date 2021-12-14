@@ -8,5 +8,9 @@ namespace easyvlans.Model
 {
     public abstract class SwitchAccessMode
     {
+        public abstract void Connect();
+        public abstract void Authenticate();
+        public abstract void WriteLine(string line);
+        public abstract Task<string[]> ReadLines();
     }
 }

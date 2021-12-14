@@ -17,7 +17,10 @@ namespace easyvlans.Model
         public Config(Dictionary<string, Switch> switches, Dictionary<int, Vlan> vlans, List<Port> ports)
         {
             foreach (KeyValuePair<string, Switch> switchKVP in switches)
+            {
                 Switches.Add(switchKVP.Key, switchKVP.Value);
+                switchKVP.Value.AssignConfig(this);
+            }
             foreach (KeyValuePair<int, Vlan> vlanKVP in vlans)
                 Vlans.Add(vlanKVP.Key, vlanKVP.Value);
             Ports.AddRange(ports);
