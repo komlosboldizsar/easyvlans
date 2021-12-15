@@ -1,4 +1,5 @@
-﻿using System;
+﻿using easyvlans.Logger;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -83,8 +84,10 @@ namespace easyvlans.Model
             {
                 SwitchAccessMode sam = accessModes[0];
                 Status = SwitchStatus.Connecting;
+                LogDispatcher.I($"Switch \"{Label}\" is connecting...");
                 await sam.Connect();
                 Status = SwitchStatus.Authenticating;
+                LogDispatcher.I($"Switch \"{Label}\" is authenticating...");
                 await sam.Authenticate();
                 Status = SwitchStatus.Connected;
                 await actionBody.Invoke(sam, tag);
@@ -92,10 +95,12 @@ namespace easyvlans.Model
             catch (CouldNotConnectException)
             {
                 Status = SwitchStatus.CantConnect;
+                LogDispatcher.E($"Failed to connect to switch \"{Label}\".");
             }
             catch (CouldNotAuthenticateException)
             {
                 Status = SwitchStatus.CantAuthenticate;
+                LogDispatcher.E($"Failed to authenticate on switch \"{Label}\".");
             }
         }
 
@@ -103,6 +108,7 @@ namespace easyvlans.Model
 
         private async Task _readVlans(SwitchAccessMode sam, object tag = null)
         {
+            LogDispatcher.I($"Reading VLAN settings from switch \"{Label}\"...");
             sam.WriteLine("");
             sam.WriteLine("enable");
             sam.WriteLine("show interfaces status");
@@ -131,12 +137,22 @@ namespace easyvlans.Model
                             Vlan vlan = null;
                             if (int.TryParse(vlanIdStr, out int vlanId))
                                 config.Vlans.TryGetValue(vlanId, out vlan);
-                            ports.FindAll(p => p.Index == portId).ForEach(p => { p.CurrentVlan = vlan; p.Status = PortStatus.VlanRead; });
+                            ports.FindAll(p => p.Index == portId).ForEach(p => {
+                                p.CurrentVlan = vlan;
+                                p.Status = PortStatus.VlanRead;
+                                string endOfSentence = "";
+                                if (vlanIdStr == "trunk")
+                                    endOfSentence = "trunk";
+                                else
+                                    endOfSentence = $"assigned to VLAN \"{vlanId} ({vlan?.Name ?? "unknown"})\"";
+                                LogDispatcher.I($"Port \"{p.Label}\" (\"{p.Index}\" on switch \"{Label}\") is {endOfSentence}.");
+                            });
                         }
                     }
                 }
             }
             Status = SwitchStatus.VlansRead;
+            LogDispatcher.I($"Reading VLAN settings from switch \"{Label}\" ready.");
         }
 
         public async Task SetVlan(Port port, Vlan vlan) => await DoRemoteAction(_setVlan, Tuple.Create<Port, Vlan>(port, vlan));
@@ -147,6 +163,7 @@ namespace easyvlans.Model
             Port port = typedTag.Item1;
             Vlan vlan = typedTag.Item2;
             port.Status = PortStatus.SettingVlan;
+            LogDispatcher.I($"Assigning port \"{port.Label}\" (\"{port.Index}\" on switch \"{Label}\") to VLAN \"{vlan.ID} ({vlan.Name})\"...");
             sam.WriteLine("");
             sam.WriteLine("enable");
             sam.WriteLine("configure terminal");
@@ -160,6 +177,7 @@ namespace easyvlans.Model
                 if (line.Contains("Configured from"))
                 {
                     Status = SwitchStatus.PortVlanChanged;
+                    LogDispatcher.I($"Assigning port \"{port.Label}\" (\"{port.Index}\" on switch \"{Label}\") to VLAN \"{vlan.ID} ({vlan.Name})\" ready.");
                     port.CurrentVlan = vlan;
                     port.Status = PortStatus.VlanSetNotPersisted;
                     if (!portsWithPendingChange.Contains(port) && ports.Contains(port))
@@ -170,12 +188,14 @@ namespace easyvlans.Model
             }
             Status = SwitchStatus.PortVlanChangeError;
             port.Status = PortStatus.VlanSetFailed;
+            LogDispatcher.E($"Assigning port \"{port.Label}\" (\"{port.Index}\" on switch \"{Label}\") to VLAN \"{vlan.ID} ({vlan.Name})\" failed.");
         }
 
         public async Task PersistConfig() => await DoRemoteAction(_persistConfig);
 
         private async Task _persistConfig(SwitchAccessMode sam, object tag = null)
         {
+            LogDispatcher.I($"Copying running-config to startup-config on switch \"{Label}\"...");
             sam.WriteLine("");
             sam.WriteLine("enable");
             sam.WriteLine("copy running-config startup-config");
@@ -186,6 +206,7 @@ namespace easyvlans.Model
                 if (line.Contains("[OK]"))
                 {
                     Status = SwitchStatus.ConfigSaved;
+                    LogDispatcher.I($"Copying running-config to startup-config on switch \"{Label}\" ready.");
                     foreach (Port port in ports)
                         port.Status = PortStatus.VlanSetPersisted;
                     portsWithPendingChange.Clear();
@@ -194,6 +215,7 @@ namespace easyvlans.Model
                 }
             }
             Status = SwitchStatus.ConfigSaveError;
+            LogDispatcher.E($"Copying running-config to startup-config on switch \"{Label}\" failed.");
         }
 
     }
