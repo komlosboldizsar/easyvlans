@@ -12,7 +12,7 @@ namespace easyvlans.Logger
         public delegate void NewLogMessageDelegate(LogMessageSeverity severity, string message);
         public static event NewLogMessageDelegate NewLogMessage;
 
-        private static List<LogMessage> Messages { get; } = new List<LogMessage>();
+        public static List<LogMessage> Messages { get; } = new List<LogMessage>();
 
         public static void Log(LogMessageSeverity severity, string message)
         {
