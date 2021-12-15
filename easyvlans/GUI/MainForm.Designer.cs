@@ -55,10 +55,13 @@ namespace easyvlans.GUI
             this.rowSwitchPersistChanges = new System.Windows.Forms.Button();
             this.titleSwitchState = new System.Windows.Forms.Label();
             this.rowSwitchState = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.showVerboseLog = new System.Windows.Forms.CheckBox();
             this.portTable.SuspendLayout();
             this.portTableContainer.SuspendLayout();
             this.switchTableContainer.SuspendLayout();
             this.switchTable.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // portTable
@@ -250,7 +253,7 @@ namespace easyvlans.GUI
             this.logTextBox.Location = new System.Drawing.Point(0, 185);
             this.logTextBox.MinimumSize = new System.Drawing.Size(4, 100);
             this.logTextBox.Name = "logTextBox";
-            this.logTextBox.Size = new System.Drawing.Size(1061, 173);
+            this.logTextBox.Size = new System.Drawing.Size(1061, 140);
             this.logTextBox.TabIndex = 4;
             this.logTextBox.Text = "";
             // 
@@ -393,6 +396,30 @@ namespace easyvlans.GUI
             this.rowSwitchState.Text = "In progress...";
             this.rowSwitchState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // panel1
+            // 
+            this.panel1.AutoSize = true;
+            this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panel1.Controls.Add(this.showVerboseLog);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(0, 325);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1061, 33);
+            this.panel1.TabIndex = 1;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // showVerboseLog
+            // 
+            this.showVerboseLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.showVerboseLog.AutoSize = true;
+            this.showVerboseLog.Location = new System.Drawing.Point(909, 5);
+            this.showVerboseLog.Name = "showVerboseLog";
+            this.showVerboseLog.Size = new System.Drawing.Size(149, 24);
+            this.showVerboseLog.TabIndex = 0;
+            this.showVerboseLog.Text = "Show verbose log";
+            this.showVerboseLog.UseVisualStyleBackColor = true;
+            this.showVerboseLog.CheckedChanged += new System.EventHandler(this.showVerboseLogCheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -400,6 +427,7 @@ namespace easyvlans.GUI
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1061, 358);
             this.Controls.Add(this.logTextBox);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.switchTableContainer);
             this.Controls.Add(this.portTableContainer);
             this.MaximizeBox = false;
@@ -413,6 +441,8 @@ namespace easyvlans.GUI
             this.switchTableContainer.PerformLayout();
             this.switchTable.ResumeLayout(false);
             this.switchTable.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -446,6 +476,8 @@ namespace easyvlans.GUI
         private System.Windows.Forms.Button rowSwitchPersistChanges;
         private System.Windows.Forms.Label titleSwitchState;
         private System.Windows.Forms.Label rowSwitchState;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.CheckBox showVerboseLog;
     }
 }
 

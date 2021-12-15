@@ -27,29 +27,35 @@ namespace easyvlans.GUI
 
         public MainForm(Config config)
         {
-            LogDispatcher.NewLogMessage += logMessageHandler;
+            LogDispatcher.NewLogMessage += addLogMessage;
             this.config = config;
             Load += loadConfig;
             InitializeComponent();
         }
 
-        private void logMessageHandler(LogMessageSeverity severity, string message)
+        private void addLogMessage(LogMessageSeverity severity, string message)
         {
-            lock (logTextBox)
+            if (!showVerboseLog.Checked && (severity == LogMessageSeverity.Verbose))
+                return;
+            logTextBox.AppendText(message + "\r\n");
+            int textLength = logTextBox.TextLength;
+            int selectionLength = message.Length;
+            int selectionStart = textLength - selectionLength - 1;
+            if (selectionStart < 0)
             {
-                logTextBox.AppendText(message + "\r\n");
-                int textLength = logTextBox.TextLength;
-                int selectionLength = message.Length;
-                int selectionStart = textLength - selectionLength - 1;
-                if (selectionStart < 0)
-                {
-                    selectionStart = 0;
-                    selectionLength = 0;
-                }
-                logTextBox.Select(selectionStart, selectionLength);
-                logTextBox.SelectionColor = logColors[severity];
-                logTextBox.Select(0, 0);
+                selectionStart = 0;
+                selectionLength = 0;
             }
+            logTextBox.Select(selectionStart, selectionLength);
+            logTextBox.SelectionColor = logColors[severity];
+            logTextBox.Select(0, 0);
+        }
+
+        private void showVerboseLogCheckedChanged(object sender, EventArgs e)
+        {
+            logTextBox.Text = "";
+            foreach (LogMessage logMessage in LogDispatcher.Messages)
+                addLogMessage(logMessage.Severity, logMessage.Message);
         }
 
         private Dictionary<LogMessageSeverity, Color> logColors = new Dictionary<LogMessageSeverity, Color>()
@@ -364,6 +370,11 @@ namespace easyvlans.GUI
             { SwitchStatus.ConfigSaved, Color.DarkGreen },
             { SwitchStatus.ConfigSaveError, Color.Red }
         };
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
 
     }
 }
