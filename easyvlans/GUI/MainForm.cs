@@ -1,6 +1,7 @@
 ﻿using easyvlans.GUI;
 using easyvlans.GUI.Helpers;
 using easyvlans.GUI.Helpers.DropDowns;
+using easyvlans.Logger;
 using easyvlans.Model;
 using System;
 using System.Collections.Generic;
@@ -26,10 +27,38 @@ namespace easyvlans.GUI
 
         public MainForm(Config config)
         {
+            LogDispatcher.NewLogMessage += logMessageHandler;
             this.config = config;
             Load += loadConfig;
             InitializeComponent();
         }
+
+        private void logMessageHandler(LogMessageSeverity severity, string message)
+        {
+            lock (logTextBox)
+            {
+                logTextBox.AppendText(message + "\r\n");
+                int textLength = logTextBox.TextLength;
+                int selectionLength = message.Length;
+                int selectionStart = textLength - selectionLength - 1;
+                if (selectionStart < 0)
+                {
+                    selectionStart = 0;
+                    selectionLength = 0;
+                }
+                logTextBox.Select(selectionStart, selectionLength);
+                logTextBox.SelectionColor = logColors[severity];
+                logTextBox.Select(0, 0);
+            }
+        }
+
+        private Dictionary<LogMessageSeverity, Color> logColors = new Dictionary<LogMessageSeverity, Color>()
+        {
+            { LogMessageSeverity.Error, Color.Red },
+            { LogMessageSeverity.Warning, Color.Orange },
+            { LogMessageSeverity.Info, Color.Black },
+            { LogMessageSeverity.Verbose, Color.LightBlue }
+        };
 
         private async void loadConfig(object sender, EventArgs e)
         {

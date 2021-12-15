@@ -247,10 +247,10 @@ namespace easyvlans.GUI
             // logTextBox
             // 
             this.logTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logTextBox.Location = new System.Drawing.Point(0, 210);
+            this.logTextBox.Location = new System.Drawing.Point(0, 185);
             this.logTextBox.MinimumSize = new System.Drawing.Size(4, 100);
             this.logTextBox.Name = "logTextBox";
-            this.logTextBox.Size = new System.Drawing.Size(1061, 148);
+            this.logTextBox.Size = new System.Drawing.Size(1061, 173);
             this.logTextBox.TabIndex = 4;
             this.logTextBox.Text = "";
             // 
@@ -262,7 +262,7 @@ namespace easyvlans.GUI
             this.portTableContainer.Location = new System.Drawing.Point(0, 0);
             this.portTableContainer.Name = "portTableContainer";
             this.portTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
-            this.portTableContainer.Size = new System.Drawing.Size(1061, 105);
+            this.portTableContainer.Size = new System.Drawing.Size(1061, 80);
             this.portTableContainer.TabIndex = 5;
             // 
             // switchTableContainer
@@ -270,7 +270,7 @@ namespace easyvlans.GUI
             this.switchTableContainer.AutoSize = true;
             this.switchTableContainer.Controls.Add(this.switchTable);
             this.switchTableContainer.Dock = System.Windows.Forms.DockStyle.Top;
-            this.switchTableContainer.Location = new System.Drawing.Point(0, 105);
+            this.switchTableContainer.Location = new System.Drawing.Point(0, 80);
             this.switchTableContainer.Name = "switchTableContainer";
             this.switchTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 25);
             this.switchTableContainer.Size = new System.Drawing.Size(1061, 105);
