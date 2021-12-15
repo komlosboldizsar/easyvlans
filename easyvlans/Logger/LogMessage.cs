@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Logger
 {
-    public record LogMessage(LogMessageSeverity Severity, string Message);
+    public record LogMessage(DateTime Timestamp, LogMessageSeverity Severity, string Message);
 }

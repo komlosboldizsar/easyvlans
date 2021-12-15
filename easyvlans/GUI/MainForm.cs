@@ -33,13 +33,14 @@ namespace easyvlans.GUI
             InitializeComponent();
         }
 
-        private void addLogMessage(LogMessageSeverity severity, string message)
+        private void addLogMessage(DateTime timestamp, LogMessageSeverity severity, string message)
         {
             if (!showVerboseLog.Checked && (severity == LogMessageSeverity.Verbose))
                 return;
-            logTextBox.AppendText(message + "\r\n");
+            string textToAdd = $"[{timestamp.ToString("HH:mm:ss")}] {message} \r\n";
+            logTextBox.AppendText(textToAdd);
             int textLength = logTextBox.TextLength;
-            int selectionLength = message.Length;
+            int selectionLength = textToAdd.Length;
             int selectionStart = textLength - selectionLength - 1;
             if (selectionStart < 0)
             {
@@ -55,7 +56,7 @@ namespace easyvlans.GUI
         {
             logTextBox.Text = "";
             foreach (LogMessage logMessage in LogDispatcher.Messages)
-                addLogMessage(logMessage.Severity, logMessage.Message);
+                addLogMessage(logMessage.Timestamp, logMessage.Severity, logMessage.Message);
         }
 
         private Dictionary<LogMessageSeverity, Color> logColors = new Dictionary<LogMessageSeverity, Color>()

@@ -9,15 +9,16 @@ namespace easyvlans.Logger
     public class LogDispatcher
     {
 
-        public delegate void NewLogMessageDelegate(LogMessageSeverity severity, string message);
+        public delegate void NewLogMessageDelegate(DateTime Timestamp, LogMessageSeverity severity, string message);
         public static event NewLogMessageDelegate NewLogMessage;
 
         public static List<LogMessage> Messages { get; } = new List<LogMessage>();
 
         public static void Log(LogMessageSeverity severity, string message)
         {
-            Messages.Add(new LogMessage(severity, message));
-            NewLogMessage?.Invoke(severity, message);
+            DateTime timestamp = DateTime.Now;
+            Messages.Add(new LogMessage(timestamp, severity, message));
+            NewLogMessage?.Invoke(timestamp, severity, message);
         }
 
         public static void E(string message) => Log(LogMessageSeverity.Error, message);
