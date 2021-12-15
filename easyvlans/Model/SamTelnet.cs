@@ -1,4 +1,5 @@
-﻿using PrimS.Telnet;
+﻿using easyvlans.Logger;
+using PrimS.Telnet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,10 +45,16 @@ namespace easyvlans.Model
         public async override Task Authenticate()
         { }
 
-        public async override void WriteLine(string line) => await client.WriteLine(line);
+        public async override void WriteLine(string line)
+        {
+            LogDispatcher.V($"To {ip}:{port} (telnet): {line}");
+            await client.WriteLine(line);
+        }
+
         public async override Task<string[]> ReadLines()
         {
             string text = await client.ReadAsync();
+            LogDispatcher.V($"From {ip}:{port} (telnet): >>>>\r\n{text}\r\n<<<<");
             return text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         }
     }
