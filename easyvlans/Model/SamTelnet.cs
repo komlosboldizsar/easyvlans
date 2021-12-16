@@ -24,10 +24,21 @@ namespace easyvlans.Model
             this.ip = ip;
             this.port = port ?? DEFAULT_TELNET_PORT;
         }
+
         public async override Task Connect()
         {
             if (client != null)
-                client.Dispose();
+            {
+                try
+                {
+                    client.Dispose();
+                }
+                catch { }
+                finally
+                {
+                    client = null;
+                }
+            }
             CancellationTokenSource connectCancellationTokenSource = new CancellationTokenSource();
             CancellationToken connectCancellationToken = connectCancellationTokenSource.Token;
             await Task.Run(() => {
@@ -42,8 +53,7 @@ namespace easyvlans.Model
                 throw new CouldNotConnectException();
         }
 
-        public async override Task Authenticate()
-        { }
+        public async override Task Authenticate() => await Task.CompletedTask; // suppress warning
 
         public async override void WriteLine(string line)
         {
