@@ -1,3 +1,4 @@
+using easyvlans.Logger;
 using easyvlans.Model;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace easyvlans
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            FileLogger fileLogger = new FileLogger();
             Config config = (new ConfigParser()).LoadConfig();
             Application.Run(new GUI.MainForm(config));
         }
