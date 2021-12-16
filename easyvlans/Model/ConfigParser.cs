@@ -24,7 +24,10 @@ namespace easyvlans.Model
         private const string TAG_SWITCHACCESS_TELNET = "telnet";
         private const string ATTRIBUTE_SWITCHACCESS_TELNET_PORT = "port";
         private const string TAG_SWITCHACCESS_SSH_KEYPAIR = "ssh";
-        
+        private const string ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_PORT = "port";
+        private const string ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_USERNAME = "username";
+        private const string ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_PRIVATEKEYFILE = "privatekeyfile";
+
         private const string TAG_VLANS = "vlans";
         private const string TAG_VLAN = "vlan";
         private const string ATTRIBUTE_VLAN_ID = "id";
@@ -113,7 +116,14 @@ namespace easyvlans.Model
                         sam = new SamTelnet(@switch.IP, telnetPort);
                         break;
                     case TAG_SWITCHACCESS_SSH_KEYPAIR:
-                        sam = new SamSshKeypair(/*TODO*/);
+                        int? sshKeypairPort = null;
+                        string sshKeypairPortStr = node.Attributes[ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_PORT]?.Value;
+                        if (sshKeypairPortStr != null)
+                            if (int.TryParse(sshKeypairPortStr, out int _sshKeypairPort))
+                                sshKeypairPort = _sshKeypairPort;
+                        string sshKeypairUsername = node.Attributes[ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_USERNAME]?.Value;
+                        string sshKeypairPrivateKeyFile = node.Attributes[ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_PRIVATEKEYFILE]?.Value;
+                        sam = new SamSshKeypair(@switch.IP, sshKeypairPort, sshKeypairUsername, sshKeypairPrivateKeyFile);
                         break;
                 }
                 if (sam != null)
