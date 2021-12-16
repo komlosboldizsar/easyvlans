@@ -11,8 +11,6 @@ namespace easyvlans.Model
         NotConnected,
         Connecting,
         CantConnect,
-        Authenticating,
-        CantAuthenticate,
         Connected,
         NoAccessMode,
         VlansRead,

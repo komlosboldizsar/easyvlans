@@ -64,8 +64,6 @@ namespace easyvlans.Model
             shellStream = client.CreateShellStream("easyvlans", 80, 40, 800, 600, 4096);
         }
 
-        public async override Task Authenticate() => await Task.CompletedTask; // suppress warning
-
         public async override void WriteLine(string line)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(line + "\r\n");

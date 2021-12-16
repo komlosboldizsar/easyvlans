@@ -86,9 +86,6 @@ namespace easyvlans.Model
                 Status = SwitchStatus.Connecting;
                 LogDispatcher.I($"Switch \"{Label}\" is connecting...");
                 await sam.Connect();
-                Status = SwitchStatus.Authenticating;
-                LogDispatcher.I($"Switch \"{Label}\" is authenticating...");
-                await sam.Authenticate();
                 Status = SwitchStatus.Connected;
                 await actionBody.Invoke(sam, tag);
             }
@@ -96,11 +93,6 @@ namespace easyvlans.Model
             {
                 Status = SwitchStatus.CantConnect;
                 LogDispatcher.E($"Failed to connect to switch \"{Label}\".");
-            }
-            catch (CouldNotAuthenticateException)
-            {
-                Status = SwitchStatus.CantAuthenticate;
-                LogDispatcher.E($"Failed to authenticate on switch \"{Label}\".");
             }
         }
 

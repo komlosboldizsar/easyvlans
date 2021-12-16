@@ -53,8 +53,6 @@ namespace easyvlans.Model
                 throw new CouldNotConnectException();
         }
 
-        public async override Task Authenticate() => await Task.CompletedTask; // suppress warning
-
         public async override void WriteLine(string line)
         {
             LogDispatcher.V($"To {ip}:{port} (telnet): {line}");
