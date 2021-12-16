@@ -368,10 +368,5 @@ namespace easyvlans.GUI
             { SwitchStatus.ConfigSaveError, Color.Red }
         };
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
     }
 }
