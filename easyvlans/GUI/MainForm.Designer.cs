@@ -29,6 +29,7 @@ namespace easyvlans.GUI
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.portTable = new System.Windows.Forms.TableLayoutPanel();
             this.titlePortPortLabel = new System.Windows.Forms.Label();
             this.titlePortSwitch = new System.Windows.Forms.Label();
@@ -429,6 +430,7 @@ namespace easyvlans.GUI
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.switchTableContainer);
             this.Controls.Add(this.portTableContainer);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "EasyVLANs";
