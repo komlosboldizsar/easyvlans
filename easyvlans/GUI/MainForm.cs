@@ -31,7 +31,7 @@ namespace easyvlans.GUI
             LogDispatcher.NewLogMessage += addLogMessage;
             this.config = config;
             this.parsingError = parsingError;
-            Load += loadConfig;
+            Load += load;
             InitializeComponent();
         }
 
@@ -54,7 +54,9 @@ namespace easyvlans.GUI
             logTextBox.Select(0, 0);
         }
 
-        private void showVerboseLogCheckedChanged(object sender, EventArgs e)
+        private void showVerboseLogCheckedChanged(object sender, EventArgs e) => reloadLogMessages();
+
+        private void reloadLogMessages()
         {
             logTextBox.Text = "";
             foreach (LogMessage logMessage in LogDispatcher.Messages)
@@ -69,8 +71,10 @@ namespace easyvlans.GUI
             { LogMessageSeverity.Verbose, Color.LightBlue }
         };
 
-        private async void loadConfig(object sender, EventArgs e)
+        private async void load(object sender, EventArgs e)
         {
+
+            reloadLogMessages();
 
             string errorToShow = parsingError;
             if ((errorToShow == null) && (config == null))
