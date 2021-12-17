@@ -44,7 +44,6 @@ namespace easyvlans.GUI
             int textLength = logTextBox.TextLength;
             int selectionLength = textToAdd.Length;
             int selectionStart = textLength - selectionLength + 1;
-            System.Diagnostics.Debug.WriteLine($"SELECTION: from {selectionStart} characters {selectionLength}");
             if (selectionStart < 0)
             {
                 selectionStart = 0;
@@ -52,7 +51,8 @@ namespace easyvlans.GUI
             }
             logTextBox.Select(selectionStart, selectionLength);
             logTextBox.SelectionColor = logColors[severity];
-            logTextBox.Select(0, 0);
+            logTextBox.Select(textLength - 1, 0);
+            logTextBox.ScrollToCaret();
         }
 
         private void showVerboseLogCheckedChanged(object sender, EventArgs e) => reloadLogMessages();
