@@ -39,11 +39,12 @@ namespace easyvlans.GUI
         {
             if (!showVerboseLog.Checked && (severity == LogMessageSeverity.Verbose))
                 return;
-            string textToAdd = $"[{timestamp.ToString("HH:mm:ss")}] {message} \r\n";
+            string textToAdd = $"[{timestamp.ToString("HH:mm:ss")}] {message}\r\n";
             logTextBox.AppendText(textToAdd);
             int textLength = logTextBox.TextLength;
             int selectionLength = textToAdd.Length;
-            int selectionStart = textLength - selectionLength - 1;
+            int selectionStart = textLength - selectionLength + 1;
+            System.Diagnostics.Debug.WriteLine($"SELECTION: from {selectionStart} characters {selectionLength}");
             if (selectionStart < 0)
             {
                 selectionStart = 0;
