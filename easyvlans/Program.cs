@@ -20,8 +20,20 @@ namespace easyvlans
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             FileLogger fileLogger = new FileLogger();
-            Config config = (new ConfigParser()).LoadConfig();
-            Application.Run(new GUI.MainForm(config));
+            Config config = null;
+            string parsingError = null;
+            try
+            {
+                config = (new ConfigParser()).LoadConfig();
+            }
+            catch (ConfigParsingException e)
+            {
+                parsingError = e.Message;
+                LogDispatcher.E("XML configuration parsing error: " + e.Message);
+                if (e.InnerException != null)
+                    LogDispatcher.E("Inner exception: " + e.InnerException.Message);
+            }
+            Application.Run(new GUI.MainForm(config, parsingError));
         }
     }
 }

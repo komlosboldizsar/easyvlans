@@ -19,16 +19,18 @@ namespace easyvlans.GUI
     {
 
         private Config config;
+        private string parsingError;
 
         public MainForm()
         {
             InitializeComponent();
         }
 
-        public MainForm(Config config)
+        public MainForm(Config config, string parsingError)
         {
             LogDispatcher.NewLogMessage += addLogMessage;
             this.config = config;
+            this.parsingError = parsingError;
             Load += loadConfig;
             InitializeComponent();
         }
@@ -70,9 +72,25 @@ namespace easyvlans.GUI
         private async void loadConfig(object sender, EventArgs e)
         {
 
-            if (config == null)
+            string errorToShow = parsingError;
+            if ((errorToShow == null) && (config == null))
+                errorToShow = "Couldn't load configuration, reason unknown.";
+            if (errorToShow != null)
             {
-                // Todo...
+                rowPortPortLabel.Text = "N/A";
+                rowPortPortLabel.ForeColor = Color.Red;
+                rowPortSwitch.Text = "N/A";
+                rowPortPortId.Text = "N/A";
+                rowPortCurrentVlan.Text = "N/A";
+                rowPortSetVlanTo.Enabled = false;
+                rowPortSet.Enabled = false;
+                rowPortState.Text = "N/A";
+                rowSwitchSwitchName.Text = "N/A";
+                rowSwitchSwitchName.ForeColor = Color.Red;
+                rowSwitchPendingChanges.Text = "N/A";
+                rowSwitchPersistChanges.Enabled = false;
+                rowSwitchState.Text = "N/A";
+                MessageBox.Show(errorToShow, "Initialization error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
