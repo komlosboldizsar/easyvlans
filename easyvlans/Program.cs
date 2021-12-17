@@ -20,10 +20,12 @@ namespace easyvlans
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             FileLogger fileLogger = new FileLogger();
+            LogDispatcher.I("Program started.");
             Config config = null;
             string parsingError = null;
             try
             {
+                LogDispatcher.I("Loading configuration...");
                 config = (new ConfigParser()).LoadConfig();
             }
             catch (ConfigParsingException e)
@@ -33,6 +35,7 @@ namespace easyvlans
                 if (e.InnerException != null)
                     LogDispatcher.E("Inner exception: " + e.InnerException.Message);
             }
+            LogDispatcher.I("Starting GUI...");
             Application.Run(new GUI.MainForm(config, parsingError));
         }
     }
