@@ -147,6 +147,7 @@ namespace easyvlans.GUI
                 thisPortRowControls.PortId.Text = port.Index;
                 thisPortRowControls.CurrentVlan.Text = CURRENT_VLAN_UNKNOWN;
                 thisPortRowControls.SetVlanTo.Tag = port;
+                thisPortRowControls.SetVlanTo.Enabled = port.Switch.HasAccessMode;
                 thisPortRowControls.Set.Tag = port;
                 thisPortRowControls.Set.Enabled = false;
                 thisPortRowControls.State.Text = portStatusStrings[port.Status];

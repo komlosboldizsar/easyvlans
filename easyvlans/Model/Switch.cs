@@ -15,6 +15,7 @@ namespace easyvlans.Model
         public string Label { get; init; }
         public string IP { get; init; }
         private List<SwitchAccessMode> accessModes = new List<SwitchAccessMode>();
+        public bool HasAccessMode => (accessModes.Count > 0);
         private List<Port> ports = new List<Port>();
         private List<Port> portsWithPendingChange = new List<Port>();
         private Config config;
