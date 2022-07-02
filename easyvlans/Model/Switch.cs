@@ -102,8 +102,21 @@ namespace easyvlans.Model
         private async Task _readVlans(SwitchAccessMode sam, object tag = null)
         {
             LogDispatcher.I($"Reading VLAN settings from switch \"{Label}\"...");
-            sam.WriteLine("");
-            sam.WriteLine("enable");
+            bool ok = false;
+            do {
+                string[] l = await sam.ReadLines();
+                if (l.Any(t => t.Contains("User Name:")))
+                    ok = true;
+            } while (!ok);
+            sam.WriteLine("cisco");
+            ok = false;
+            do
+            {
+                string[] l = await sam.ReadLines();
+                if (l.Any(t => t.Contains("Password:")))
+                    ok = true;
+            } while (!ok);
+            sam.WriteLine("cisco");
             sam.WriteLine("show interfaces status");
             List<string> lineBuffer = new List<string>();
             lineBuffer.AddRange(await sam.ReadLines());
