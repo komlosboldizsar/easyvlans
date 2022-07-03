@@ -75,10 +75,19 @@ namespace easyvlans.Model
 
         public async Task ReadConfigAsync()
         {
-            Dictionary<int, SnmpVlan> snmpVlans = await ReadSnmpVlansAsync();
-            Dictionary<int, SnmpPort> snmpPorts = await ReadSnmpPortsAsync();
-            BindUserToSnmpVlans(snmpVlans);
-            CalculateSnmpPortVlanMemberships(snmpVlans, snmpPorts);
+            LogDispatcher.I($"Reading configuration of switch [{Label}]...");
+            try
+            {
+                Dictionary<int, SnmpVlan> snmpVlans = await ReadSnmpVlansAsync();
+                Dictionary<int, SnmpPort> snmpPorts = await ReadSnmpPortsAsync();
+                BindUserToSnmpVlans(snmpVlans);
+                CalculateSnmpPortVlanMemberships(snmpVlans, snmpPorts);
+                LogDispatcher.I($"Reading configuration of switch [{Label}] ready.");
+            }
+            catch (Exception ex)
+            {
+                LogDispatcher.E($"Unsuccessfull reading of configuration of switch [{Label}]. Error message: [{ex.Message}]");
+            }
         }
 
         private async Task<List<Variable>> SnmpBulkWalkAsync(string objectIdentifierStr)
@@ -179,14 +188,23 @@ namespace easyvlans.Model
 
         public async Task SetPortToVlanAsync(UserPort port, UserVlan vlan)
         {
-            List<Variable> variablesFirst = new(), variablesLast = new();
-            variablesFirst.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));
-            (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index);
-            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
-            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
-            variablesFirst.AddRange(variablesLast);
-            await SnmpSetAsync(variablesFirst);
-            portUpdated(port);
+            LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}]...");
+            try
+            {
+                List<Variable> variablesFirst = new(), variablesLast = new();
+                variablesFirst.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));
+                (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index);
+                await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
+                await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
+                variablesFirst.AddRange(variablesLast);
+                await SnmpSetAsync(variablesFirst);
+                portUpdated(port);
+                LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}] ready.");
+            }
+            catch (Exception ex)
+            {
+                LogDispatcher.E($"Unsuccessful setting of membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}]. Error message: [{ex.Message}]");
+            }
         }
 
         private async Task getVlansBitfieldsForPort(string tableObjectIdentifier, int targetVlanId, int portByteIndex, int portBitIndex, List<Variable> variablesFirst, List<Variable> variablesLast)
@@ -218,16 +236,23 @@ namespace easyvlans.Model
 
         public async Task<bool> PersistChangesAsync()
         {
+            LogDispatcher.I($"Persisting changes of switch [{Label}]...");
             foreach (Func<Task> persistChangesDelegate in persistChangesDelegates)
             {
                 try
                 {
+                    LogDispatcher.V($"Trying to persist changes of switch [{Label}] with method [TODO].");
                     await persistChangesDelegate.Invoke();
                     changesPersisted();
+                    LogDispatcher.I($"Persisting changes of switch [{Label}] ready.");
                     return true;
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    LogDispatcher.V($"Didn't succeeded to persist changes of switch [{Label}] with method [TODO]. Error message: [{ex.Message}]");
+                }
             }
+            LogDispatcher.E($"Unsuccessful persisting of changes of switch [{Label}].");
             return false;
         }
 
