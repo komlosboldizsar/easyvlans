@@ -186,7 +186,7 @@ namespace easyvlans.Model
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
             variablesFirst.AddRange(variablesLast);
             await SnmpSetAsync(variablesFirst);
-            portUpdated(port);   
+            portUpdated(port);
         }
 
         private async Task getVlansBitfieldsForPort(string tableObjectIdentifier, int targetVlanId, int portByteIndex, int portBitIndex, List<Variable> variablesFirst, List<Variable> variablesLast)
