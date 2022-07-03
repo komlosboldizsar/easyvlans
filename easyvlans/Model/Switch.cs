@@ -186,6 +186,7 @@ namespace easyvlans.Model
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
             variablesFirst.AddRange(variablesLast);
             await SnmpSetAsync(variablesFirst);
+            portUpdated(port);   
         }
 
         private async Task getVlansBitfieldsForPort(string tableObjectIdentifier, int targetVlanId, int portByteIndex, int portBitIndex, List<Variable> variablesFirst, List<Variable> variablesLast)
@@ -199,6 +200,14 @@ namespace easyvlans.Model
                 Variable newRow = new Variable(oldRow.Id, DataFactory.CreateSnmpData(snmpDataBytes));
                 (valueToSet ? variablesLast : variablesFirst).Add(newRow);
             }
+        }
+
+        private void portUpdated(UserPort port)
+        {
+            if (portsWithPendingChange.Contains(port))
+                return;
+            portsWithPendingChange.Add(port);
+            PortsWithPendingChangeCount++;
         }
 
     }
