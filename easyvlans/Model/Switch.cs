@@ -188,6 +188,8 @@ namespace easyvlans.Model
 
         public async Task SetPortToVlanAsync(UserPort port, UserVlan vlan)
         {
+            if ((port.Switch != this) || !ports.Contains(port))
+                return;
             LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}]...");
             try
             {
