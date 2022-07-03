@@ -186,10 +186,10 @@ namespace easyvlans.Model
 
         private (int, int) getByteBitIndex(int portIndex) => (((portIndex - 1) / 8), (7 - ((portIndex - 1) % 8)));
 
-        public async Task SetPortToVlanAsync(UserPort port, UserVlan vlan)
+        public async Task<bool> SetPortToVlanAsync(UserPort port, UserVlan vlan)
         {
             if ((port.Switch != this) || !ports.Contains(port))
-                return;
+                return false;
             LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}]...");
             try
             {
@@ -202,10 +202,12 @@ namespace easyvlans.Model
                 await SnmpSetAsync(variablesFirst);
                 portUpdated(port);
                 LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}] ready.");
+                return true;
             }
             catch (Exception ex)
             {
                 LogDispatcher.E($"Unsuccessful setting of membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}]. Error message: [{ex.Message}]");
+                return false;
             }
         }
 

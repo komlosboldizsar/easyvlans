@@ -57,7 +57,8 @@ namespace easyvlans.Model
 
         public async Task SetVlanTo(UserVlan vlan)
         {
-            await Switch.SetPortToVlanAsync(this, vlan);
+            if (!await Switch.SetPortToVlanAsync(this, vlan))
+                return;
             CurrentVlan = vlan;
         }
 
