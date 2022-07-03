@@ -281,7 +281,7 @@ namespace easyvlans.GUI
         {
             Button typedSender = sender as Button;
             Switch @switch = typedSender?.Tag as Switch;
-            //await @switch?.PersistConfig();
+            await @switch?.PersistChangesAsync();
         }
 
         private string vlanToStr(UserVlan vlan) => $"{vlan.ID} - {vlan.Name}";

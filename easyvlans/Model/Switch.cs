@@ -210,6 +210,69 @@ namespace easyvlans.Model
             PortsWithPendingChangeCount++;
         }
 
+        private void changesPersisted()
+        {
+            portsWithPendingChange.Clear();
+            PortsWithPendingChangeCount = 0;
+        }
+
+        public async Task<bool> PersistChangesAsync()
+        {
+            foreach (Func<Task> persistChangesDelegate in persistChangesDelegates)
+            {
+                try
+                {
+                    await persistChangesDelegate.Invoke();
+                    changesPersisted();
+                    return true;
+                }
+                catch { }
+            }
+            return false;
+        }
+
+        private Func<Task>[] persistChangesDelegates
+        {
+            get
+            {
+                if (_persistChangesDelegates == null)
+                {
+                    _persistChangesDelegates = new Func<Task>[]
+                    {
+                        persistChangesGeneralAsync,
+                        persistChangesCiscoCopyAsync
+                    };
+                }
+                return _persistChangesDelegates;
+            }
+        }
+
+        private Func<Task>[] _persistChangesDelegates;
+
+        private async Task persistChangesGeneralAsync()
+        {
+            await SnmpSetAsync(new List<Variable>() {
+                new Variable(new ObjectIdentifier(OID_WRITEMEM), new Integer32(1))
+            });
+        }
+
+        private const string OID_WRITEMEM = "1.3.6.1.4.1.9.2.1.54";
+
+        private async Task persistChangesCiscoCopyAsync()
+        {
+            int randomRowId = _randomGenerator.Next(1, 512);
+            await SnmpSetAsync(new List<Variable>() {
+                new Variable(new ObjectIdentifier($"{OID_CC_COPY_SOURCE_FILE_TYPE}.{randomRowId}"), new Integer32(4)),
+                new Variable(new ObjectIdentifier($"{OID_CC_COPY_DESTINATION_FILE_TYPE}.{randomRowId}"), new Integer32(3)),
+                new Variable(new ObjectIdentifier($"{OID_CC_COPY_ENTRY_ROW_STATUS}.{randomRowId}"), new Integer32(1))
+            });
+        }
+
+        private const string OID_CC_COPY_SOURCE_FILE_TYPE = "1.3.6.1.4.1.9.9.96.1.1.1.1.3";
+        private const string OID_CC_COPY_DESTINATION_FILE_TYPE = "1.3.6.1.4.1.9.9.96.1.1.1.1.4";
+        private const string OID_CC_COPY_ENTRY_ROW_STATUS = "1.3.6.1.4.1.9.9.96.1.1.1.1.14";
+
+        private Random _randomGenerator = new Random();
     }
 
 }
