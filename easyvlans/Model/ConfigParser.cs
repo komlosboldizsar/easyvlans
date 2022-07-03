@@ -21,13 +21,9 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_SWITCH_ID = "id";
         private const string ATTRIBUTE_SWITCH_LABEL = "label";
         private const string ATTRIBUTE_SWITCH_IP = "ip";
-
-        private const string TAG_SWITCHACCESS_TELNET = "telnet";
-        private const string ATTRIBUTE_SWITCHACCESS_TELNET_PORT = "port";
-        private const string TAG_SWITCHACCESS_SSH_KEYPAIR = "ssh";
-        private const string ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_PORT = "port";
-        private const string ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_USERNAME = "username";
-        private const string ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_PRIVATEKEYFILE = "privatekeyfile";
+        private const string ATTRIBUTE_SWITCH_PORT = "port";
+        private const string ATTRIBUTE_SWITCH_COMMUNITY_READ = "community_read";
+        private const string ATTRIBUTE_SWITCH_COMMUNITY_WRITE = "community_write";
 
         private const string TAG_VLANS = "vlans";
         private const string TAG_VLAN = "vlan";
@@ -53,8 +49,8 @@ namespace easyvlans.Model
                     if (root.LocalName != TAG_ROOT)
                         throw new ConfigParsingException("Root tag of configuration XML is invalid!");
                     Dictionary<string, Switch> switches = null;
-                    Dictionary<int, Vlan> vlans = null;
-                    List<Port> ports = null;
+                    Dictionary<int, UserVlan> vlans = null;
+                    List<UserPort> ports = null;
                     foreach (XmlNode node in root.ChildNodes)
                     {
                         switch (node.LocalName)
@@ -112,8 +108,18 @@ namespace easyvlans.Model
                     throw new ConfigParsingException($"IP address of switch (XML attribute: {ATTRIBUTE_SWITCH_IP}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
                 if (!REGEXP_IP_ADDRESS.IsMatch(switchIp))
                     throw new ConfigParsingException($"IP address of switch (XML attribute: {ATTRIBUTE_SWITCH_IP}) is invalid at {tagIndex}. <{TAG_SWITCH}> tag!");
-                Switch @switch = new Switch(switchId, switchLabel, switchIp);
-                loadSwitchAccessData(node, @switch);
+                string switchPortStr = node.Attributes[ATTRIBUTE_SWITCH_PORT]?.Value;
+                if (string.IsNullOrWhiteSpace(switchPortStr))
+                    throw new ConfigParsingException($"Port of switch (XML attribute: {ATTRIBUTE_SWITCH_PORT}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
+                if (!int.TryParse(switchPortStr, out int switchPort))
+                    throw new ConfigParsingException($"Port of switch (XML attribute: {ATTRIBUTE_SWITCH_PORT}) is invalid at {tagIndex}. <{TAG_SWITCH}> tag!");
+                string switchCommunityRead = node.Attributes[ATTRIBUTE_SWITCH_COMMUNITY_READ]?.Value;
+                if (string.IsNullOrWhiteSpace(switchCommunityRead))
+                    throw new ConfigParsingException($"Read community string of switch (XML attribute: {ATTRIBUTE_SWITCH_COMMUNITY_READ}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
+                string switchCommunityWrite = node.Attributes[ATTRIBUTE_SWITCH_COMMUNITY_WRITE]?.Value;
+                if (string.IsNullOrWhiteSpace(switchCommunityWrite))
+                    throw new ConfigParsingException($"Write community string of switch (XML attribute: {ATTRIBUTE_SWITCH_COMMUNITY_WRITE}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
+                Switch @switch = new Switch(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchCommunityWrite);
                 switches.Add(switchId, @switch);
                 tagIndex++;
             }
@@ -122,52 +128,9 @@ namespace easyvlans.Model
 
         private readonly Regex REGEXP_IP_ADDRESS = new Regex(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        private void loadSwitchAccessData(XmlNode switchNode, Switch @switch)
+        private Dictionary<int, UserVlan> loadVlans(XmlNode parentNode)
         {
-            int tagIndex = 1;
-            foreach (XmlNode node in switchNode.ChildNodes)
-            {
-                SwitchAccessMode sam = null;
-                switch (node.LocalName)
-                {
-                    case TAG_SWITCHACCESS_TELNET:
-                        int? telnetPort = null;
-                        string telnetPortStr = node.Attributes[ATTRIBUTE_SWITCHACCESS_TELNET_PORT]?.Value;
-                        if (telnetPortStr != null)
-                        {
-                            if (!int.TryParse(telnetPortStr, out int _telnetPort) || (_telnetPort < 1) || (_telnetPort > 65535))
-                                throw new ConfigParsingException($"Port (XML attribute: {ATTRIBUTE_SWITCHACCESS_TELNET_PORT}) for telnet access must be a valid integer between 1 and 65535 at {tagIndex}. access method (XML tag: {TAG_SWITCHACCESS_TELNET}) for switch identified by ID \"{@switch.ID}\"!");
-                            telnetPort = _telnetPort;
-                        }
-                        sam = new SamTelnet(@switch.IP, telnetPort);
-                        break;
-                    case TAG_SWITCHACCESS_SSH_KEYPAIR:
-                        int? sshKeypairPort = null;
-                        string sshKeypairPortStr = node.Attributes[ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_PORT]?.Value;
-                        if (sshKeypairPortStr != null)
-                        {
-                            if (!int.TryParse(sshKeypairPortStr, out int _sshKeypairPort) || (_sshKeypairPort < 1) || (_sshKeypairPort > 65535))
-                                throw new ConfigParsingException($"Port (XML attribute: {ATTRIBUTE_SWITCHACCESS_TELNET_PORT}) for SSH keypair access must be a valid integer between 1 and 65535 at {tagIndex}. access method (XML tag: {TAG_SWITCHACCESS_SSH_KEYPAIR}) for switch identified by ID \"{@switch.ID}\"!");
-                            sshKeypairPort = _sshKeypairPort;
-                        }
-                        string sshKeypairUsername = node.Attributes[ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_USERNAME]?.Value;
-                        if (string.IsNullOrWhiteSpace(sshKeypairUsername))
-                            throw new ConfigParsingException($"Username (XML attribute: {ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_USERNAME}) for SSH keypair access can't be empty at {tagIndex}. access method for switch identified by ID \"{@switch.ID}\"!");
-                        string sshKeypairPrivateKeyFile = node.Attributes[ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_PRIVATEKEYFILE]?.Value;
-                        if (string.IsNullOrWhiteSpace(sshKeypairPrivateKeyFile))
-                            throw new ConfigParsingException($"Private key file path (XML attribute: {ATTRIBUTE_SWITCHACCESS_SSH_KEYPAIR_PRIVATEKEYFILE}) for SSH keypair access can't be empty at {tagIndex}. access method for switch identified by ID \"{@switch.ID}\"!");
-                        sam = new SamSshKeypair(@switch.IP, sshKeypairPort, sshKeypairUsername, sshKeypairPrivateKeyFile);
-                        break;
-                }
-                if (sam != null)
-                    @switch.AddAccessMode(sam);
-                tagIndex++;
-            }
-        }
-
-        private Dictionary<int, Vlan> loadVlans(XmlNode parentNode)
-        {
-            Dictionary<int, Vlan> vlans = new Dictionary<int, Vlan>();
+            Dictionary<int, UserVlan> vlans = new Dictionary<int, UserVlan>();
             int tagIndex = 1;
             foreach (XmlNode node in parentNode.ChildNodes)
             {
@@ -181,16 +144,16 @@ namespace easyvlans.Model
                 string vlanName = node.Attributes[ATTRIBUTE_VLAN_NAME]?.Value;
                 if (string.IsNullOrWhiteSpace(vlanName))
                     throw new ConfigParsingException($"Name of VLAN (XML attribute: {ATTRIBUTE_VLAN_NAME}) can't be empty at {tagIndex}. <{TAG_VLAN}> tag!");
-                Vlan vlan = new Vlan(vlanId, vlanName);
+                UserVlan vlan = new UserVlan(vlanId, vlanName);
                 vlans.Add(vlanId, vlan);
                 tagIndex++;
             }
             return vlans;
         }
 
-        private List<Port> loadPorts(XmlNode parentNode, Dictionary<string, Switch> switches, Dictionary<int, Vlan> vlans)
+        private List<UserPort> loadPorts(XmlNode parentNode, Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans)
         {
-            List<Port> ports = new List<Port>();
+            List<UserPort> ports = new List<UserPort>();
             int tagIndex = 1;
             foreach (XmlNode node in parentNode.ChildNodes)
             {
@@ -202,11 +165,13 @@ namespace easyvlans.Model
                 string portSwitch = node.Attributes[ATTRIBUTE_PORT_SWITCH]?.Value;
                 if (!switches.TryGetValue(portSwitch, out Switch @switch))
                     throw new ConfigParsingException($"Couldn't find switch with ID \"{portSwitch}\" for port at {tagIndex}. <{TAG_PORT}> tag!");
-                string portIndex = node.Attributes[ATTRIBUTE_PORT_INDEX]?.Value;
-                if (string.IsNullOrWhiteSpace(portIndex))
+                string portIndexStr = node.Attributes[ATTRIBUTE_PORT_INDEX]?.Value;
+                if (string.IsNullOrWhiteSpace(portIndexStr))
                     throw new ConfigParsingException($"Index of port (XML attribute: {ATTRIBUTE_PORT_INDEX}) can't be empty at {tagIndex}. <{TAG_PORT}> tag!");
+                if (!int.TryParse(portIndexStr, out int portIndex))
+                    throw new ConfigParsingException($"Index of port (XML attribute: {ATTRIBUTE_PORT_INDEX}) is invalid at {tagIndex}. <{TAG_PORT}> tag!");
                 string portVlans = node.Attributes[ATTRIBUTE_PORT_VLANS]?.Value;
-                List<Vlan> vlansForPort = new List<Vlan>();
+                List<UserVlan> vlansForPort = new List<UserVlan>();
                 string[] vlanIds = portVlans.Split(',');
                 foreach (string _vlanId in vlanIds)
                 {
@@ -224,7 +189,7 @@ namespace easyvlans.Model
                     else
                     {
                         int.TryParse(vlanId, out int vlanIdInt);
-                        if (!vlans.TryGetValue(vlanIdInt, out Vlan vlan))
+                        if (!vlans.TryGetValue(vlanIdInt, out UserVlan vlan))
                             throw new ConfigParsingException($"Couldn't find VLAN with ID \"{vlanId}\" for port at {tagIndex}. <{TAG_PORT}> tag!");
                         if (exclude)
                             vlansForPort.RemoveAll(v => (v == vlan));
@@ -232,7 +197,7 @@ namespace easyvlans.Model
                             vlansForPort.Add(vlan);
                     }
                 }
-                Port port = new Port(portLabel, @switch, portIndex, vlansForPort.Distinct().OrderBy(v => v.ID));
+                UserPort port = new UserPort(portLabel, @switch, portIndex, vlansForPort.Distinct().OrderBy(v => v.ID));
                 ports.Add(port);
                 tagIndex++;
             }

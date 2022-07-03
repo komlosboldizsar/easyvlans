@@ -16,6 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Lextm.SharpSnmpLib" Version="12.4.0" />
     <PackageReference Include="SSH.NET" Version="2020.0.1" />
     <PackageReference Include="Telnet" Version="0.8.6" />
   </ItemGroup>

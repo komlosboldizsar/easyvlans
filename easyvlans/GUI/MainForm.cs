@@ -104,7 +104,7 @@ namespace easyvlans.GUI
             Task[] allReadVlansTask = new Task[config.Switches.Count];
             int i = 0;
             foreach (Switch @switch in config.Switches.Values)
-                allReadVlansTask[i++] = @switch.ReadVlans();
+                allReadVlansTask[i++] = @switch.ReadConfigAsync();
             await Task.WhenAll(allReadVlansTask);
 
         }
@@ -120,7 +120,7 @@ namespace easyvlans.GUI
 
             int portRow = 0;
             int portRowHeight = (int)portTable.RowStyles[1].Height;
-            foreach (Port port in config.Ports)
+            foreach (UserPort port in config.Ports)
             {
 
                 int portTableRow = portRow + 1;
@@ -144,10 +144,10 @@ namespace easyvlans.GUI
 
                 thisPortRowControls.PortLabel.Text = port.Label;
                 thisPortRowControls.Switch.Text = port.Switch.Label;
-                thisPortRowControls.PortId.Text = port.Index;
+                thisPortRowControls.PortId.Text = port.Index.ToString();
                 thisPortRowControls.CurrentVlan.Text = CURRENT_VLAN_UNKNOWN;
                 thisPortRowControls.SetVlanTo.Tag = port;
-                thisPortRowControls.SetVlanTo.Enabled = port.Switch.HasAccessMode;
+                //thisPortRowControls.SetVlanTo.Enabled = port.Switch.HasAccessMode;
                 thisPortRowControls.Set.Tag = port;
                 thisPortRowControls.Set.Enabled = false;
                 thisPortRowControls.State.Text = portStatusStrings[port.Status];
@@ -159,10 +159,10 @@ namespace easyvlans.GUI
             }
 
             portRow = 0;
-            foreach (Port port in config.Ports)
+            foreach (UserPort port in config.Ports)
                 portRowControls[portRow++].SetVlanTo.CreateAdapterAsDataSource(port.Vlans, vlanToStr, true, "");
 
-            foreach (Port port in config.Ports)
+            foreach (UserPort port in config.Ports)
             {
                 port.CurrentVlanChanged += portsCurrentVlanChangedHandler;
                 PortRowControls rowControls = portAssociatedRowControls[port];
@@ -172,14 +172,14 @@ namespace easyvlans.GUI
 
         }
 
-        private void portsStatusChangedHandler(Port port, PortStatus newValue)
+        private void portsStatusChangedHandler(UserPort port, PortStatus newValue)
         {
             Label thisPortStateControl = portAssociatedRowControls[port].State;
             thisPortStateControl.Text = portStatusStrings[newValue];
             thisPortStateControl.ForeColor = portStatusColors[newValue];
         }
 
-        private void portsCurrentVlanChangedHandler(Port port, Vlan newValue)
+        private void portsCurrentVlanChangedHandler(UserPort port, UserVlan newValue)
         {
             PortRowControls rowControls = portAssociatedRowControls[port];
             rowControls.CurrentVlan.Text = vlanToStr(newValue);
@@ -189,7 +189,7 @@ namespace easyvlans.GUI
         private void portsSetVlanToSelectedIndexChangedHandler(object sender, EventArgs e)
         {
             ComboBox typedSender = sender as ComboBox;
-            Port port = typedSender?.Tag as Port;
+            UserPort port = typedSender?.Tag as UserPort;
             if (port == null)
                 return;
             portAssociatedRowControls[port].Set.Enabled = (typedSender.SelectedIndex > 0);
@@ -198,11 +198,11 @@ namespace easyvlans.GUI
         private async void portsSetButtonClickHandler(object sender, EventArgs e)
         {
             Button typedSender = sender as Button;
-            Port port = typedSender?.Tag as Port;
+            UserPort port = typedSender?.Tag as UserPort;
             if (port == null)
                 return;
-            Vlan selectedVlan = portAssociatedRowControls[port].SetVlanTo.SelectedValue as Vlan;
-            await port.SetVlanTo(selectedVlan);
+            UserVlan selectedVlan = portAssociatedRowControls[port].SetVlanTo.SelectedValue as UserVlan;
+            port.SetVlanTo(selectedVlan);
         }
 
         private void showSwitches()
@@ -281,10 +281,10 @@ namespace easyvlans.GUI
         {
             Button typedSender = sender as Button;
             Switch @switch = typedSender?.Tag as Switch;
-            await @switch?.PersistConfig();
+            //await @switch?.PersistConfig();
         }
 
-        private string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
+        private string vlanToStr(UserVlan vlan) => $"{vlan.ID} - {vlan.Name}";
 
         public class PortRowControls
         {
@@ -306,7 +306,7 @@ namespace easyvlans.GUI
         }
 
         private List<PortRowControls> portRowControls = new List<PortRowControls>();
-        private Dictionary<Port, PortRowControls> portAssociatedRowControls = new Dictionary<Port, PortRowControls>();
+        private Dictionary<UserPort, PortRowControls> portAssociatedRowControls = new Dictionary<UserPort, PortRowControls>();
 
         private List<SwitchRowControls> switchRowControls = new List<SwitchRowControls>();
         private Dictionary<Switch, SwitchRowControls> switchAssociatedRowControls = new Dictionary<Switch, SwitchRowControls>();

@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    public class Port
+    public class UserPort
     {
 
         public string Label { get; init; }
         public Switch Switch { get; init; }
-        public string Index { get; init; }
-        public List<Vlan> Vlans { get; } = new List<Vlan>();
+        public int Index { get; init; }
+        public List<UserVlan> Vlans { get; } = new List<UserVlan>();
 
-        public delegate void CurrentVlanChangedDelegate(Port port, Vlan newValue);
+        public delegate void CurrentVlanChangedDelegate(UserPort port, UserVlan newValue);
         public event CurrentVlanChangedDelegate CurrentVlanChanged;
-        private Vlan _currentVlan;
-        public Vlan CurrentVlan
+        private UserVlan _currentVlan;
+        public UserVlan CurrentVlan
         {
             get => _currentVlan;
             set
@@ -30,7 +30,7 @@ namespace easyvlans.Model
             }
         }
 
-        public delegate void StatusChangedDelegate(Port port, PortStatus newValue);
+        public delegate void StatusChangedDelegate(UserPort port, PortStatus newValue);
         public event StatusChangedDelegate StatusChanged;
         private PortStatus _status;
         public PortStatus Status
@@ -45,7 +45,7 @@ namespace easyvlans.Model
             }
         }
 
-        public Port(string label, Switch @switch, string index, IEnumerable<Vlan> vlans)
+        public UserPort(string label, Switch @switch, int index, IEnumerable<UserVlan> vlans)
         {
             Status = PortStatus.Unknown;
             Label = label;
@@ -55,7 +55,7 @@ namespace easyvlans.Model
             Vlans.AddRange(vlans);
         }
 
-        public async Task SetVlanTo(Vlan vlan) => await Switch.SetVlan(this, vlan);
+        public async Task SetVlanTo(UserVlan vlan) => await Switch.SetPortToVlanAsync(this, vlan);
 
     }
 

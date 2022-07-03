@@ -6,19 +6,14 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-
-    public class Vlan
+    public class UserVlan
     {
-
         public int ID { get; init; }
         public string Name { get; init; }
-
-        public Vlan(int id, string name)
+        public UserVlan(int id, string name)
         {
             ID = id;
             Name = name;
         }
-
     }
-
 }
