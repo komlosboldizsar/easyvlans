@@ -6,35 +6,15 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    internal class PersistChangesMethods
+    internal class PersistChangesMethods : MethodCollection<IPersistChangesMethod>
     {
-
         public static PersistChangesMethods Instance { get; } = new();
-
-        private PersistChangesMethods()
-        {
-            knownMethodsDictionary = new();
-            knownMethodsDictionary.Add(DefaultMethod.Name, DefaultMethod);
-            foreach (IPersistChangesMethod method in knownMethods)
-                knownMethodsDictionary.Add(method.Name, method);
-        }
-
-        public IPersistChangesMethod Get(string name)
-        {
-            if (name == null)
-                return DefaultMethod;
-            knownMethodsDictionary.TryGetValue(name, out IPersistChangesMethod method);
-            return method;
-        }
-
-        public IPersistChangesMethod DefaultMethod { get; } = new PersistChangesWritememMethod();
-
-        private Dictionary<string, IPersistChangesMethod> knownMethodsDictionary;
-
-        private IPersistChangesMethod[] knownMethods = new IPersistChangesMethod[]
+        private PersistChangesMethods() { }
+        public override IPersistChangesMethod DefaultMethod { get; } = new PersistChangesWritememMethod();
+        protected override IPersistChangesMethod[] knownMethods { get; } = new IPersistChangesMethod[]
         {
             new PersistChangesCiscoCopyMethod()
         };
- 
+
     }
 }

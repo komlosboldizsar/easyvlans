@@ -6,32 +6,11 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    internal class AccessVlanMembershipMethods
+    internal class AccessVlanMembershipMethods : MethodCollection<IAccessVlanMembershipMethod>
     {
-
         public static AccessVlanMembershipMethods Instance { get; } = new();
-
-        private AccessVlanMembershipMethods()
-        {
-            knownMethodsDictionary = new();
-            knownMethodsDictionary.Add(DefaultMethod.Name, DefaultMethod);
-            foreach (IAccessVlanMembershipMethod method in knownMethods)
-                knownMethodsDictionary.Add(method.Name, method);
-        }
-
-        public IAccessVlanMembershipMethod Get(string name)
-        {
-            if (name == null)
-                return DefaultMethod;
-            knownMethodsDictionary.TryGetValue(name, out IAccessVlanMembershipMethod method);
-            return method;
-        }
-
-        public IAccessVlanMembershipMethod DefaultMethod { get; } = new AccessVlanMembershipQSwitchMibMethod();
-
-        private Dictionary<string, IAccessVlanMembershipMethod> knownMethodsDictionary;
-
-        private IAccessVlanMembershipMethod[] knownMethods = new IAccessVlanMembershipMethod[] { };
- 
+        private AccessVlanMembershipMethods() { }
+        public override IAccessVlanMembershipMethod DefaultMethod { get; } = new AccessVlanMembershipQSwitchMibMethod();
+        protected override IAccessVlanMembershipMethod[] knownMethods { get; } = new IAccessVlanMembershipMethod[] { };
     }
 }
