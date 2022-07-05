@@ -24,6 +24,7 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_SWITCH_PORT = "port";
         private const string ATTRIBUTE_SWITCH_COMMUNITY_READ = "community_read";
         private const string ATTRIBUTE_SWITCH_COMMUNITY_WRITE = "community_write";
+        private const string ATTRIBUTE_SWITCH_METHOD_PERSIST = "method_persist";
 
         private const string TAG_VLANS = "vlans";
         private const string TAG_VLAN = "vlan";
@@ -119,7 +120,8 @@ namespace easyvlans.Model
                 string switchCommunityWrite = node.Attributes[ATTRIBUTE_SWITCH_COMMUNITY_WRITE]?.Value;
                 if (string.IsNullOrWhiteSpace(switchCommunityWrite))
                     throw new ConfigParsingException($"Write community string of switch (XML attribute: {ATTRIBUTE_SWITCH_COMMUNITY_WRITE}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
-                Switch @switch = new Switch(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchCommunityWrite);
+                string switchMethodPersist = node.Attributes[ATTRIBUTE_SWITCH_METHOD_PERSIST]?.Value;
+                Switch @switch = new Switch(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchCommunityWrite, switchMethodPersist);
                 switches.Add(switchId, @switch);
                 tagIndex++;
             }

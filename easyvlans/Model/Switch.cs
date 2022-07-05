@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    public class Switch
+    public partial class Switch
     {
 
         public readonly string ID;
@@ -20,6 +20,7 @@ namespace easyvlans.Model
         private readonly IPEndPoint ipEndPoint;
         private readonly OctetString readCommunity;
         private readonly OctetString writeCommunity;
+        private readonly IPersistChangesMethod persistChangesMethod;
 
         private List<UserPort> ports = new();
         private List<UserPort> portsWithPendingChange = new();
@@ -56,13 +57,14 @@ namespace easyvlans.Model
             }
         }
 
-        public Switch(string id, string label, string ip, int port, string readCommunity, string writeCommunity)
+        public Switch(string id, string label, string ip, int port, string readCommunity, string writeCommunity, string persistChangesMethodName)
         {
             ID = id;
             Label = label;
             ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
             this.readCommunity = new OctetString(readCommunity);
             this.writeCommunity = new OctetString(writeCommunity);
+            persistChangesMethod = PersistChangesMethods.Instance.Get(persistChangesMethodName);
         }
 
         internal void AssignConfig(Config config) => this.config = config;
@@ -90,7 +92,7 @@ namespace easyvlans.Model
             }
         }
 
-        private async Task<List<Variable>> SnmpBulkWalkAsync(string objectIdentifierStr)
+        public async Task<List<Variable>> SnmpBulkWalkAsync(string objectIdentifierStr)
         {
             List<Variable> result = new List<Variable>();
             await Messenger.BulkWalkAsync(VersionCode.V2, ipEndPoint, readCommunity, OctetString.Empty,
@@ -98,7 +100,7 @@ namespace easyvlans.Model
             return result;
         }
 
-        private async Task SnmpSetAsync(List<Variable> variables)
+        public async Task SnmpSetAsync(List<Variable> variables)
             => await Messenger.SetAsync(VersionCode.V2, ipEndPoint, writeCommunity, variables);
 
         public async Task<Dictionary<int, SnmpVlan>> ReadSnmpVlansAsync()
@@ -240,75 +242,19 @@ namespace easyvlans.Model
 
         public async Task<bool> PersistChangesAsync()
         {
-            LogDispatcher.I($"Persisting changes of switch [{Label}]...");
-            foreach (IPersistChangesMethod persistChangesMethod in persistChangesMethods)
+            try
             {
-                try
-                {
-                    LogDispatcher.V($"Trying to persist changes of switch [{Label}] with method [{persistChangesMethod.Name}].");
-                    await persistChangesMethod.Do(this);
-                    changesPersisted();
-                    LogDispatcher.I($"Persisting changes of switch [{Label}] ready.");
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    LogDispatcher.V($"Didn't succeeded to persist changes of switch [{Label}] with method [{persistChangesMethod.Name}]. Error message: [{ex.Message}]");
-                }
+                LogDispatcher.V($"Persisting changes of switch [{Label}] with method [{persistChangesMethod.Name}].");
+                await persistChangesMethod.Do(this);
+                changesPersisted();
+                LogDispatcher.I($"Persisting changes of switch [{Label}] ready.");
+                return true;
             }
-            LogDispatcher.E($"Unsuccessful persisting of changes of switch [{Label}].");
+            catch (Exception ex)
+            {
+                LogDispatcher.V($"Didn't succeeded to persist changes of switch [{Label}] with method [{persistChangesMethod.Name}]. Error message: [{ex.Message}]");
+            }
             return false;
-        }
-
-        private IPersistChangesMethod[] persistChangesMethods = new IPersistChangesMethod[]
-        {
-            new PersistChangesGeneralMethod(),
-            new PersistChangesCiscoCopyMethod()
-        };
-
-        private interface IPersistChangesMethod
-        {
-            string Name { get; }
-            Task Do(Switch @switch);
-        }
-
-        private class PersistChangesGeneralMethod : IPersistChangesMethod
-        {
-
-            public string Name => "general";
-
-            public async Task Do(Switch @switch)
-            {
-                await @switch.SnmpSetAsync(new List<Variable>() {
-                    new Variable(new ObjectIdentifier(OID_WRITEMEM), new Integer32(1))
-                });
-            }
-
-            private const string OID_WRITEMEM = "1.3.6.1.4.1.9.2.1.54";
-
-        }
-
-        private class PersistChangesCiscoCopyMethod : IPersistChangesMethod
-        {
-
-            public string Name => "cisco copy";
-
-            public async Task Do(Switch @switch)
-            {
-                int randomRowId = _randomGenerator.Next(1, 512);
-                await @switch.SnmpSetAsync(new List<Variable>() {
-                    new Variable(new ObjectIdentifier($"{OID_CC_COPY_SOURCE_FILE_TYPE}.{randomRowId}"), new Integer32(4)),
-                    new Variable(new ObjectIdentifier($"{OID_CC_COPY_DESTINATION_FILE_TYPE}.{randomRowId}"), new Integer32(3)),
-                    new Variable(new ObjectIdentifier($"{OID_CC_COPY_ENTRY_ROW_STATUS}.{randomRowId}"), new Integer32(1))
-                });
-            }
-
-            private Random _randomGenerator = new Random();
-
-            private const string OID_CC_COPY_SOURCE_FILE_TYPE = "1.3.6.1.4.1.9.9.96.1.1.1.1.3";
-            private const string OID_CC_COPY_DESTINATION_FILE_TYPE = "1.3.6.1.4.1.9.9.96.1.1.1.1.4";
-            private const string OID_CC_COPY_ENTRY_ROW_STATUS = "1.3.6.1.4.1.9.9.96.1.1.1.1.14";
-
         }
 
     }
