@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    internal class PersistChangesGeneralMethod : IPersistChangesMethod
+    internal class PersistChangesWritememMethod : IPersistChangesMethod
     {
 
-        public string Name => "general";
+        public string Name => "writemem";
 
         public async Task Do(Switch @switch)
         {

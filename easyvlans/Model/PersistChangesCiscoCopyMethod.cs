@@ -9,7 +9,7 @@ namespace easyvlans.Model
     internal class PersistChangesCiscoCopyMethod : IPersistChangesMethod
     {
 
-        public string Name => "cisco copy";
+        public string Name => "ciscocopy";
 
         public async Task Do(Switch @switch)
         {

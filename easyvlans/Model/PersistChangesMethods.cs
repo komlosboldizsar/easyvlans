@@ -27,7 +27,7 @@ namespace easyvlans.Model
             return method;
         }
 
-        public IPersistChangesMethod DefaultMethod { get; } = new PersistChangesGeneralMethod();
+        public IPersistChangesMethod DefaultMethod { get; } = new PersistChangesWritememMethod();
 
         private Dictionary<string, IPersistChangesMethod> knownMethodsDictionary;
 
