@@ -22,8 +22,7 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_SWITCH_LABEL = "label";
         private const string ATTRIBUTE_SWITCH_IP = "ip";
         private const string ATTRIBUTE_SWITCH_PORT = "port";
-        private const string ATTRIBUTE_SWITCH_COMMUNITY_READ = "community_read";
-        private const string ATTRIBUTE_SWITCH_COMMUNITY_WRITE = "community_write";
+        private const string ATTRIBUTE_SWITCH_COMMUNITY_STRING = "community_string";
         private const string ATTRIBUTE_SWITCH_ACCESS_VLAN_MEMBERSHIP = "method_access_vlan_membership";
         private const string ATTRIBUTE_SWITCH_METHOD_PERSIST = "method_persist";
 
@@ -115,15 +114,12 @@ namespace easyvlans.Model
                     throw new ConfigParsingException($"Port of switch (XML attribute: {ATTRIBUTE_SWITCH_PORT}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
                 if (!int.TryParse(switchPortStr, out int switchPort))
                     throw new ConfigParsingException($"Port of switch (XML attribute: {ATTRIBUTE_SWITCH_PORT}) is invalid at {tagIndex}. <{TAG_SWITCH}> tag!");
-                string switchCommunityRead = node.Attributes[ATTRIBUTE_SWITCH_COMMUNITY_READ]?.Value;
+                string switchCommunityRead = node.Attributes[ATTRIBUTE_SWITCH_COMMUNITY_STRING]?.Value;
                 if (string.IsNullOrWhiteSpace(switchCommunityRead))
-                    throw new ConfigParsingException($"Read community string of switch (XML attribute: {ATTRIBUTE_SWITCH_COMMUNITY_READ}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
-                string switchCommunityWrite = node.Attributes[ATTRIBUTE_SWITCH_COMMUNITY_WRITE]?.Value;
-                if (string.IsNullOrWhiteSpace(switchCommunityWrite))
-                    throw new ConfigParsingException($"Write community string of switch (XML attribute: {ATTRIBUTE_SWITCH_COMMUNITY_WRITE}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
+                    throw new ConfigParsingException($"Community string of switch (XML attribute: {ATTRIBUTE_SWITCH_COMMUNITY_STRING}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
                 string switchMethodAccessVlanMembership = node.Attributes[ATTRIBUTE_SWITCH_ACCESS_VLAN_MEMBERSHIP]?.Value;
                 string switchMethodPersist = node.Attributes[ATTRIBUTE_SWITCH_METHOD_PERSIST]?.Value;
-                Switch @switch = new Switch(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchCommunityWrite, switchMethodAccessVlanMembership, switchMethodPersist);
+                Switch @switch = new Switch(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchMethodAccessVlanMembership, switchMethodPersist);
                 switches.Add(switchId, @switch);
                 tagIndex++;
             }

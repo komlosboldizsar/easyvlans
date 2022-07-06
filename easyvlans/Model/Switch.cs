@@ -18,8 +18,7 @@ namespace easyvlans.Model
         public readonly string ID;
         public readonly string Label;
         private readonly IPEndPoint ipEndPoint;
-        private readonly OctetString readCommunity;
-        private readonly OctetString writeCommunity;
+        private readonly OctetString communityString;
         private readonly IAccessVlanMembershipMethod accessVlanMembershipMethod;
         private readonly IPersistChangesMethod persistChangesMethod;
 
@@ -58,13 +57,12 @@ namespace easyvlans.Model
             }
         }
 
-        public Switch(string id, string label, string ip, int port, string readCommunity, string writeCommunity, string accessVlanMembershipMethodName, string persistChangesMethodName)
+        public Switch(string id, string label, string ip, int port, string communityString, string accessVlanMembershipMethodName, string persistChangesMethodName)
         {
             ID = id;
             Label = label;
             ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
-            this.readCommunity = new OctetString(readCommunity);
-            this.writeCommunity = new OctetString(writeCommunity);
+            this.communityString = new OctetString(communityString);
             accessVlanMembershipMethod = AccessVlanMembershipMethods.Instance.Get(accessVlanMembershipMethodName, this);
             persistChangesMethod = PersistChangesMethods.Instance.Get(persistChangesMethodName, this);
         }
@@ -80,13 +78,13 @@ namespace easyvlans.Model
         public async Task<List<Variable>> SnmpBulkWalkAsync(string objectIdentifierStr)
         {
             List<Variable> result = new List<Variable>();
-            await Messenger.BulkWalkAsync(VersionCode.V2, ipEndPoint, readCommunity, OctetString.Empty,
+            await Messenger.BulkWalkAsync(VersionCode.V2, ipEndPoint, communityString, OctetString.Empty,
                 new ObjectIdentifier(objectIdentifierStr), result, 5, WalkMode.WithinSubtree, null, null);
             return result;
         }
 
         public async Task SnmpSetAsync(List<Variable> variables)
-            => await Messenger.SetAsync(VersionCode.V2, ipEndPoint, writeCommunity, variables);
+            => await Messenger.SetAsync(VersionCode.V2, ipEndPoint, communityString, variables);
 
         public async Task ReadConfigAsync()
         {
