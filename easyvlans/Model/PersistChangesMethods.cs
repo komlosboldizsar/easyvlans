@@ -12,7 +12,8 @@ namespace easyvlans.Model
         private PersistChangesMethods() { }
         protected override IPersistChangesMethod[] knownMethods { get; } = new IPersistChangesMethod[]
         {
-            new PersistChangesCiscoCopyMethod()
+            new PersistChangesCiscoCopyMethod(),
+            new PersistChangesDlinkDgs121024axMethod()
         };
     }
 }
