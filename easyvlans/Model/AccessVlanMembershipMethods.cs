@@ -10,6 +10,9 @@ namespace easyvlans.Model
     {
         public static AccessVlanMembershipMethods Instance { get; } = new();
         private AccessVlanMembershipMethods() { }
-        protected override IAccessVlanMembershipMethod[] knownMethods { get; } = new IAccessVlanMembershipMethod[] { };
+        protected override IAccessVlanMembershipMethod[] knownMethods { get; } = new IAccessVlanMembershipMethod[]
+        {
+            new AccessVlanMembershipDLinkPrivateMibMethod()
+        };
     }
 }
