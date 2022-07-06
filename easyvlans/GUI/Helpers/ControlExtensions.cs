@@ -18,7 +18,7 @@ namespace easyvlans.GUI.Helpers
             T instance = Activator.CreateInstance<T>();
             foreach (PropertyInfo propInfo in controlProperties)
                 if (propInfo.CanWrite)
-                    if (propInfo.Name != "WindowTarget")
+                    if ((propInfo.Name != "WindowTarget") && (propInfo.Name != "SelectionStart") && (propInfo.Name != "SelectionLength"))
                         propInfo.SetValue(instance, propInfo.GetValue(controlToClone, null), null);
             return instance;
         }
