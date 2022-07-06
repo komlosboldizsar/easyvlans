@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    internal abstract class MethodCollection<TMethod>
-        where TMethod : IMethod
+    internal abstract class MethodCollection<TMethod, TDefaultMethod>
+        where TMethod : class, IMethod<TMethod>
+        where TDefaultMethod : TMethod, new()
     {
 
         public MethodCollection()
@@ -18,15 +19,15 @@ namespace easyvlans.Model
                 knownMethodsDictionary.Add(method.Name, method);
         }
 
-        public TMethod Get(string name)
+        public TMethod Get(string name, Switch @switch)
         {
             if (name == null)
-                return DefaultMethod;
+                return DefaultMethod.GetInstance(@switch);
             knownMethodsDictionary.TryGetValue(name, out TMethod method);
-            return method;
+            return method?.GetInstance(@switch);
         }
 
-        public abstract TMethod DefaultMethod { get; }
+        public TMethod DefaultMethod { get; } = new TDefaultMethod();
 
         private Dictionary<string, TMethod> knownMethodsDictionary;
 

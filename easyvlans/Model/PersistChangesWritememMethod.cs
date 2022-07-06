@@ -10,9 +10,14 @@ namespace easyvlans.Model
 
         public string Name => "writemem";
 
-        public async Task Do(Switch @switch)
+        public PersistChangesWritememMethod() { }
+        public PersistChangesWritememMethod(Switch @switch) => _switch = @switch;
+        public IPersistChangesMethod GetInstance(Switch @switch) => new PersistChangesCiscoCopyMethod(@switch);
+        private Switch _switch;
+
+        public async Task Do()
         {
-            await @switch.SnmpSetAsync(new List<Variable>() {
+            await _switch.SnmpSetAsync(new List<Variable>() {
                 new Variable(new ObjectIdentifier(OID_WRITEMEM), new Integer32(1))
             });
         }

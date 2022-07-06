@@ -65,8 +65,8 @@ namespace easyvlans.Model
             ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
             this.readCommunity = new OctetString(readCommunity);
             this.writeCommunity = new OctetString(writeCommunity);
-            accessVlanMembershipMethod = AccessVlanMembershipMethods.Instance.Get(accessVlanMembershipMethodName);
-            persistChangesMethod = PersistChangesMethods.Instance.Get(persistChangesMethodName);
+            accessVlanMembershipMethod = AccessVlanMembershipMethods.Instance.Get(accessVlanMembershipMethodName, this);
+            persistChangesMethod = PersistChangesMethods.Instance.Get(persistChangesMethodName, this);
         }
 
         internal void AssignConfig(Config config) => this.Config = config;
@@ -93,7 +93,7 @@ namespace easyvlans.Model
             LogDispatcher.I($"Reading configuration of switch [{Label}]...");
             try
             {
-                await accessVlanMembershipMethod.ReadConfigAsync(this);
+                await accessVlanMembershipMethod.ReadConfigAsync();
                 LogDispatcher.I($"Reading configuration of switch [{Label}] ready.");
             }
             catch (Exception ex)
@@ -109,7 +109,7 @@ namespace easyvlans.Model
             LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}]...");
             try
             {
-                await accessVlanMembershipMethod.SetPortToVlanAsync(this, port, vlan);
+                await accessVlanMembershipMethod.SetPortToVlanAsync(port, vlan);
                 portUpdated(port);
                 return true;
             }
@@ -133,7 +133,7 @@ namespace easyvlans.Model
             try
             {
                 LogDispatcher.V($"Persisting changes of switch [{Label}] with method [{persistChangesMethod.Name}].");
-                await persistChangesMethod.Do(this);
+                await persistChangesMethod.Do();
                 changesPersisted();
                 LogDispatcher.I($"Persisting changes of switch [{Label}] ready.");
                 return true;

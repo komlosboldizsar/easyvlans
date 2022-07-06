@@ -2,8 +2,8 @@
 
 namespace easyvlans.Model
 {
-    internal interface IPersistChangesMethod : IMethod
+    internal interface IPersistChangesMethod : IMethod<IPersistChangesMethod>
     {
-        Task Do(Switch @switch);
+        Task Do();
     }
 }
