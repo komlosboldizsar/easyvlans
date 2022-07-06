@@ -12,7 +12,7 @@ namespace easyvlans.Model
         private AccessVlanMembershipMethods() { }
         protected override IAccessVlanMembershipMethod[] knownMethods { get; } = new IAccessVlanMembershipMethod[]
         {
-            new AccessVlanMembershipDLinkPrivateMibMethod()
+            new AccessVlanMembershipDlinkDgs121024axMethod()
         };
     }
 }

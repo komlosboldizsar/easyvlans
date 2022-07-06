@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    internal class AccessVlanMembershipDLinkPrivateMibMethod : IAccessVlanMembershipMethod
+    internal class AccessVlanMembershipDlinkDgs121024axMethod : IAccessVlanMembershipMethod
     {
 
-        public string Name => "dlinkprivatemib";
+        public string Name => "dlinkdgs121024ax";
 
-        public AccessVlanMembershipDLinkPrivateMibMethod() { }
-        public AccessVlanMembershipDLinkPrivateMibMethod(Switch @switch) => _switch = @switch;
-        public IAccessVlanMembershipMethod GetInstance(Switch @switch) => new AccessVlanMembershipDLinkPrivateMibMethod(@switch);
+        public AccessVlanMembershipDlinkDgs121024axMethod() { }
+        public AccessVlanMembershipDlinkDgs121024axMethod(Switch @switch) => _switch = @switch;
+        public IAccessVlanMembershipMethod GetInstance(Switch @switch) => new AccessVlanMembershipDlinkDgs121024axMethod(@switch);
         private Switch _switch;
 
         public async Task ReadConfigAsync()
