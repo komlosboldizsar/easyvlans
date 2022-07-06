@@ -12,7 +12,7 @@ namespace easyvlans.Model
 
         public PersistChangesWritememMethod() { }
         public PersistChangesWritememMethod(Switch @switch) => _switch = @switch;
-        public IPersistChangesMethod GetInstance(Switch @switch) => new PersistChangesCiscoCopyMethod(@switch);
+        public IPersistChangesMethod GetInstance(Switch @switch) => new PersistChangesWritememMethod(@switch);
         private Switch _switch;
 
         public async Task Do()
