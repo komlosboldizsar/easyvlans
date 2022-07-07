@@ -64,10 +64,20 @@ namespace easyvlans.Model
             ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
             this.communityString = new OctetString(communityString);
             accessVlanMembershipMethod = AccessVlanMembershipMethods.Instance.GetInstance(accessVlanMembershipMethodName, this);
+            logMethodFoundOrNot("accessing and setting VLAN memberships", accessVlanMembershipMethodName, accessVlanMembershipMethod);
             persistChangesMethod = PersistChangesMethods.Instance.GetInstance(persistChangesMethodName, this);
+            logMethodFoundOrNot("persisting changes", persistChangesMethodName, persistChangesMethod);
         }
 
-        internal void AssignConfig(Config config) => this.Config = config;
+        private void logMethodFoundOrNot(string methodPurpose, string methodName, IMethod method)
+        {
+            if (method == null)
+                LogDispatcher.W($"No method found with name [{methodName}] for {methodPurpose} of switch [{Label}].");
+            else
+                LogDispatcher.V($"Found method with name [{methodName}] for {methodPurpose} of switch [{Label}].");
+        }
+
+        internal void AssignConfig(Config config) => Config = config;
 
         internal void AssociatePort(UserPort port)
         {
@@ -88,7 +98,13 @@ namespace easyvlans.Model
 
         public async Task ReadConfigAsync()
         {
+            if (accessVlanMembershipMethod == null)
+            {
+                LogDispatcher.E($"Couldn't read configuration of switch [{Label}], because no method is associated.");
+                return;
+            }
             LogDispatcher.I($"Reading configuration of switch [{Label}]...");
+            LogDispatcher.V($"Method for reading configuration of switch [{Label}]: [{accessVlanMembershipMethod.Name}].");
             try
             {
                 await accessVlanMembershipMethod.ReadConfigAsync();
@@ -104,11 +120,18 @@ namespace easyvlans.Model
         {
             if ((port.Switch != this) || !Ports.Contains(port))
                 return false;
+            if (accessVlanMembershipMethod == null)
+            {
+                LogDispatcher.E($"Couldn't set VLAN membership of port [{port.Label}] @ switch [{Label}], because no method is associated.");
+                return false;
+            }
             LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}]...");
+            LogDispatcher.V($"Method for setting VLAN membership of port [{port.Label}] @ switch [{Label}]: [{accessVlanMembershipMethod.Name}].");
             try
             {
                 await accessVlanMembershipMethod.SetPortToVlanAsync(port, vlan);
                 portUpdated(port);
+                LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}] ready.");
                 return true;
             }
             catch (Exception ex)
@@ -128,9 +151,15 @@ namespace easyvlans.Model
 
         public async Task<bool> PersistChangesAsync()
         {
+            if (persistChangesMethod == null)
+            {
+                LogDispatcher.E($"Couldn't persist changes of switch [{Label}], because no method is associated.");
+                return false;
+            }
+            LogDispatcher.I($"Persisting changes of switch [{Label}]...");
+            LogDispatcher.V($"Method for persisting changes of switch [{Label}]: [{persistChangesMethod.Name}].");
             try
             {
-                LogDispatcher.V($"Persisting changes of switch [{Label}] with method [{persistChangesMethod.Name}].");
                 await persistChangesMethod.Do();
                 changesPersisted();
                 LogDispatcher.I($"Persisting changes of switch [{Label}] ready.");
@@ -138,7 +167,7 @@ namespace easyvlans.Model
             }
             catch (Exception ex)
             {
-                LogDispatcher.V($"Didn't succeeded to persist changes of switch [{Label}] with method [{persistChangesMethod.Name}]. Error message: [{ex.Message}]");
+                LogDispatcher.E($"Didn't succeeded to persist changes of switch [{Label}] with method [{persistChangesMethod.Name}]. Error message: [{ex.Message}]");
             }
             return false;
         }
