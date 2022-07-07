@@ -9,15 +9,10 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    internal class AccessVlanMembershipQSwitchMibMethod : IAccessVlanMembershipMethod
+    internal class AccessVlanMembershipQSwitchMibMethod : MethodBase, IAccessVlanMembershipMethod
     {
 
         public string Name => "qswitchmib";
-
-        public AccessVlanMembershipQSwitchMibMethod() { }
-        public AccessVlanMembershipQSwitchMibMethod(Switch @switch) => _switch = @switch;
-        public IAccessVlanMembershipMethod GetInstance(Switch @switch) => new AccessVlanMembershipQSwitchMibMethod(@switch);
-        private Switch _switch;
 
         public async Task ReadConfigAsync()
         {
@@ -30,7 +25,7 @@ namespace easyvlans.Model
         public async Task<Dictionary<int, SnmpVlan>> ReadSnmpVlansAsync()
         {
             Dictionary<int, SnmpVlan> snmpVlans = new();
-            List<Variable> portVlanStaticTable = await _switch.SnmpBulkWalkAsync(OID_DOT1Q_VLAN_STATIC_TABLE);
+            List<Variable> portVlanStaticTable = await Switch.SnmpBulkWalkAsync(OID_DOT1Q_VLAN_STATIC_TABLE);
             foreach (Variable portVlanStaticTableRow in portVlanStaticTable)
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanStaticTableRow.GetIdParts();
@@ -54,7 +49,7 @@ namespace easyvlans.Model
 
         public void BindUserToSnmpVlans(Dictionary<int, SnmpVlan> snmpVlans)
         {
-            foreach (UserVlan userVlan in _switch.Config.Vlans.Values)
+            foreach (UserVlan userVlan in Switch.Config.Vlans.Values)
                 if (snmpVlans.TryGetValue(userVlan.ID, out SnmpVlan snmpVlan))
                     snmpVlan.UserVlan = userVlan;
         }
@@ -62,7 +57,7 @@ namespace easyvlans.Model
         public async Task<Dictionary<int, SnmpPort>> ReadSnmpPortsAsync()
         {
             Dictionary<int, SnmpPort> snmpPorts = new();
-            List<Variable> portVlanTable = await _switch.SnmpBulkWalkAsync(OID_DOT1Q_PORT_VLAN_TABLE);
+            List<Variable> portVlanTable = await Switch.SnmpBulkWalkAsync(OID_DOT1Q_PORT_VLAN_TABLE);
             foreach (Variable portVlanTableRow in portVlanTable)
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
@@ -83,7 +78,7 @@ namespace easyvlans.Model
 
         public void CalculateSnmpPortVlanMemberships(Dictionary<int, SnmpVlan> snmpVlans, Dictionary<int, SnmpPort> snmpPorts)
         {
-            foreach (UserPort userPort in _switch.Ports)
+            foreach (UserPort userPort in Switch.Ports)
             {
                 if (!snmpPorts.TryGetValue(userPort.Index, out SnmpPort snmpPort))
                 {
@@ -120,14 +115,14 @@ namespace easyvlans.Model
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
             variablesFirst.AddRange(variablesLast);
-            await _switch.SnmpSetAsync(variablesFirst);
-            LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{_switch.Label}] to VLAN [{vlan.Name}] ready.");
+            await Switch.SnmpSetAsync(variablesFirst);
+            LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Switch.Label}] to VLAN [{vlan.Name}] ready.");
             return true;
         }
 
         private async Task getVlansBitfieldsForPort(string tableObjectIdentifier, int targetVlanId, int portByteIndex, int portBitIndex, List<Variable> variablesFirst, List<Variable> variablesLast)
         {
-            foreach (Variable oldRow in await _switch.SnmpBulkWalkAsync(tableObjectIdentifier))
+            foreach (Variable oldRow in await Switch.SnmpBulkWalkAsync(tableObjectIdentifier))
             {
                 SnmpVariableHelpers.IdParts idParts = oldRow.GetIdParts();
                 bool valueToSet = idParts.RowId == targetVlanId;

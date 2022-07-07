@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    internal interface IMethod
+    internal class MethodBase
     {
-        string Name { get; }
-        Switch Switch { init; }
+        public Switch Switch { get; init; }
     }
 }

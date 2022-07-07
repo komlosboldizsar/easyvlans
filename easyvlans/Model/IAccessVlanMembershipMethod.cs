@@ -2,7 +2,7 @@
 
 namespace easyvlans.Model
 {
-    internal interface IAccessVlanMembershipMethod : IMethod<IAccessVlanMembershipMethod>
+    internal interface IAccessVlanMembershipMethod : IMethod
     {
         Task ReadConfigAsync();
         Task<bool> SetPortToVlanAsync(UserPort port, UserVlan vlan);

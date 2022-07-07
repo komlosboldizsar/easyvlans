@@ -5,19 +5,14 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    internal class PersistChangesWritememMethod : IPersistChangesMethod
+    internal class PersistChangesWritememMethod : MethodBase, IPersistChangesMethod
     {
 
         public string Name => "writemem";
 
-        public PersistChangesWritememMethod() { }
-        public PersistChangesWritememMethod(Switch @switch) => _switch = @switch;
-        public IPersistChangesMethod GetInstance(Switch @switch) => new PersistChangesWritememMethod(@switch);
-        private Switch _switch;
-
         public async Task Do()
         {
-            await _switch.SnmpSetAsync(new List<Variable>() {
+            await Switch.SnmpSetAsync(new List<Variable>() {
                 new Variable(new ObjectIdentifier(OID_WRITEMEM), new Integer32(1))
             });
         }

@@ -2,7 +2,7 @@
 
 namespace easyvlans.Model
 {
-    internal interface IPersistChangesMethod : IMethod<IPersistChangesMethod>
+    internal interface IPersistChangesMethod : IMethod
     {
         Task Do();
     }

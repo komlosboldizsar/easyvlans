@@ -6,20 +6,15 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    internal class PersistChangesCiscoCopyMethod : IPersistChangesMethod
+    internal class PersistChangesCiscoCopyMethod : MethodBase, IPersistChangesMethod
     {
 
         public string Name => "ciscocopy";
 
-        public PersistChangesCiscoCopyMethod() { }
-        public PersistChangesCiscoCopyMethod(Switch @switch) => _switch = @switch;
-        public IPersistChangesMethod GetInstance(Switch @switch) => new PersistChangesCiscoCopyMethod(@switch);
-        private Switch _switch;
-
         public async Task Do()
         {
             int randomRowId = _randomGenerator.Next(1, 512);
-            await _switch.SnmpSetAsync(new List<Variable>() {
+            await Switch.SnmpSetAsync(new List<Variable>() {
                 new Variable(new ObjectIdentifier($"{OID_CC_COPY_SOURCE_FILE_TYPE}.{randomRowId}"), new Integer32(4)),
                 new Variable(new ObjectIdentifier($"{OID_CC_COPY_DESTINATION_FILE_TYPE}.{randomRowId}"), new Integer32(3)),
                 new Variable(new ObjectIdentifier($"{OID_CC_COPY_ENTRY_ROW_STATUS}.{randomRowId}"), new Integer32(1))

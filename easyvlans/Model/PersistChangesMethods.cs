@@ -10,10 +10,10 @@ namespace easyvlans.Model
     {
         public static PersistChangesMethods Instance { get; } = new();
         private PersistChangesMethods() { }
-        protected override IPersistChangesMethod[] knownMethods { get; } = new IPersistChangesMethod[]
+        protected override void registerMethods()
         {
-            new PersistChangesCiscoCopyMethod(),
-            new PersistChangesDlinkDgs121024axMethod()
-        };
+            registerMethod<PersistChangesCiscoCopyMethod>();
+            registerMethod<PersistChangesDlinkDgs121024axMethod>();
+        }
     }
 }

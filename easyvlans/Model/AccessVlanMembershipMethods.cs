@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    internal class AccessVlanMembershipMethods : MethodCollection<IAccessVlanMembershipMethod, AccessVlanMembershipQSwitchMibMethod>
+    internal sealed class AccessVlanMembershipMethods : MethodCollection<IAccessVlanMembershipMethod, AccessVlanMembershipQSwitchMibMethod>
     {
         public static AccessVlanMembershipMethods Instance { get; } = new();
         private AccessVlanMembershipMethods() { }
-        protected override IAccessVlanMembershipMethod[] knownMethods { get; } = new IAccessVlanMembershipMethod[]
+        protected override void registerMethods()
         {
-            new AccessVlanMembershipDlinkDgs121024axMethod()
-        };
+            registerMethod<AccessVlanMembershipDlinkDgs121024axMethod>();
+        }
     }
 }

@@ -6,32 +6,36 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    internal abstract class MethodCollection<TMethod, TDefaultMethod>
-        where TMethod : class, IMethod<TMethod>
-        where TDefaultMethod : TMethod, new()
+    internal abstract class MethodCollection<TMethodInterface, TDefaultMethod>
+        where TMethodInterface : class, IMethod
+        where TDefaultMethod : TMethodInterface, new()
     {
 
         public MethodCollection()
         {
-            knownMethodsDictionary = new();
-            knownMethodsDictionary.Add(DefaultMethod.Name, DefaultMethod);
-            foreach (TMethod method in knownMethods)
-                knownMethodsDictionary.Add(method.Name, method);
+            knownMethodFactoriesDictionary.Add(defaultMethodFactory.CreateInstance(null).Name, defaultMethodFactory);
         }
 
-        public TMethod Get(string name, Switch @switch)
+        public TMethodInterface GetInstance(string name, Switch @switch)
         {
             if (name == null)
-                return DefaultMethod.GetInstance(@switch);
-            knownMethodsDictionary.TryGetValue(name, out TMethod method);
-            return method?.GetInstance(@switch);
+                return GetDefaultMethodInstance(@switch);
+            knownMethodFactoriesDictionary.TryGetValue(name, out IMethodFactory<TMethodInterface> methodFactory);
+            return methodFactory?.CreateInstance(@switch);
         }
 
-        public TMethod DefaultMethod { get; } = new TDefaultMethod();
+        private IMethodFactory<TMethodInterface> defaultMethodFactory = new MethodFactory<TMethodInterface, TDefaultMethod>();
+        public TMethodInterface GetDefaultMethodInstance(Switch @switch) => defaultMethodFactory.CreateInstance(@switch);
 
-        private Dictionary<string, TMethod> knownMethodsDictionary;
+        private Dictionary<string, IMethodFactory<TMethodInterface>> knownMethodFactoriesDictionary = new();
 
-        protected abstract TMethod[] knownMethods { get; }
+        protected void registerMethod<TMethod>() where TMethod : TMethodInterface, new()
+        {
+            MethodFactory<TMethodInterface, TMethod> factory = new();
+            knownMethodFactoriesDictionary.Add(factory.CreateInstance(null).Name, factory);
+        }
+
+        protected abstract void registerMethods();
 
     }
 }

@@ -63,8 +63,8 @@ namespace easyvlans.Model
             Label = label;
             ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
             this.communityString = new OctetString(communityString);
-            accessVlanMembershipMethod = AccessVlanMembershipMethods.Instance.Get(accessVlanMembershipMethodName, this);
-            persistChangesMethod = PersistChangesMethods.Instance.Get(persistChangesMethodName, this);
+            accessVlanMembershipMethod = AccessVlanMembershipMethods.Instance.GetInstance(accessVlanMembershipMethodName, this);
+            persistChangesMethod = PersistChangesMethods.Instance.GetInstance(persistChangesMethodName, this);
         }
 
         internal void AssignConfig(Config config) => this.Config = config;
