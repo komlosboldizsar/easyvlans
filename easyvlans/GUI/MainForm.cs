@@ -85,7 +85,7 @@ namespace easyvlans.GUI
                 rowPortPortLabel.Text = "N/A";
                 rowPortPortLabel.ForeColor = Color.Red;
                 rowPortSwitch.Text = "N/A";
-                rowPortPortId.Text = "N/A";
+                rowPortPortIndex.Text = "N/A";
                 rowPortCurrentVlan.Text = "N/A";
                 rowPortSetVlanTo.Enabled = false;
                 rowPortSet.Enabled = false;
@@ -134,7 +134,7 @@ namespace easyvlans.GUI
                     portTable.RowStyles.Add(new RowStyle(SizeType.Absolute, portRowHeight));
                     portTable.Controls.Add(thisPortRowControls.PortLabel, 0, portTableRow);
                     portTable.Controls.Add(thisPortRowControls.Switch, 1, portTableRow);
-                    portTable.Controls.Add(thisPortRowControls.PortId, 2, portTableRow);
+                    portTable.Controls.Add(thisPortRowControls.PortIndex, 2, portTableRow);
                     portTable.Controls.Add(thisPortRowControls.CurrentVlan, 3, portTableRow);
                     portTable.Controls.Add(thisPortRowControls.SetVlanTo, 4, portTableRow);
                     portTable.Controls.Add(thisPortRowControls.Set, 5, portTableRow);
@@ -144,7 +144,7 @@ namespace easyvlans.GUI
 
                 thisPortRowControls.PortLabel.Text = port.Label;
                 thisPortRowControls.Switch.Text = port.Switch.Label;
-                thisPortRowControls.PortId.Text = port.Index.ToString();
+                thisPortRowControls.PortIndex.Text = port.Index.ToString();
                 thisPortRowControls.CurrentVlan.Text = CURRENT_VLAN_UNKNOWN;
                 thisPortRowControls.CurrentVlan.ForeColor = COLOR_NO_PENDING_CHANGES;
                 thisPortRowControls.SetVlanTo.Tag = port;
@@ -320,7 +320,7 @@ namespace easyvlans.GUI
         {
             public Label PortLabel { get; init; }
             public Label Switch { get; init; }
-            public Label PortId { get; init; }
+            public Label PortIndex { get; init; }
             public Label CurrentVlan { get; init; }
             public ComboBox SetVlanTo { get; init; }
             public Button Set { get; init; }
@@ -351,7 +351,7 @@ namespace easyvlans.GUI
             {
                 PortLabel = cloneOrOriginal(rowPortPortLabel, portRow),
                 Switch = cloneOrOriginal(rowPortSwitch, portRow),
-                PortId = cloneOrOriginal(rowPortPortId, portRow),
+                PortIndex = cloneOrOriginal(rowPortPortIndex, portRow),
                 CurrentVlan = cloneOrOriginal(rowPortCurrentVlan, portRow),
                 SetVlanTo = cloneOrOriginal(rowPortSetVlanTo, portRow),
                 Set = cloneOrOriginal(rowPortSet, portRow),

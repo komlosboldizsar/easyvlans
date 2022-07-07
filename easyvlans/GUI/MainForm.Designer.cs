@@ -33,13 +33,13 @@ namespace easyvlans.GUI
             this.portTable = new System.Windows.Forms.TableLayoutPanel();
             this.titlePortPortLabel = new System.Windows.Forms.Label();
             this.titlePortSwitch = new System.Windows.Forms.Label();
-            this.titlePortPortId = new System.Windows.Forms.Label();
+            this.titlePortPortIndex = new System.Windows.Forms.Label();
             this.titlePortCurrentVlan = new System.Windows.Forms.Label();
             this.titlePortSetVlanTo = new System.Windows.Forms.Label();
             this.rowPortSet = new System.Windows.Forms.Button();
             this.rowPortSwitch = new System.Windows.Forms.Label();
             this.rowPortPortLabel = new System.Windows.Forms.Label();
-            this.rowPortPortId = new System.Windows.Forms.Label();
+            this.rowPortPortIndex = new System.Windows.Forms.Label();
             this.rowPortCurrentVlan = new System.Windows.Forms.Label();
             this.rowPortSetVlanTo = new System.Windows.Forms.ComboBox();
             this.rowPortState = new System.Windows.Forms.Label();
@@ -78,13 +78,13 @@ namespace easyvlans.GUI
             this.portTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.portTable.Controls.Add(this.titlePortPortLabel, 0, 0);
             this.portTable.Controls.Add(this.titlePortSwitch, 1, 0);
-            this.portTable.Controls.Add(this.titlePortPortId, 2, 0);
+            this.portTable.Controls.Add(this.titlePortPortIndex, 2, 0);
             this.portTable.Controls.Add(this.titlePortCurrentVlan, 3, 0);
             this.portTable.Controls.Add(this.titlePortSetVlanTo, 4, 0);
             this.portTable.Controls.Add(this.rowPortSet, 5, 1);
             this.portTable.Controls.Add(this.rowPortSwitch, 1, 1);
             this.portTable.Controls.Add(this.rowPortPortLabel, 0, 1);
-            this.portTable.Controls.Add(this.rowPortPortId, 2, 1);
+            this.portTable.Controls.Add(this.rowPortPortIndex, 2, 1);
             this.portTable.Controls.Add(this.rowPortCurrentVlan, 3, 1);
             this.portTable.Controls.Add(this.rowPortSetVlanTo, 4, 1);
             this.portTable.Controls.Add(this.rowPortState, 6, 1);
@@ -122,17 +122,17 @@ namespace easyvlans.GUI
             this.titlePortSwitch.Text = "Switch";
             this.titlePortSwitch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // titlePortPortId
+            // titlePortPortIndex
             // 
-            this.titlePortPortId.AutoSize = true;
-            this.titlePortPortId.Dock = System.Windows.Forms.DockStyle.Left;
-            this.titlePortPortId.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.titlePortPortId.Location = new System.Drawing.Point(203, 0);
-            this.titlePortPortId.Name = "titlePortPortId";
-            this.titlePortPortId.Size = new System.Drawing.Size(54, 35);
-            this.titlePortPortId.TabIndex = 2;
-            this.titlePortPortId.Text = "Port ID";
-            this.titlePortPortId.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.titlePortPortIndex.AutoSize = true;
+            this.titlePortPortIndex.Dock = System.Windows.Forms.DockStyle.Left;
+            this.titlePortPortIndex.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.titlePortPortIndex.Location = new System.Drawing.Point(203, 0);
+            this.titlePortPortIndex.Name = "titlePortPortIndex";
+            this.titlePortPortIndex.Size = new System.Drawing.Size(45, 35);
+            this.titlePortPortIndex.TabIndex = 2;
+            this.titlePortPortIndex.Text = "Index";
+            this.titlePortPortIndex.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // titlePortCurrentVlan
             // 
@@ -192,16 +192,16 @@ namespace easyvlans.GUI
             this.rowPortPortLabel.Text = "DP B.21";
             this.rowPortPortLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // rowPortPortId
+            // rowPortPortIndex
             // 
-            this.rowPortPortId.AutoSize = true;
-            this.rowPortPortId.Dock = System.Windows.Forms.DockStyle.Left;
-            this.rowPortPortId.Location = new System.Drawing.Point(203, 35);
-            this.rowPortPortId.Name = "rowPortPortId";
-            this.rowPortPortId.Size = new System.Drawing.Size(53, 35);
-            this.rowPortPortId.TabIndex = 10;
-            this.rowPortPortId.Text = "Fa0/21";
-            this.rowPortPortId.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.rowPortPortIndex.AutoSize = true;
+            this.rowPortPortIndex.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rowPortPortIndex.Location = new System.Drawing.Point(203, 35);
+            this.rowPortPortIndex.Name = "rowPortPortIndex";
+            this.rowPortPortIndex.Size = new System.Drawing.Size(25, 35);
+            this.rowPortPortIndex.TabIndex = 10;
+            this.rowPortPortIndex.Text = "21";
+            this.rowPortPortIndex.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // rowPortCurrentVlan
             // 
@@ -210,9 +210,9 @@ namespace easyvlans.GUI
             this.rowPortCurrentVlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.rowPortCurrentVlan.Location = new System.Drawing.Point(303, 35);
             this.rowPortCurrentVlan.Name = "rowPortCurrentVlan";
-            this.rowPortCurrentVlan.Size = new System.Drawing.Size(77, 35);
+            this.rowPortCurrentVlan.Size = new System.Drawing.Size(75, 35);
             this.rowPortCurrentVlan.TabIndex = 11;
-            this.rowPortCurrentVlan.Text = "4 (Vutrix)";
+            this.rowPortCurrentVlan.Text = "4 - Vutrix";
             this.rowPortCurrentVlan.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // rowPortSetVlanTo
@@ -286,7 +286,7 @@ namespace easyvlans.GUI
             this.switchTable.ColumnCount = 4;
             this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.switchTable.Controls.Add(this.titleSwitchSwitchName, 0, 0);
             this.switchTable.Controls.Add(this.titleSwitchPendingChanges, 1, 0);
@@ -369,9 +369,9 @@ namespace easyvlans.GUI
             this.rowSwitchPersistChanges.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rowSwitchPersistChanges.Location = new System.Drawing.Point(303, 38);
             this.rowSwitchPersistChanges.Name = "rowSwitchPersistChanges";
-            this.rowSwitchPersistChanges.Size = new System.Drawing.Size(144, 29);
+            this.rowSwitchPersistChanges.Size = new System.Drawing.Size(114, 29);
             this.rowSwitchPersistChanges.TabIndex = 5;
-            this.rowSwitchPersistChanges.Text = "running -> startup";
+            this.rowSwitchPersistChanges.Text = "persist";
             this.rowSwitchPersistChanges.UseVisualStyleBackColor = true;
             // 
             // titleSwitchState
@@ -379,7 +379,7 @@ namespace easyvlans.GUI
             this.titleSwitchState.AutoSize = true;
             this.titleSwitchState.Dock = System.Windows.Forms.DockStyle.Left;
             this.titleSwitchState.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.titleSwitchState.Location = new System.Drawing.Point(453, 0);
+            this.titleSwitchState.Location = new System.Drawing.Point(423, 0);
             this.titleSwitchState.Name = "titleSwitchState";
             this.titleSwitchState.Size = new System.Drawing.Size(43, 35);
             this.titleSwitchState.TabIndex = 6;
@@ -390,7 +390,7 @@ namespace easyvlans.GUI
             // 
             this.rowSwitchState.AutoSize = true;
             this.rowSwitchState.Dock = System.Windows.Forms.DockStyle.Left;
-            this.rowSwitchState.Location = new System.Drawing.Point(453, 35);
+            this.rowSwitchState.Location = new System.Drawing.Point(423, 35);
             this.rowSwitchState.Name = "rowSwitchState";
             this.rowSwitchState.Size = new System.Drawing.Size(91, 35);
             this.rowSwitchState.TabIndex = 7;
@@ -454,14 +454,14 @@ namespace easyvlans.GUI
         private System.Windows.Forms.TableLayoutPanel portTable;
         private System.Windows.Forms.Label titlePortPortLabel;
         private System.Windows.Forms.Label titlePortSwitch;
-        private System.Windows.Forms.Label titlePortPortId;
+        private System.Windows.Forms.Label titlePortPortIndex;
         private System.Windows.Forms.Label titlePortCurrentVlan;
         private System.Windows.Forms.RichTextBox logTextBox;
         private System.Windows.Forms.Label titlePortSetVlanTo;
         private System.Windows.Forms.Button rowPortSet;
         private System.Windows.Forms.Label rowPortSwitch;
         private System.Windows.Forms.Label rowPortPortLabel;
-        private System.Windows.Forms.Label rowPortPortId;
+        private System.Windows.Forms.Label rowPortPortIndex;
         private System.Windows.Forms.Label rowPortCurrentVlan;
         private System.Windows.Forms.ComboBox rowPortSetVlanTo;
         private System.Windows.Forms.Label rowPortState;
