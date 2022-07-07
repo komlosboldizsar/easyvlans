@@ -14,6 +14,7 @@ namespace easyvlans.Model
         public MethodCollection()
         {
             knownMethodFactoriesDictionary.Add(defaultMethodFactory.CreateInstance(null).Name, defaultMethodFactory);
+            registerMethods();
         }
 
         public TMethodInterface GetInstance(string name, Switch @switch)
