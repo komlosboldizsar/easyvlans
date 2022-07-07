@@ -174,6 +174,8 @@ namespace easyvlans.Model
 
         private void changesPersisted()
         {
+            foreach (UserPort userPort in portsWithPendingChange)
+                userPort.ChangesPersisted();
             portsWithPendingChange.Clear();
             PortsWithPendingChangeCount = 0;
         }

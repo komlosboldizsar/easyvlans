@@ -146,6 +146,7 @@ namespace easyvlans.GUI
                 thisPortRowControls.Switch.Text = port.Switch.Label;
                 thisPortRowControls.PortId.Text = port.Index.ToString();
                 thisPortRowControls.CurrentVlan.Text = CURRENT_VLAN_UNKNOWN;
+                thisPortRowControls.CurrentVlan.ForeColor = COLOR_NO_PENDING_CHANGES;
                 thisPortRowControls.SetVlanTo.Tag = port;
                 //thisPortRowControls.SetVlanTo.Enabled = port.Switch.HasAccessMode;
                 thisPortRowControls.Set.Tag = port;
@@ -153,6 +154,7 @@ namespace easyvlans.GUI
                 thisPortRowControls.State.Text = portStatusStrings[port.Status];
                 thisPortRowControls.State.ForeColor = portStatusColors[port.Status];
                 port.StatusChanged += portsStatusChangedHandler;
+                port.PendingChangesChanged += portPendingChangesChangedHandler;
 
                 portRow++;
 
@@ -177,6 +179,12 @@ namespace easyvlans.GUI
             Label thisPortStateControl = portAssociatedRowControls[port].State;
             thisPortStateControl.Text = portStatusStrings[newValue];
             thisPortStateControl.ForeColor = portStatusColors[newValue];
+        }
+
+        private void portPendingChangesChangedHandler(UserPort port, bool newValue)
+        {
+            Label thisPortCurrentVlanControl = portAssociatedRowControls[port].CurrentVlan;
+            thisPortCurrentVlanControl.ForeColor = newValue ? COLOR_HAS_PENDING_CHANGES : COLOR_NO_PENDING_CHANGES;
         }
 
         private void portsCurrentVlanChangedHandler(UserPort port, UserVlan newValue)

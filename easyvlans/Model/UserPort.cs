@@ -45,6 +45,21 @@ namespace easyvlans.Model
             }
         }
 
+        public delegate void PendingChangesChangedDelegate(UserPort port, bool newValue);
+        public event PendingChangesChangedDelegate PendingChangesChanged;
+        private bool _pendingChanges;
+        public bool PendingChanges
+        {
+            get => _pendingChanges;
+            internal set
+            {
+                if (value == _pendingChanges)
+                    return;
+                _pendingChanges = value;
+                PendingChangesChanged?.Invoke(this, value);
+            }
+        }
+
         public UserPort(string label, Switch @switch, int index, IEnumerable<UserVlan> vlans)
         {
             Status = PortStatus.Unknown;
@@ -60,7 +75,10 @@ namespace easyvlans.Model
             if (!await Switch.SetPortToVlanAsync(this, vlan))
                 return;
             CurrentVlan = vlan;
+            PendingChanges = true;
         }
+
+        internal void ChangesPersisted() => PendingChanges = false;
 
     }
 
