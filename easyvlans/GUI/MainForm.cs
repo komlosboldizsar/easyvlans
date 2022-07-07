@@ -210,7 +210,7 @@ namespace easyvlans.GUI
             if (port == null)
                 return;
             UserVlan selectedVlan = portAssociatedRowControls[port].SetVlanTo.SelectedValue as UserVlan;
-            port.SetVlanTo(selectedVlan);
+            await port.SetVlanTo(selectedVlan);
         }
 
         private void showSwitches()
