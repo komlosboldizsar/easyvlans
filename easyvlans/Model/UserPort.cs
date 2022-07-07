@@ -30,6 +30,21 @@ namespace easyvlans.Model
             }
         }
 
+        public delegate void HasComplexMembershipChangedDelegate(UserPort port, bool newValue);
+        public event HasComplexMembershipChangedDelegate HasComplexMembershipChanged;
+        private bool _hasComplexMembership;
+        public bool HasComplexMembership
+        {
+            get => _hasComplexMembership;
+            internal set
+            {
+                if (value == _hasComplexMembership)
+                    return;
+                _hasComplexMembership = value;
+                HasComplexMembershipChanged?.Invoke(this, value);
+            }
+        }
+
         public delegate void StatusChangedDelegate(UserPort port, PortStatus newValue);
         public event StatusChangedDelegate StatusChanged;
         private PortStatus _status;

@@ -99,9 +99,16 @@ namespace easyvlans.Model
                     }
                 }
                 if ((ownerVlans == 1) && (lastOwnerSnmpVlan.ID == snmpPort.PVID) && userPort.Vlans.Contains(lastOwnerSnmpVlan.UserVlan))
+                {
                     userPort.CurrentVlan = lastOwnerSnmpVlan.UserVlan;
+                    userPort.HasComplexMembership = false;
+                }
                 else
+                {
                     userPort.CurrentVlan = null;
+                    if ((ownerVlans > 1) || (lastOwnerSnmpVlan.ID != snmpPort.PVID))
+                        userPort.HasComplexMembership = true;
+                }
             }
         }
 

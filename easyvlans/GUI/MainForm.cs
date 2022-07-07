@@ -155,6 +155,7 @@ namespace easyvlans.GUI
                 thisPortRowControls.State.ForeColor = portStatusColors[port.Status];
                 port.StatusChanged += portsStatusChangedHandler;
                 port.PendingChangesChanged += portPendingChangesChangedHandler;
+                port.HasComplexMembershipChanged += portHasComplexMembershipChangedHandler;
 
                 portRow++;
 
@@ -181,17 +182,38 @@ namespace easyvlans.GUI
             thisPortStateControl.ForeColor = portStatusColors[newValue];
         }
 
-        private void portPendingChangesChangedHandler(UserPort port, bool newValue)
-        {
-            Label thisPortCurrentVlanControl = portAssociatedRowControls[port].CurrentVlan;
-            thisPortCurrentVlanControl.ForeColor = newValue ? COLOR_HAS_PENDING_CHANGES : COLOR_NO_PENDING_CHANGES;
-        }
+        private void portPendingChangesChangedHandler(UserPort port, bool newValue) => displayPortVlanMembership(port);
+        private void portHasComplexMembershipChangedHandler(UserPort port, bool newValue) => displayPortVlanMembership(port);
 
         private void portsCurrentVlanChangedHandler(UserPort port, UserVlan newValue)
         {
             PortRowControls rowControls = portAssociatedRowControls[port];
-            rowControls.CurrentVlan.Text = vlanToStr(newValue);
             rowControls.SetVlanTo.SelectedIndex = 0;
+            displayPortVlanMembership(port);
+        }
+
+        private void displayPortVlanMembership(UserPort port)
+        {
+            PortRowControls rowControls = portAssociatedRowControls[port];
+            string vlanText;
+            Color foreColor;
+            if (port.CurrentVlan != null)
+            {
+                vlanText = vlanToStr(port.CurrentVlan);
+                foreColor = port.PendingChanges ? COLOR_HAS_PENDING_CHANGES : COLOR_NO_PENDING_CHANGES;
+            }
+            else if (port.HasComplexMembership)
+            {
+                vlanText = "complex";
+                foreColor = Color.LightBlue;
+            }
+            else
+            {
+                vlanText = "unknown";
+                foreColor = Color.LightGray;
+            }
+            rowControls.CurrentVlan.Text = vlanText;
+            rowControls.CurrentVlan.ForeColor = foreColor;
         }
 
         private void portsSetVlanToSelectedIndexChangedHandler(object sender, EventArgs e)
