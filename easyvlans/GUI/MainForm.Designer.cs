@@ -29,6 +29,7 @@ namespace easyvlans.GUI
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.portTable = new System.Windows.Forms.TableLayoutPanel();
             this.titlePortPortLabel = new System.Windows.Forms.Label();
             this.titlePortSwitch = new System.Windows.Forms.Label();
@@ -56,6 +57,8 @@ namespace easyvlans.GUI
             this.titleSwitchState = new System.Windows.Forms.Label();
             this.rowSwitchState = new System.Windows.Forms.Label();
             this.bottomPanel = new System.Windows.Forms.Panel();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.githubLink = new System.Windows.Forms.LinkLabel();
             this.showVerboseLog = new System.Windows.Forms.CheckBox();
             this.portPageButtonContainer = new System.Windows.Forms.FlowLayoutPanel();
             this.portPageButton = new System.Windows.Forms.Button();
@@ -404,12 +407,41 @@ namespace easyvlans.GUI
             // 
             this.bottomPanel.AutoSize = true;
             this.bottomPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.bottomPanel.Controls.Add(this.linkLabel1);
+            this.bottomPanel.Controls.Add(this.githubLink);
             this.bottomPanel.Controls.Add(this.showVerboseLog);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.bottomPanel.Location = new System.Drawing.Point(0, 325);
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(1061, 33);
             this.bottomPanel.TabIndex = 1;
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(282, 6);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+            this.linkLabel1.Size = new System.Drawing.Size(95, 20);
+            this.linkLabel1.TabIndex = 2;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Report issue";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.issueReportLinkClicked);
+            // 
+            // githubLink
+            // 
+            this.githubLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.githubLink.AutoSize = true;
+            this.githubLink.LinkColor = System.Drawing.Color.Blue;
+            this.githubLink.Location = new System.Drawing.Point(9, 6);
+            this.githubLink.Name = "githubLink";
+            this.githubLink.Size = new System.Drawing.Size(267, 20);
+            this.githubLink.TabIndex = 1;
+            this.githubLink.TabStop = true;
+            this.githubLink.Text = "github.com/komlosboldizsar/easyvlans";
+            this.githubLink.VisitedLinkColor = System.Drawing.Color.Blue;
+            this.githubLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.githubLinkClickHandler);
             // 
             // showVerboseLog
             // 
@@ -458,7 +490,11 @@ namespace easyvlans.GUI
             this.Controls.Add(this.switchTableContainer);
             this.Controls.Add(this.portTableContainer);
             this.Controls.Add(this.portPageButtonContainer);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Location = new System.Drawing.Point(50, 50);
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.Text = "EasyVLANs";
             this.portTable.ResumeLayout(false);
             this.portTable.PerformLayout();
             this.portTableContainer.ResumeLayout(false);
@@ -508,6 +544,8 @@ namespace easyvlans.GUI
         private System.Windows.Forms.CheckBox showVerboseLog;
         private System.Windows.Forms.FlowLayoutPanel portPageButtonContainer;
         private System.Windows.Forms.Button portPageButton;
+        private System.Windows.Forms.LinkLabel githubLink;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }
 

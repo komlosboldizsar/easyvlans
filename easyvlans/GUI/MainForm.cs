@@ -162,6 +162,14 @@ namespace easyvlans.GUI
             PortRowControls.Bind(shownPorts);
         }
 
+        private void openUrl(string url) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+
+        private void githubLinkClickHandler(object sender, LinkLabelLinkClickedEventArgs e) => openUrl(URL_GITHUB);
+        private void issueReportLinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => openUrl(URL_GITHUB_ISSUEREPORT);
+
+        private const string URL_GITHUB = @"http://github.com/komlosboldizsar/easyvlans";
+        private const string URL_GITHUB_ISSUEREPORT = @"http://github.com/komlosboldizsar/easyvlans/issues/new";
+
     }
 
 }
