@@ -14,6 +14,7 @@ namespace easyvlans.Model
         public Switch Switch { get; init; }
         public int Index { get; init; }
         public List<UserVlan> Vlans { get; } = new List<UserVlan>();
+        public UserPortPage Page { get; init; }
 
         public delegate void CurrentVlanChangedDelegate(UserPort port, UserVlan newValue);
         public event CurrentVlanChangedDelegate CurrentVlanChanged;
@@ -75,7 +76,7 @@ namespace easyvlans.Model
             }
         }
 
-        public UserPort(string label, Switch @switch, int index, IEnumerable<UserVlan> vlans)
+        public UserPort(string label, Switch @switch, int index, IEnumerable<UserVlan> vlans, UserPortPage page)
         {
             Status = PortStatus.Unknown;
             Label = label;
@@ -83,6 +84,7 @@ namespace easyvlans.Model
             @switch.AssociatePort(this);
             Index = index;
             Vlans.AddRange(vlans);
+            Page = page;
         }
 
         public async Task SetVlanTo(UserVlan vlan)

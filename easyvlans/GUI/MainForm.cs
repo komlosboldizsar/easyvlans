@@ -98,14 +98,39 @@ namespace easyvlans.GUI
                 MessageBox.Show(errorToShow, "Initialization error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
+            showPages();
             showPorts();
+            showDefaultPortPage();
             showSwitches();
             Task[] allReadVlansTask = new Task[config.Switches.Count];
             int i = 0;
             foreach (Switch @switch in config.Switches.Values)
                 allReadVlansTask[i++] = @switch.ReadConfigAsync();
             await Task.WhenAll(allReadVlansTask);
+
+        }
+
+        private void showPages()
+        {
+
+            if (config.PortPages.Count == 0)
+            {
+                portPageButtonPanel.Visible = false;
+                return;
+            }
+
+            int portPageIndex = 0;
+
+            foreach (UserPortPage portPage in config.PortPages)
+            {
+                Button newPortPageButton = (portPageIndex > 0) ? portPageButton.Clone() : portPageButton;
+                newPortPageButton.Text = portPage.Title;
+                newPortPageButton.Tag = portPage;
+                newPortPageButton.Click += portPageButtonClick;
+                if (portPageIndex > 0)
+                    portPageButtonPanel.Controls.Add(newPortPageButton);
+                portPageIndex++;
+            }
 
         }
 
@@ -131,7 +156,7 @@ namespace easyvlans.GUI
                 if (portRow > 0)
                 {
                     portTable.RowCount++;
-                    portTable.RowStyles.Add(new RowStyle(SizeType.Absolute, portRowHeight));
+                    portTable.RowStyles.Add(thisPortRowControls.RowStyle);
                     portTable.Controls.Add(thisPortRowControls.PortLabel, 0, portTableRow);
                     portTable.Controls.Add(thisPortRowControls.Switch, 1, portTableRow);
                     portTable.Controls.Add(thisPortRowControls.PortIndex, 2, portTableRow);
@@ -142,6 +167,7 @@ namespace easyvlans.GUI
                     Size = new Size(Size.Width, Size.Height + portRowHeight);
                 }
 
+                thisPortRowControls.RowStyle = portTable.RowStyles[portRow + 1];
                 thisPortRowControls.PortLabel.Text = port.Label;
                 thisPortRowControls.Switch.Text = port.Switch.Label;
                 thisPortRowControls.PortIndex.Text = port.Index.ToString();
@@ -235,6 +261,9 @@ namespace easyvlans.GUI
             await port.SetVlanTo(selectedVlan);
         }
 
+        private void showDefaultPortPage()
+            => showPortPage(config.PortPages.FirstOrDefault(pp => pp.IsDefault) ?? config.PortPages.FirstOrDefault());
+
         private void showSwitches()
         {
 
@@ -318,6 +347,17 @@ namespace easyvlans.GUI
 
         public class PortRowControls
         {
+            private float _originalHeight;
+            private RowStyle _rowStyle;
+            public RowStyle RowStyle
+            {
+                get => _rowStyle;
+                set
+                {
+                    _rowStyle = value;
+                    _originalHeight = value.Height;
+                }
+            }
             public Label PortLabel { get; init; }
             public Label Switch { get; init; }
             public Label PortIndex { get; init; }
@@ -325,6 +365,10 @@ namespace easyvlans.GUI
             public ComboBox SetVlanTo { get; init; }
             public Button Set { get; init; }
             public Label State { get; init; }
+            public bool Shown
+            {
+                set => RowStyle.Height = value ? _originalHeight : 0;
+            }
         }
 
         public class SwitchRowControls
@@ -347,8 +391,11 @@ namespace easyvlans.GUI
 
         private PortRowControls getPortRowControls(int portRow)
         {
+            RowStyle originalPortRowStyle = portTable.RowStyles[1];
+            RowStyle portRowStyle = (portRow > 0) ? new RowStyle(SizeType.Absolute, originalPortRowStyle.Height) : originalPortRowStyle;
             return new PortRowControls()
             {
+                RowStyle = portRowStyle,
                 PortLabel = cloneOrOriginal(rowPortPortLabel, portRow),
                 Switch = cloneOrOriginal(rowPortSwitch, portRow),
                 PortIndex = cloneOrOriginal(rowPortPortIndex, portRow),
@@ -421,6 +468,29 @@ namespace easyvlans.GUI
             { SwitchStatus.ConfigSaved, Color.DarkGreen },
             { SwitchStatus.ConfigSaveError, Color.Red }
         };
+
+        private void portPageButtonClick(object sender, EventArgs e)
+        {
+            UserPortPage portPage = ((Button)sender).Tag as UserPortPage;
+            showPortPage(portPage);
+        }
+
+        private void showPortPage(UserPortPage portPage)
+        {
+            portTable.SuspendLayout();
+            foreach (Control ctrl in portPageButtonPanel.Controls)
+            {
+                if (ctrl is Button btn)
+                {
+                    bool selected = (btn.Tag == portPage);
+                    btn.BackColor = selected ? Color.DarkBlue : SystemColors.Control;
+                    btn.ForeColor = selected ? Color.White : SystemColors.ControlText;
+                }
+            }
+            foreach (UserPort port in config.Ports)
+                portAssociatedRowControls[port].Shown = ((port.Page == null) || (port.Page == portPage));
+            portTable.ResumeLayout(true);
+        }
 
     }
 }

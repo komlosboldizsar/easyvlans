@@ -13,8 +13,9 @@ namespace easyvlans.Model
         public Dictionary<string, Switch> Switches { get; } = new Dictionary<string, Switch>();
         public Dictionary<int, UserVlan> Vlans { get; } = new Dictionary<int, UserVlan>();
         public List<UserPort> Ports { get; } = new List<UserPort>();
+        public List<UserPortPage> PortPages { get; } = new List<UserPortPage>();
 
-        public Config(Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans, List<UserPort> ports)
+        public Config(Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans, List<UserPort> ports, List<UserPortPage> portPages)
         {
             foreach (KeyValuePair<string, Switch> switchKVP in switches)
             {
@@ -24,6 +25,7 @@ namespace easyvlans.Model
             foreach (KeyValuePair<int, UserVlan> vlanKVP in vlans)
                 Vlans.Add(vlanKVP.Key, vlanKVP.Value);
             Ports.AddRange(ports);
+            PortPages.AddRange(portPages);
         }
 
     }

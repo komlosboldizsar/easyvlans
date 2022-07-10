@@ -58,11 +58,14 @@ namespace easyvlans.GUI
             this.rowSwitchState = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.showVerboseLog = new System.Windows.Forms.CheckBox();
+            this.portPageButtonPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.portPageButton = new System.Windows.Forms.Button();
             this.portTable.SuspendLayout();
             this.portTableContainer.SuspendLayout();
             this.switchTableContainer.SuspendLayout();
             this.switchTable.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.portPageButtonPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // portTable
@@ -251,10 +254,10 @@ namespace easyvlans.GUI
             // logTextBox
             // 
             this.logTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logTextBox.Location = new System.Drawing.Point(0, 185);
+            this.logTextBox.Location = new System.Drawing.Point(0, 251);
             this.logTextBox.MinimumSize = new System.Drawing.Size(4, 100);
             this.logTextBox.Name = "logTextBox";
-            this.logTextBox.Size = new System.Drawing.Size(1061, 140);
+            this.logTextBox.Size = new System.Drawing.Size(1061, 100);
             this.logTextBox.TabIndex = 4;
             this.logTextBox.Text = "";
             // 
@@ -263,7 +266,7 @@ namespace easyvlans.GUI
             this.portTableContainer.AutoSize = true;
             this.portTableContainer.Controls.Add(this.portTable);
             this.portTableContainer.Dock = System.Windows.Forms.DockStyle.Top;
-            this.portTableContainer.Location = new System.Drawing.Point(0, 0);
+            this.portTableContainer.Location = new System.Drawing.Point(0, 46);
             this.portTableContainer.Name = "portTableContainer";
             this.portTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
             this.portTableContainer.Size = new System.Drawing.Size(1061, 80);
@@ -274,10 +277,10 @@ namespace easyvlans.GUI
             this.switchTableContainer.AutoSize = true;
             this.switchTableContainer.Controls.Add(this.switchTable);
             this.switchTableContainer.Dock = System.Windows.Forms.DockStyle.Top;
-            this.switchTableContainer.Location = new System.Drawing.Point(0, 80);
+            this.switchTableContainer.Location = new System.Drawing.Point(0, 126);
             this.switchTableContainer.Name = "switchTableContainer";
             this.switchTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 25);
-            this.switchTableContainer.Size = new System.Drawing.Size(1061, 105);
+            this.switchTableContainer.Size = new System.Drawing.Size(1061, 125);
             this.switchTableContainer.TabIndex = 1;
             // 
             // switchTable
@@ -299,10 +302,11 @@ namespace easyvlans.GUI
             this.switchTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.switchTable.Location = new System.Drawing.Point(10, 10);
             this.switchTable.Name = "switchTable";
-            this.switchTable.RowCount = 2;
+            this.switchTable.RowCount = 3;
             this.switchTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.switchTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.switchTable.Size = new System.Drawing.Size(1041, 70);
+            this.switchTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.switchTable.Size = new System.Drawing.Size(1041, 90);
             this.switchTable.TabIndex = 0;
             // 
             // titleSwitchSwitchName
@@ -420,6 +424,30 @@ namespace easyvlans.GUI
             this.showVerboseLog.UseVisualStyleBackColor = true;
             this.showVerboseLog.CheckedChanged += new System.EventHandler(this.showVerboseLogCheckedChanged);
             // 
+            // flowLayoutPanel1
+            // 
+            this.portPageButtonPanel.AutoSize = true;
+            this.portPageButtonPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.portPageButtonPanel.Controls.Add(this.portPageButton);
+            this.portPageButtonPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.portPageButtonPanel.Location = new System.Drawing.Point(0, 0);
+            this.portPageButtonPanel.Name = "flowLayoutPanel1";
+            this.portPageButtonPanel.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
+            this.portPageButtonPanel.Size = new System.Drawing.Size(1061, 46);
+            this.portPageButtonPanel.TabIndex = 1;
+            // 
+            // button1
+            // 
+            this.portPageButton.AutoSize = true;
+            this.portPageButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.portPageButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.portPageButton.Location = new System.Drawing.Point(13, 13);
+            this.portPageButton.Name = "button1";
+            this.portPageButton.Size = new System.Drawing.Size(71, 30);
+            this.portPageButton.TabIndex = 0;
+            this.portPageButton.Text = "button1";
+            this.portPageButton.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -430,6 +458,8 @@ namespace easyvlans.GUI
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.switchTableContainer);
             this.Controls.Add(this.portTableContainer);
+            this.Controls.Add(this.portPageButtonPanel);
+            this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
@@ -444,6 +474,8 @@ namespace easyvlans.GUI
             this.switchTable.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.portPageButtonPanel.ResumeLayout(false);
+            this.portPageButtonPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -479,6 +511,8 @@ namespace easyvlans.GUI
         private System.Windows.Forms.Label rowSwitchState;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.CheckBox showVerboseLog;
+        private System.Windows.Forms.FlowLayoutPanel portPageButtonPanel;
+        private System.Windows.Forms.Button portPageButton;
     }
 }
 

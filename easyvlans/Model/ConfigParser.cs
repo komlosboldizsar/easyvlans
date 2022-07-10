@@ -38,6 +38,12 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_PORT_INDEX = "index";
         private const string ATTRIBUTE_PORT_VLANS = "vlans";
 
+        private const string TAG_PAGE = "page";
+        private const string ATTRIBUTE_PAGE_TITLE = "title";
+        private const string ATTRIBUTE_PAGE_DEFAULT = "default";
+
+        private const string STR_TRUE = "true";
+
         public Config LoadConfig()
         {
             if (File.Exists(FILE_CONFIG))
@@ -52,6 +58,7 @@ namespace easyvlans.Model
                     Dictionary<string, Switch> switches = null;
                     Dictionary<int, UserVlan> vlans = null;
                     List<UserPort> ports = null;
+                    List<UserPortPage> pages = null;
                     foreach (XmlNode node in root.ChildNodes)
                     {
                         switch (node.LocalName)
@@ -63,7 +70,7 @@ namespace easyvlans.Model
                                 vlans = loadVlans(node);
                                 break;
                             case TAG_PORTS:
-                                ports = loadPorts(node, switches, vlans);
+                                (ports, pages) = loadPortsAndPages(node, switches, vlans);
                                 break;
                         }
                     }
@@ -71,9 +78,9 @@ namespace easyvlans.Model
                         throw new ConfigParsingException("Couldn't load switches from configuration XML!");
                     if (switches == null)
                         throw new ConfigParsingException("Couldn't load VLANs from configuration XML!");
-                    if (switches == null)
+                    if (ports == null)
                         throw new ConfigParsingException("Couldn't load ports from configuration XML!");
-                    return new Config(switches, vlans, ports);
+                    return new Config(switches, vlans, ports, pages);
                 }
                 catch (ConfigParsingException)
                 {
@@ -151,57 +158,80 @@ namespace easyvlans.Model
             return vlans;
         }
 
-        private List<UserPort> loadPorts(XmlNode parentNode, Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans)
+        private (List<UserPort>, List<UserPortPage>) loadPortsAndPages(XmlNode parentNode, Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans)
         {
-            List<UserPort> ports = new List<UserPort>();
-            int tagIndex = 1;
+            List<UserPort> ports = new();
+            List<UserPortPage> portPages = new();
+            int tagIndexPort = 1, tagIndexPortPage = 1;
             foreach (XmlNode node in parentNode.ChildNodes)
             {
-                if (node.LocalName != TAG_PORT)
-                    continue;
-                string portLabel = node.Attributes[ATTRIBUTE_PORT_LABEL]?.Value;
-                if (string.IsNullOrWhiteSpace(portLabel))
-                    throw new ConfigParsingException($"Label of port (XML attribute: {ATTRIBUTE_PORT_LABEL}) can't be empty at {tagIndex}. <{TAG_PORT}> tag!");
-                string portSwitch = node.Attributes[ATTRIBUTE_PORT_SWITCH]?.Value;
-                if (!switches.TryGetValue(portSwitch, out Switch @switch))
-                    throw new ConfigParsingException($"Couldn't find switch with ID \"{portSwitch}\" for port at {tagIndex}. <{TAG_PORT}> tag!");
-                string portIndexStr = node.Attributes[ATTRIBUTE_PORT_INDEX]?.Value;
-                if (string.IsNullOrWhiteSpace(portIndexStr))
-                    throw new ConfigParsingException($"Index of port (XML attribute: {ATTRIBUTE_PORT_INDEX}) can't be empty at {tagIndex}. <{TAG_PORT}> tag!");
-                if (!int.TryParse(portIndexStr, out int portIndex))
-                    throw new ConfigParsingException($"Index of port (XML attribute: {ATTRIBUTE_PORT_INDEX}) is invalid at {tagIndex}. <{TAG_PORT}> tag!");
-                string portVlans = node.Attributes[ATTRIBUTE_PORT_VLANS]?.Value;
-                List<UserVlan> vlansForPort = new List<UserVlan>();
-                string[] vlanIds = portVlans.Split(',');
-                foreach (string _vlanId in vlanIds)
+                if (node.LocalName == TAG_PORT)
                 {
-                    string vlanId = _vlanId;
-                    bool exclude = vlanId.StartsWith('!');
-                    if (exclude)
-                        vlanId = vlanId.Substring(1);
-                    if (vlanId == "all")
-                    {
-                        if (exclude)
-                            vlansForPort.RemoveAll(v => vlans.Values.Contains(v));
-                        else
-                            vlansForPort.AddRange(vlans.Values);
-                    }
-                    else
-                    {
-                        int.TryParse(vlanId, out int vlanIdInt);
-                        if (!vlans.TryGetValue(vlanIdInt, out UserVlan vlan))
-                            throw new ConfigParsingException($"Couldn't find VLAN with ID \"{vlanId}\" for port at {tagIndex}. <{TAG_PORT}> tag!");
-                        if (exclude)
-                            vlansForPort.RemoveAll(v => (v == vlan));
-                        else
-                            vlansForPort.Add(vlan);
-                    }
+                    ports.Add(loadPort(node, tagIndexPort++, null, switches, vlans));
                 }
-                UserPort port = new UserPort(portLabel, @switch, portIndex, vlansForPort.Distinct().OrderBy(v => v.ID));
-                ports.Add(port);
-                tagIndex++;
+                else if (node.LocalName == TAG_PAGE)
+                {
+                    UserPortPage portPage = loadPortPage(node, tagIndexPortPage++);
+                    portPages.Add(portPage);
+                    foreach (XmlNode childNode in node.ChildNodes)
+                        if (childNode.LocalName == TAG_PORT)
+                            ports.Add(loadPort(childNode, tagIndexPort++, portPage, switches, vlans));
+                }
             }
-            return ports;
+            return (ports, portPages);
+        }
+
+        private UserPort loadPort(XmlNode node, int tagIndex, UserPortPage page, Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans)
+        {
+            string portLabel = node.Attributes[ATTRIBUTE_PORT_LABEL]?.Value;
+            if (string.IsNullOrWhiteSpace(portLabel))
+                throw new ConfigParsingException($"Label of port (XML attribute: {ATTRIBUTE_PORT_LABEL}) can't be empty at {tagIndex}. <{TAG_PORT}> tag!");
+            string portSwitch = node.Attributes[ATTRIBUTE_PORT_SWITCH]?.Value;
+            if (!switches.TryGetValue(portSwitch, out Switch @switch))
+                throw new ConfigParsingException($"Couldn't find switch with ID \"{portSwitch}\" for port at {tagIndex}. <{TAG_PORT}> tag!");
+            string portIndexStr = node.Attributes[ATTRIBUTE_PORT_INDEX]?.Value;
+            if (string.IsNullOrWhiteSpace(portIndexStr))
+                throw new ConfigParsingException($"Index of port (XML attribute: {ATTRIBUTE_PORT_INDEX}) can't be empty at {tagIndex}. <{TAG_PORT}> tag!");
+            if (!int.TryParse(portIndexStr, out int portIndex))
+                throw new ConfigParsingException($"Index of port (XML attribute: {ATTRIBUTE_PORT_INDEX}) is invalid at {tagIndex}. <{TAG_PORT}> tag!");
+            string portVlans = node.Attributes[ATTRIBUTE_PORT_VLANS]?.Value;
+            List<UserVlan> vlansForPort = new List<UserVlan>();
+            string[] vlanIds = portVlans.Split(',');
+            foreach (string _vlanId in vlanIds)
+            {
+                string vlanId = _vlanId;
+                bool exclude = vlanId.StartsWith('!');
+                if (exclude)
+                    vlanId = vlanId.Substring(1);
+                if (vlanId == "all")
+                {
+                    if (exclude)
+                        vlansForPort.RemoveAll(v => vlans.Values.Contains(v));
+                    else
+                        vlansForPort.AddRange(vlans.Values);
+                }
+                else
+                {
+                    int.TryParse(vlanId, out int vlanIdInt);
+                    if (!vlans.TryGetValue(vlanIdInt, out UserVlan vlan))
+                        throw new ConfigParsingException($"Couldn't find VLAN with ID \"{vlanId}\" for port at {tagIndex}. <{TAG_PORT}> tag!");
+                    if (exclude)
+                        vlansForPort.RemoveAll(v => (v == vlan));
+                    else
+                        vlansForPort.Add(vlan);
+                }
+            }
+            return new UserPort(portLabel, @switch, portIndex, vlansForPort.Distinct().OrderBy(v => v.ID), page);
+        }
+
+        private UserPortPage loadPortPage(XmlNode node, int tagIndex)
+        {
+            string pageTitle = node.Attributes[ATTRIBUTE_PAGE_TITLE]?.Value;
+            if (string.IsNullOrWhiteSpace(pageTitle))
+                throw new ConfigParsingException($"Title of page (XML attribute: {ATTRIBUTE_PAGE_TITLE}) can't be empty at {tagIndex}. <{TAG_PAGE}> tag!");
+            string pageDefaultString = node.Attributes[ATTRIBUTE_PAGE_DEFAULT]?.Value;
+            bool pageDefault = (pageDefaultString == STR_TRUE);
+            return new UserPortPage(pageTitle, pageDefault);
         }
 
     }
