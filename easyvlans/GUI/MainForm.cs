@@ -21,10 +21,7 @@ namespace easyvlans.GUI
         private Config config;
         private string parsingError;
 
-        public MainForm()
-        {
-            InitializeComponent();
-        }
+        public MainForm() => InitializeComponent();
 
         public MainForm(Config config, string parsingError)
         {
@@ -74,9 +71,7 @@ namespace easyvlans.GUI
 
         private async void load(object sender, EventArgs e)
         {
-
             reloadLogMessages();
-
             string errorToShow = parsingError;
             if ((errorToShow == null) && (config == null))
                 errorToShow = "Couldn't load configuration, reason unknown.";
@@ -99,28 +94,24 @@ namespace easyvlans.GUI
                 return;
             }
             showPages();
-            showPorts();
+            createPortsTable();
             showDefaultPortPage();
-            showSwitches();
+            createAndShowSwitchesTable();
             Task[] allReadVlansTask = new Task[config.Switches.Count];
             int i = 0;
             foreach (Switch @switch in config.Switches.Values)
                 allReadVlansTask[i++] = @switch.ReadConfigAsync();
             await Task.WhenAll(allReadVlansTask);
-
         }
 
         private void showPages()
         {
-
             if (config.PortPages.Count == 0)
             {
-                portPageButtonPanel.Visible = false;
+                portPageButtonContainer.Visible = false;
                 return;
             }
-
             int portPageIndex = 0;
-
             foreach (UserPortPage portPage in config.PortPages)
             {
                 Button newPortPageButton = (portPageIndex > 0) ? portPageButton.Clone() : portPageButton;
@@ -128,357 +119,37 @@ namespace easyvlans.GUI
                 newPortPageButton.Tag = portPage;
                 newPortPageButton.Click += portPageButtonClick;
                 if (portPageIndex > 0)
-                    portPageButtonPanel.Controls.Add(newPortPageButton);
+                    portPageButtonContainer.Controls.Add(newPortPageButton);
                 portPageIndex++;
             }
-
         }
 
-        private void showPorts()
+        private void createPortsTable()
         {
-
             if (config.Ports.Count == 0)
-            {
-                // Todo...
-                return;
-            }
-
-            int portRow = 0;
-            int portRowHeight = (int)portTable.RowStyles[1].Height;
-            foreach (UserPort port in config.Ports)
-            {
-
-                int portTableRow = portRow + 1;
-                PortRowControls thisPortRowControls = getPortRowControls(portRow);
-                portRowControls.Add(thisPortRowControls);
-                portAssociatedRowControls.Add(port, thisPortRowControls);
-
-                if (portRow > 0)
-                {
-                    portTable.RowCount++;
-                    portTable.RowStyles.Add(thisPortRowControls.RowStyle);
-                    portTable.Controls.Add(thisPortRowControls.PortLabel, 0, portTableRow);
-                    portTable.Controls.Add(thisPortRowControls.Switch, 1, portTableRow);
-                    portTable.Controls.Add(thisPortRowControls.PortIndex, 2, portTableRow);
-                    portTable.Controls.Add(thisPortRowControls.CurrentVlan, 3, portTableRow);
-                    portTable.Controls.Add(thisPortRowControls.SetVlanTo, 4, portTableRow);
-                    portTable.Controls.Add(thisPortRowControls.Set, 5, portTableRow);
-                    portTable.Controls.Add(thisPortRowControls.State, 6, portTableRow);
-                    Size = new Size(Size.Width, Size.Height + portRowHeight);
-                }
-
-                thisPortRowControls.RowStyle = portTable.RowStyles[portRow + 1];
-                thisPortRowControls.PortLabel.Text = port.Label;
-                thisPortRowControls.Switch.Text = port.Switch.Label;
-                thisPortRowControls.PortIndex.Text = port.Index.ToString();
-                thisPortRowControls.CurrentVlan.Text = CURRENT_VLAN_UNKNOWN;
-                thisPortRowControls.CurrentVlan.ForeColor = COLOR_NO_PENDING_CHANGES;
-                thisPortRowControls.SetVlanTo.Tag = port;
-                //thisPortRowControls.SetVlanTo.Enabled = port.Switch.HasAccessMode;
-                thisPortRowControls.Set.Tag = port;
-                thisPortRowControls.Set.Enabled = false;
-                thisPortRowControls.State.Text = portStatusStrings[port.Status];
-                thisPortRowControls.State.ForeColor = portStatusColors[port.Status];
-                port.StatusChanged += portsStatusChangedHandler;
-                port.PendingChangesChanged += portPendingChangesChangedHandler;
-                port.HasComplexMembershipChanged += portHasComplexMembershipChangedHandler;
-
-                portRow++;
-
-            }
-
-            portRow = 0;
-            foreach (UserPort port in config.Ports)
-                portRowControls[portRow++].SetVlanTo.CreateAdapterAsDataSource(port.Vlans, vlanToStr, true, "");
-
-            foreach (UserPort port in config.Ports)
-            {
-                port.CurrentVlanChanged += portsCurrentVlanChangedHandler;
-                PortRowControls rowControls = portAssociatedRowControls[port];
-                rowControls.SetVlanTo.SelectedIndexChanged += portsSetVlanToSelectedIndexChangedHandler;
-                rowControls.Set.Click += portsSetButtonClickHandler;
-            }
-
-        }
-
-        private void portsStatusChangedHandler(UserPort port, PortStatus newValue)
-        {
-            Label thisPortStateControl = portAssociatedRowControls[port].State;
-            thisPortStateControl.Text = portStatusStrings[newValue];
-            thisPortStateControl.ForeColor = portStatusColors[newValue];
-        }
-
-        private void portPendingChangesChangedHandler(UserPort port, bool newValue) => displayPortVlanMembership(port);
-        private void portHasComplexMembershipChangedHandler(UserPort port, bool newValue) => displayPortVlanMembership(port);
-
-        private void portsCurrentVlanChangedHandler(UserPort port, UserVlan newValue)
-        {
-            PortRowControls rowControls = portAssociatedRowControls[port];
-            rowControls.SetVlanTo.SelectedIndex = 0;
-            displayPortVlanMembership(port);
-        }
-
-        private void displayPortVlanMembership(UserPort port)
-        {
-            PortRowControls rowControls = portAssociatedRowControls[port];
-            string vlanText;
-            Color foreColor;
-            if (port.CurrentVlan != null)
-            {
-                vlanText = vlanToStr(port.CurrentVlan);
-                foreColor = port.PendingChanges ? COLOR_HAS_PENDING_CHANGES : COLOR_NO_PENDING_CHANGES;
-            }
-            else if (port.HasComplexMembership)
-            {
-                vlanText = "complex";
-                foreColor = Color.LightBlue;
-            }
-            else
-            {
-                vlanText = "unknown";
-                foreColor = Color.LightGray;
-            }
-            rowControls.CurrentVlan.Text = vlanText;
-            rowControls.CurrentVlan.ForeColor = foreColor;
-        }
-
-        private void portsSetVlanToSelectedIndexChangedHandler(object sender, EventArgs e)
-        {
-            ComboBox typedSender = sender as ComboBox;
-            UserPort port = typedSender?.Tag as UserPort;
-            if (port == null)
-                return;
-            portAssociatedRowControls[port].Set.Enabled = (typedSender.SelectedIndex > 0);
-        }
-
-        private async void portsSetButtonClickHandler(object sender, EventArgs e)
-        {
-            Button typedSender = sender as Button;
-            UserPort port = typedSender?.Tag as UserPort;
-            if (port == null)
-                return;
-            UserVlan selectedVlan = portAssociatedRowControls[port].SetVlanTo.SelectedValue as UserVlan;
-            await port.SetVlanTo(selectedVlan);
+                return; // Todo...
+            int maxPortRowCount = config.Ports.Where(p => p.Page == null).Count() + config.Ports.GroupBy(p => p.Page).Max(gp => gp.Count());
+            PortRowControls.Init(this, portTable);
+            PortRowControls.CreateAll(maxPortRowCount);
         }
 
         private void showDefaultPortPage()
             => showPortPage(config.PortPages.FirstOrDefault(pp => pp.IsDefault) ?? config.PortPages.FirstOrDefault());
 
-        private void showSwitches()
+        private void createAndShowSwitchesTable()
         {
-
             if (config.Switches.Count == 0)
-            {
-                // Todo...
-                return;
-            }
-
-            int switchRow = 0;
-            int switchRowHeight = (int)switchTable.RowStyles[1].Height;
-            foreach (Switch @switch in config.Switches.Values)
-            {
-
-                int switchTableRow = switchRow + 1;
-                SwitchRowControls thisSwitchRowControls = getSwitchRowControls(switchRow);
-                switchRowControls.Add(thisSwitchRowControls);
-                switchAssociatedRowControls.Add(@switch, thisSwitchRowControls);
-
-                if (switchRow > 0)
-                {
-                    switchTable.RowCount++;
-                    switchTable.RowStyles.Add(new RowStyle(SizeType.Absolute, switchRowHeight));
-                    switchTable.Controls.Add(thisSwitchRowControls.SwitchName, 0, switchTableRow);
-                    switchTable.Controls.Add(thisSwitchRowControls.PendingChanges, 1, switchTableRow);
-                    switchTable.Controls.Add(thisSwitchRowControls.PersistChanges, 2, switchTableRow);
-                    switchTable.Controls.Add(thisSwitchRowControls.State, 3, switchTableRow);
-                    Size = new Size(Size.Width, Size.Height + switchRowHeight);
-                }
-
-                thisSwitchRowControls.SwitchName.Text = @switch.Label;
-                thisSwitchRowControls.PendingChanges.Text = "no ports changed";
-                thisSwitchRowControls.PersistChanges.Tag = @switch;
-                thisSwitchRowControls.PersistChanges.Enabled = false;
-                thisSwitchRowControls.PersistChanges.Click += switchesPersistChangesButtonClickHandler;
-                thisSwitchRowControls.State.Text = switchStatusStrings[@switch.Status];
-                thisSwitchRowControls.State.ForeColor = switchStatusColors[@switch.Status];
-                @switch.StatusChanged += switchesStatusChangedHandler;
-                @switch.PortsWithPendingChangeCountChanged += switchesPortsWithPendingChangeCountChangedHandler;
-
-                switchRow++;
-
-            }
-
+                return; // Todo...
+            SwitchRowControls.Init(this, switchTable);
+            SwitchRowControls.CreateAll(config.Switches.Count);
+            SwitchRowControls.Bind(config.Switches.Values);
         }
 
-        private void switchesStatusChangedHandler(Switch @switch, SwitchStatus newValue)
-        {
-            Label thisSwitchStateControl = switchAssociatedRowControls[@switch].State;
-            thisSwitchStateControl.Text = switchStatusStrings[newValue];
-            thisSwitchStateControl.ForeColor = switchStatusColors[newValue];
-        }
-
-        private void switchesPortsWithPendingChangeCountChangedHandler(Switch @switch, int newValue)
-        {
-            SwitchRowControls thisSwitchRowControls = switchAssociatedRowControls[@switch];
-            string newText = "no ports changed";
-            if (newValue == 0)
-            {
-                thisSwitchRowControls.PendingChanges.Text = newText;
-                thisSwitchRowControls.PendingChanges.ForeColor = COLOR_NO_PENDING_CHANGES;
-                thisSwitchRowControls.PersistChanges.Enabled = false;
-            }
-            else
-            {
-                newText = (newValue > 1) ? $"{newValue} ports changed" : "1 port changed";
-                thisSwitchRowControls.PendingChanges.Text = newText;
-                thisSwitchRowControls.PendingChanges.ForeColor = COLOR_HAS_PENDING_CHANGES;
-                thisSwitchRowControls.PersistChanges.Enabled = true;
-            }
-        }
-
-        private async void switchesPersistChangesButtonClickHandler(object sender, EventArgs e)
-        {
-            Button typedSender = sender as Button;
-            Switch @switch = typedSender?.Tag as Switch;
-            await @switch?.PersistChangesAsync();
-        }
-
-        private string vlanToStr(UserVlan vlan) => $"{vlan.ID} - {vlan.Name}";
-
-        public class PortRowControls
-        {
-            private float _originalHeight;
-            private RowStyle _rowStyle;
-            public RowStyle RowStyle
-            {
-                get => _rowStyle;
-                set
-                {
-                    _rowStyle = value;
-                    _originalHeight = value.Height;
-                }
-            }
-            public Label PortLabel { get; init; }
-            public Label Switch { get; init; }
-            public Label PortIndex { get; init; }
-            public Label CurrentVlan { get; init; }
-            public ComboBox SetVlanTo { get; init; }
-            public Button Set { get; init; }
-            public Label State { get; init; }
-            public bool Shown
-            {
-                set => RowStyle.Height = value ? _originalHeight : 0;
-            }
-        }
-
-        public class SwitchRowControls
-        {
-            public Label SwitchName { get; init; }
-            public Label PendingChanges { get; init; }
-            public Button PersistChanges { get; init; }
-            public Label State { get; init; }
-        }
-
-        private List<PortRowControls> portRowControls = new List<PortRowControls>();
-        private Dictionary<UserPort, PortRowControls> portAssociatedRowControls = new Dictionary<UserPort, PortRowControls>();
-
-        private List<SwitchRowControls> switchRowControls = new List<SwitchRowControls>();
-        private Dictionary<Switch, SwitchRowControls> switchAssociatedRowControls = new Dictionary<Switch, SwitchRowControls>();
-
-        private T cloneOrOriginal<T>(T originalControl, int row)
-            where T : Control
-            => (row == 0) ? originalControl : originalControl.Clone();
-
-        private PortRowControls getPortRowControls(int portRow)
-        {
-            RowStyle originalPortRowStyle = portTable.RowStyles[1];
-            RowStyle portRowStyle = (portRow > 0) ? new RowStyle(SizeType.Absolute, originalPortRowStyle.Height) : originalPortRowStyle;
-            return new PortRowControls()
-            {
-                RowStyle = portRowStyle,
-                PortLabel = cloneOrOriginal(rowPortPortLabel, portRow),
-                Switch = cloneOrOriginal(rowPortSwitch, portRow),
-                PortIndex = cloneOrOriginal(rowPortPortIndex, portRow),
-                CurrentVlan = cloneOrOriginal(rowPortCurrentVlan, portRow),
-                SetVlanTo = cloneOrOriginal(rowPortSetVlanTo, portRow),
-                Set = cloneOrOriginal(rowPortSet, portRow),
-                State = cloneOrOriginal(rowPortState, portRow)
-            };
-        }
-
-        private SwitchRowControls getSwitchRowControls(int switchRow)
-        {
-            return new SwitchRowControls()
-            {
-                SwitchName = cloneOrOriginal(rowSwitchSwitchName, switchRow),
-                PendingChanges = cloneOrOriginal(rowSwitchPendingChanges, switchRow),
-                PersistChanges = cloneOrOriginal(rowSwitchPersistChanges, switchRow),
-                State = cloneOrOriginal(rowSwitchState, switchRow),
-            };
-        }
-
-        private const string CURRENT_VLAN_UNKNOWN = "unknown";
-        private Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
-        private Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
-
-        private Dictionary<PortStatus, string> portStatusStrings = new Dictionary<PortStatus, string>()
-        {
-            { PortStatus.Unknown, "unknown" },
-            { PortStatus.VlanRead, "VLAN setting loaded" },
-            { PortStatus.SettingVlan, "changing VLAN setting..." },
-            { PortStatus.VlanSetNotPersisted, "VLAN set (not permanent)" },
-            { PortStatus.VlanSetFailed, "changing VLAN failed!" },
-            { PortStatus.VlanSetPersisted, "VLAN set (permanent)" }
-        };
-
-        private Dictionary<PortStatus, Color> portStatusColors = new Dictionary<PortStatus, Color>()
-        {
-            { PortStatus.Unknown, Color.Black },
-            { PortStatus.VlanRead, Color.Black },
-            { PortStatus.SettingVlan, Color.DarkGreen },
-            { PortStatus.VlanSetNotPersisted, Color.DarkGreen },
-            { PortStatus.VlanSetFailed, Color.Red },
-            { PortStatus.VlanSetPersisted, Color.DarkGreen }
-        };
-
-        private Dictionary<SwitchStatus, string> switchStatusStrings = new Dictionary<SwitchStatus, string>()
-        {
-            { SwitchStatus.NotConnected, "not connected" },
-            { SwitchStatus.Connecting, "connecting..." },
-            { SwitchStatus.CantConnect, "couldn't connect!" },
-            { SwitchStatus.Connected, "connected" },
-            { SwitchStatus.NoAccessMode, "no access method defined!" },
-            { SwitchStatus.VlansRead, "VLAN settings loaded" },
-            { SwitchStatus.PortVlanChanged, "VLAN setting of a port changed" },
-            { SwitchStatus.PortVlanChangeError, "VLAN setting of a port failed!" },
-            { SwitchStatus.ConfigSaved, "configuration saved as startup" },
-            { SwitchStatus.ConfigSaveError, "saving configuration as startup failed!" }
-        };
-
-        private Dictionary<SwitchStatus, Color> switchStatusColors = new Dictionary<SwitchStatus, Color>()
-        {
-            { SwitchStatus.NotConnected, Color.Black },
-            { SwitchStatus.Connecting, Color.Black },
-            { SwitchStatus.CantConnect, Color.Red },
-            { SwitchStatus.Connected, Color.DarkGreen },
-            { SwitchStatus.NoAccessMode, Color.Red },
-            { SwitchStatus.VlansRead, Color.DarkGreen },
-            { SwitchStatus.PortVlanChanged, Color.DarkGreen },
-            { SwitchStatus.PortVlanChangeError, Color.Red },
-            { SwitchStatus.ConfigSaved, Color.DarkGreen },
-            { SwitchStatus.ConfigSaveError, Color.Red }
-        };
-
-        private void portPageButtonClick(object sender, EventArgs e)
-        {
-            UserPortPage portPage = ((Button)sender).Tag as UserPortPage;
-            showPortPage(portPage);
-        }
+        private void portPageButtonClick(object sender, EventArgs e) => showPortPage(((Button)sender).Tag as UserPortPage);
 
         private void showPortPage(UserPortPage portPage)
         {
-            portTable.SuspendLayout();
-            foreach (Control ctrl in portPageButtonPanel.Controls)
+            foreach (Control ctrl in portPageButtonContainer.Controls)
             {
                 if (ctrl is Button btn)
                 {
@@ -487,10 +158,10 @@ namespace easyvlans.GUI
                     btn.ForeColor = selected ? Color.White : SystemColors.ControlText;
                 }
             }
-            foreach (UserPort port in config.Ports)
-                portAssociatedRowControls[port].Shown = ((port.Page == null) || (port.Page == portPage));
-            portTable.ResumeLayout(true);
+            IEnumerable<UserPort> shownPorts = config.Ports.Where(p => ((p.Page == null) || (p.Page == portPage)));
+            PortRowControls.Bind(shownPorts);
         }
 
     }
+
 }
