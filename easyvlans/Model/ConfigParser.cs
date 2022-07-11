@@ -30,6 +30,9 @@ namespace easyvlans.Model
         private const string TAG_VLAN = "vlan";
         private const string ATTRIBUTE_VLAN_ID = "id";
         private const string ATTRIBUTE_VLAN_NAME = "name";
+        private const string TAG_VLANSET = "vlanset";
+        private const string ATTRIBUTE_VLANSET_ID = "id";
+        private const string ATTRIBUTE_VLANSET_VLANS = "vlans";
 
         private const string TAG_PORTS = "ports";
         private const string TAG_PORT = "port";
@@ -57,6 +60,7 @@ namespace easyvlans.Model
                         throw new ConfigParsingException("Root tag of configuration XML is invalid!");
                     Dictionary<string, Switch> switches = null;
                     Dictionary<int, UserVlan> vlans = null;
+                    Dictionary<string, List<UserVlan>> vlansets = null;
                     List<UserPort> ports = null;
                     List<UserPortPage> pages = null;
                     foreach (XmlNode node in root.ChildNodes)
@@ -67,10 +71,10 @@ namespace easyvlans.Model
                                 switches = loadSwitches(node);
                                 break;
                             case TAG_VLANS:
-                                vlans = loadVlans(node);
+                                (vlans, vlansets) = loadVlansAndVlanssets(node);
                                 break;
                             case TAG_PORTS:
-                                (ports, pages) = loadPortsAndPages(node, switches, vlans);
+                                (ports, pages) = loadPortsAndPages(node, switches, vlans, vlansets);
                                 break;
                         }
                     }
@@ -135,30 +139,51 @@ namespace easyvlans.Model
 
         private readonly Regex REGEXP_IP_ADDRESS = new Regex(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        private Dictionary<int, UserVlan> loadVlans(XmlNode parentNode)
+        private (Dictionary<int, UserVlan>, Dictionary<string, List<UserVlan>>) loadVlansAndVlanssets(XmlNode parentNode)
         {
-            Dictionary<int, UserVlan> vlans = new Dictionary<int, UserVlan>();
-            int tagIndex = 1;
+            Dictionary<int, UserVlan> vlans = new();
+            Dictionary<string, List<UserVlan>> vlansets = new();
+            int tagIndexVlan = 1, tagIndexVlanset = 1;
             foreach (XmlNode node in parentNode.ChildNodes)
             {
-                if (node.LocalName != TAG_VLAN)
-                    continue;
-                string vlanIdStr = node.Attributes[ATTRIBUTE_VLAN_ID]?.Value;
-                if (string.IsNullOrWhiteSpace(vlanIdStr))
-                    throw new ConfigParsingException($"ID of VLAN (XML attribute: {ATTRIBUTE_VLAN_ID}) can't be empty at {tagIndex}. <{TAG_VLAN}> tag!");
-                if (!int.TryParse(vlanIdStr, out int vlanId) || (vlanId < 1) || (vlanId > 4095))
-                    throw new ConfigParsingException($"ID of VLAN (XML attribute: {ATTRIBUTE_VLAN_ID}) must be a valid integer between 1 and 4095 at {tagIndex}. <{TAG_VLAN}> tag!");
-                string vlanName = node.Attributes[ATTRIBUTE_VLAN_NAME]?.Value;
-                if (string.IsNullOrWhiteSpace(vlanName))
-                    throw new ConfigParsingException($"Name of VLAN (XML attribute: {ATTRIBUTE_VLAN_NAME}) can't be empty at {tagIndex}. <{TAG_VLAN}> tag!");
-                UserVlan vlan = new UserVlan(vlanId, vlanName);
-                vlans.Add(vlanId, vlan);
-                tagIndex++;
+                if (node.LocalName == TAG_VLAN)
+                {
+                    UserVlan vlan = loadVlan(node, tagIndexVlan++);
+                    vlans.Add(vlan.ID, vlan);
+                }
+                else if (node.LocalName == TAG_VLANSET)
+                {
+                    (string vlansetId, List<UserVlan> vlansetVlans) = loadVlanset(node, tagIndexVlanset++, vlans);
+                    vlansets.Add(vlansetId, vlansetVlans);
+                }
             }
-            return vlans;
+            return (vlans, vlansets);
         }
 
-        private (List<UserPort>, List<UserPortPage>) loadPortsAndPages(XmlNode parentNode, Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans)
+        private UserVlan loadVlan(XmlNode node, int tagIndex)
+        {
+            string vlanIdStr = node.Attributes[ATTRIBUTE_VLAN_ID]?.Value;
+            if (string.IsNullOrWhiteSpace(vlanIdStr))
+                throw new ConfigParsingException($"ID of VLAN (XML attribute: {ATTRIBUTE_VLAN_ID}) can't be empty at {tagIndex}. <{TAG_VLAN}> tag!");
+            if (!int.TryParse(vlanIdStr, out int vlanId) || (vlanId < 1) || (vlanId > 4095))
+                throw new ConfigParsingException($"ID of VLAN (XML attribute: {ATTRIBUTE_VLAN_ID}) must be a valid integer between 1 and 4095 at {tagIndex}. <{TAG_VLAN}> tag!");
+            string vlanName = node.Attributes[ATTRIBUTE_VLAN_NAME]?.Value;
+            if (string.IsNullOrWhiteSpace(vlanName))
+                throw new ConfigParsingException($"Name of VLAN (XML attribute: {ATTRIBUTE_VLAN_NAME}) can't be empty at {tagIndex}. <{TAG_VLAN}> tag!");
+            return new UserVlan(vlanId, vlanName);
+        }
+
+        private (string, List<UserVlan>) loadVlanset(XmlNode node, int tagIndex, Dictionary<int, UserVlan> vlans)
+        {
+            string vlansetId = node.Attributes[ATTRIBUTE_VLANSET_ID]?.Value;
+            if (string.IsNullOrWhiteSpace(vlansetId))
+                throw new ConfigParsingException($"ID of VLAN set (XML attribute: {ATTRIBUTE_VLANSET_ID}) can't be empty at {tagIndex}. <{TAG_VLANSET}> tag!");
+            string vlansetFilterStr = node.Attributes[ATTRIBUTE_VLANSET_VLANS]?.Value;
+            List<UserVlan> vlansetVlans = filterVlans(vlansetFilterStr, vlans, null, "VLAN set", tagIndex, TAG_VLANSET);
+            return (vlansetId, vlansetVlans);
+        }
+
+        private (List<UserPort>, List<UserPortPage>) loadPortsAndPages(XmlNode parentNode, Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans, Dictionary<string, List<UserVlan>> vlansets)
         {
             List<UserPort> ports = new();
             List<UserPortPage> portPages = new();
@@ -167,7 +192,7 @@ namespace easyvlans.Model
             {
                 if (node.LocalName == TAG_PORT)
                 {
-                    ports.Add(loadPort(node, tagIndexPort++, null, switches, vlans));
+                    ports.Add(loadPort(node, tagIndexPort++, null, switches, vlans, vlansets));
                 }
                 else if (node.LocalName == TAG_PAGE)
                 {
@@ -175,13 +200,13 @@ namespace easyvlans.Model
                     portPages.Add(portPage);
                     foreach (XmlNode childNode in node.ChildNodes)
                         if (childNode.LocalName == TAG_PORT)
-                            ports.Add(loadPort(childNode, tagIndexPort++, portPage, switches, vlans));
+                            ports.Add(loadPort(childNode, tagIndexPort++, portPage, switches, vlans, vlansets));
                 }
             }
             return (ports, portPages);
         }
 
-        private UserPort loadPort(XmlNode node, int tagIndex, UserPortPage page, Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans)
+        private UserPort loadPort(XmlNode node, int tagIndex, UserPortPage page, Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans, Dictionary<string, List<UserVlan>> vlansets)
         {
             string portLabel = node.Attributes[ATTRIBUTE_PORT_LABEL]?.Value;
             if (string.IsNullOrWhiteSpace(portLabel))
@@ -195,33 +220,62 @@ namespace easyvlans.Model
             if (!int.TryParse(portIndexStr, out int portIndex))
                 throw new ConfigParsingException($"Index of port (XML attribute: {ATTRIBUTE_PORT_INDEX}) is invalid at {tagIndex}. <{TAG_PORT}> tag!");
             string portVlans = node.Attributes[ATTRIBUTE_PORT_VLANS]?.Value;
-            List<UserVlan> vlansForPort = new List<UserVlan>();
-            string[] vlanIds = portVlans.Split(',');
-            foreach (string _vlanId in vlanIds)
+            List<UserVlan> vlansForPort = filterVlans(portVlans, vlans, vlansets, "port", tagIndex, TAG_PORT);
+            return new UserPort(portLabel, @switch, portIndex, vlansForPort, page);
+        }
+
+        private List<UserVlan> filterVlans(string filterString, Dictionary<int, UserVlan> vlans, Dictionary<string, List<UserVlan>> vlansets, string filteringForWhat, int filteringForWhatTagIndex, string filteringForWhatTagString)
+        {
+            List<UserVlan> filteredVlans = new();
+            string[] keys = filterString.Split(',');
+            foreach (string _key in keys)
             {
-                string vlanId = _vlanId;
-                bool exclude = vlanId.StartsWith('!');
+                string key = _key;
+                bool exclude = key.StartsWith('!');
                 if (exclude)
-                    vlanId = vlanId.Substring(1);
-                if (vlanId == "all")
+                    key = key.Substring(1);
+                bool set = false;
+                if (vlansets != null)
+                {
+                    set = key.StartsWith('#');
+                    if (set)
+                        key = key.Substring(1);
+                }
+                if (set && (vlansets == null))
+                    throw new ConfigParsingException($"Not allowed to use VLAN sets in the filter string for {filteringForWhat} at {filteringForWhatTagIndex}. <{filteringForWhatTagString}> tag!");
+                if (set)
+                {
+                    if (vlansets.TryGetValue(key, out List<UserVlan> vlanset))
+                    {
+                        if (exclude)
+                            filteredVlans.RemoveAll(v => vlanset.Contains(v));
+                        else
+                            filteredVlans.AddRange(vlanset);
+                    }
+                    else
+                    {
+                        throw new ConfigParsingException($"Couldn't find VLAN set with ID \"{key}\" for {filteringForWhat} at {filteringForWhatTagIndex}. <{filteringForWhatTagString}> tag!");
+                    }
+                }
+                else if (key == "all")
                 {
                     if (exclude)
-                        vlansForPort.RemoveAll(v => vlans.Values.Contains(v));
+                        filteredVlans.RemoveAll(v => vlans.Values.Contains(v));
                     else
-                        vlansForPort.AddRange(vlans.Values);
+                        filteredVlans.AddRange(vlans.Values);
                 }
                 else
                 {
-                    int.TryParse(vlanId, out int vlanIdInt);
+                    int.TryParse(key, out int vlanIdInt);
                     if (!vlans.TryGetValue(vlanIdInt, out UserVlan vlan))
-                        throw new ConfigParsingException($"Couldn't find VLAN with ID \"{vlanId}\" for port at {tagIndex}. <{TAG_PORT}> tag!");
+                        throw new ConfigParsingException($"Couldn't find VLAN with ID \"{key}\" for {filteringForWhat} at {filteringForWhatTagIndex}. <{filteringForWhatTagString}> tag!");
                     if (exclude)
-                        vlansForPort.RemoveAll(v => (v == vlan));
+                        filteredVlans.RemoveAll(v => (v == vlan));
                     else
-                        vlansForPort.Add(vlan);
+                        filteredVlans.Add(vlan);
                 }
             }
-            return new UserPort(portLabel, @switch, portIndex, vlansForPort.Distinct().OrderBy(v => v.ID), page);
+            return filteredVlans.Distinct().OrderBy(v => v.ID).ToList();
         }
 
         private UserPortPage loadPortPage(XmlNode node, int tagIndex)
