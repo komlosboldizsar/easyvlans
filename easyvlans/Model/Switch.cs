@@ -71,10 +71,20 @@ namespace easyvlans.Model
 
         private void logMethodFoundOrNot(string methodPurpose, string methodName, IMethod method)
         {
-            if (method == null)
-                LogDispatcher.W($"No method found with name [{methodName}] for {methodPurpose} of switch [{Label}].");
+            if (methodName == null)
+            {
+                if (method == null)
+                    LogDispatcher.W($"No default method found for {methodPurpose} of switch [{Label}].");
+                else
+                    LogDispatcher.V($"Using default method for {methodPurpose} of switch [{Label}].");
+            }
             else
-                LogDispatcher.V($"Found method with name [{methodName}] for {methodPurpose} of switch [{Label}].");
+            {
+                if (method == null)
+                    LogDispatcher.W($"No method found with name [{methodName}] for {methodPurpose} of switch [{Label}].");
+                else
+                    LogDispatcher.V($"Found method with name [{methodName}] for {methodPurpose} of switch [{Label}].");
+            }
         }
 
         internal void AssignConfig(Config config) => Config = config;
