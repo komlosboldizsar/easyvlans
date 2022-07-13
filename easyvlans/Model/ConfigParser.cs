@@ -80,7 +80,7 @@ namespace easyvlans.Model
                     }
                     if (switches == null)
                         throw new ConfigParsingException("Couldn't load switches from configuration XML!");
-                    if (switches == null)
+                    if (vlans == null)
                         throw new ConfigParsingException("Couldn't load VLANs from configuration XML!");
                     if (ports == null)
                         throw new ConfigParsingException("Couldn't load ports from configuration XML!");
