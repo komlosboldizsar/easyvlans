@@ -12,11 +12,11 @@ namespace easyvlans.GUI.Helpers.DropDowns
     {
 
         private IEnumerable<T> elements;
-        private ComboBoxAdapter<T>.ToStringFunctionDelegate toStringFunction;
+        private Func<T, string> toStringFunction;
         private bool containsNull;
         private string nullLabel;
 
-        public ComboBoxAdapterFactory(IEnumerable<T> elements, ComboBoxAdapter<T>.ToStringFunctionDelegate toStringFunction, bool containsNull = false, string nullLabel = "")
+        public ComboBoxAdapterFactory(IEnumerable<T> elements, Func<T, string> toStringFunction, bool containsNull = false, string nullLabel = "")
         {
             this.elements = elements;
             this.toStringFunction = toStringFunction;
@@ -24,11 +24,8 @@ namespace easyvlans.GUI.Helpers.DropDowns
             this.nullLabel = nullLabel;
         }
 
-        public ComboBoxAdapter<T> GetOneT()
-            => new ComboBoxAdapter<T>(elements, toStringFunction, containsNull, nullLabel);
-
-        public IComboBoxAdapter GetOne()
-            => GetOneT();
+        public ComboBoxAdapter<T> GetOne() => new ComboBoxAdapter<T>(elements, toStringFunction, containsNull, nullLabel);
+        IComboBoxAdapter IComboBoxAdapterFactory.GetOne() => GetOne();
 
     }
 

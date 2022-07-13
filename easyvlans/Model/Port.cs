@@ -10,86 +10,54 @@ namespace easyvlans.Model
     public class Port
     {
 
-        public string Label { get; init; }
-        public Switch Switch { get; init; }
-        public int Index { get; init; }
-        public List<Vlan> Vlans { get; } = new List<Vlan>();
-        public PortPage Page { get; init; }
+        public readonly string Label;
+        public readonly Switch Switch;
+        public readonly int Index;
+        public readonly List<Vlan> Vlans = new();
+        public readonly PortPage Page;
 
-        public delegate void CurrentVlanChangedDelegate(Port port, Vlan newValue);
-        public event CurrentVlanChangedDelegate CurrentVlanChanged;
+        public event PropertyChangedDelegate<Port, Vlan> CurrentVlanChanged;
         private Vlan _currentVlan;
         public Vlan CurrentVlan
         {
             get => _currentVlan;
-            set
-            {
-                if (value == _currentVlan)
-                    return;
-                _currentVlan = value;
-                CurrentVlanChanged?.Invoke(this, value);
-            }
+            set => this.setProperty(ref _currentVlan, value, CurrentVlanChanged);
         }
 
-        public delegate void HasComplexMembershipChangedDelegate(Port port, bool newValue);
-        public event HasComplexMembershipChangedDelegate HasComplexMembershipChanged;
+        public event PropertyChangedDelegate<Port, bool> HasComplexMembershipChanged;
         private bool _hasComplexMembership;
         public bool HasComplexMembership
         {
             get => _hasComplexMembership;
-            internal set
-            {
-                if (value == _hasComplexMembership)
-                    return;
-                _hasComplexMembership = value;
-                HasComplexMembershipChanged?.Invoke(this, value);
-            }
+            internal set => this.setProperty(ref _hasComplexMembership, value, HasComplexMembershipChanged);
         }
 
-        public delegate void PersistConfigStatusChangedDelegate(Port port, Status newValue);
-        public event PersistConfigStatusChangedDelegate SetVlanMembershipStatusChanged;
+        public event PropertyChangedDelegate<Port, Status> SetVlanMembershipStatusChanged;
         private Status _setVlanMembershipStatus = Status.Empty;
         public Status SetVlanMembershipStatus
         {
             get => _setVlanMembershipStatus;
             private set
             {
-                if (value == _setVlanMembershipStatus)
-                    return;
-                _setVlanMembershipStatus = value;
-                SetVlanMembershipStatusChanged?.Invoke(this, value);
-                SetVlanMembershipStatusUpdateTime = DateTime.Now;
+                if (this.setProperty(ref _setVlanMembershipStatus, value, SetVlanMembershipStatusChanged))
+                    SetVlanMembershipStatusUpdateTime = DateTime.Now;
             }
         }
 
-        public delegate void SetVlanMembershipStatusUpdateTimeChangedDelegate(Port port, DateTime newValue);
-        public event SetVlanMembershipStatusUpdateTimeChangedDelegate SetVlanMembershipStatusUpdateTimeChanged;
+        public event PropertyChangedDelegate<Port, DateTime> SetVlanMembershipStatusUpdateTimeChanged;
         private DateTime _setVlanMembershipStatusUpdateTime = DateTime.Now;
         public DateTime SetVlanMembershipStatusUpdateTime
         {
             get => _setVlanMembershipStatusUpdateTime;
-            private set
-            {
-                if (value == _setVlanMembershipStatusUpdateTime)
-                    return;
-                _setVlanMembershipStatusUpdateTime = value;
-                SetVlanMembershipStatusUpdateTimeChanged?.Invoke(this, value);
-            }
+            private set => this.setProperty(ref _setVlanMembershipStatusUpdateTime, value, SetVlanMembershipStatusUpdateTimeChanged);
         }
 
-        public delegate void PendingChangesChangedDelegate(Port port, bool newValue);
-        public event PendingChangesChangedDelegate PendingChangesChanged;
+        public event PropertyChangedDelegate<Port, bool> PendingChangesChanged;
         private bool _pendingChanges;
         public bool PendingChanges
         {
             get => _pendingChanges;
-            internal set
-            {
-                if (value == _pendingChanges)
-                    return;
-                _pendingChanges = value;
-                PendingChangesChanged?.Invoke(this, value);
-            }
+            internal set => this.setProperty(ref _pendingChanges, value, PendingChangesChanged);
         }
 
         public Port(string label, Switch @switch, int index, IEnumerable<Vlan> vlans, PortPage page)

@@ -14,8 +14,8 @@ namespace easyvlans.Helpers
         {
             string variableId = variable.Id.ToString();
             int lastDot = variableId.LastIndexOf('.');
-            string firstPart = variableId.Substring(0, lastDot);
-            string lastPart = variableId.Substring(lastDot + 1);
+            string firstPart = variableId[..lastDot];
+            string lastPart = variableId[(lastDot + 1)..];
             int.TryParse(lastPart, out int lastPartInt);
             return new IdParts(firstPart, lastPartInt);
         }

@@ -6,14 +6,5 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    public class PortPage
-    {
-        public string Title { get; init; }
-        public bool IsDefault { get; init; }
-        public PortPage(string title, bool isDefault)
-        {
-            Title = title;
-            IsDefault = isDefault;
-        }
-    }
+    public record PortPage(string Title, bool IsDefault);
 }

@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Logger
 {
-
     public class FileLogger
     {
 
-        private const string LOG_FOLDER_PATH = ".\\log";
-        private string filePath = null;
+        private const string LOG_FOLDER_PATH = @".\log";
+        private readonly string filePath = null;
 
         public FileLogger()
         {
@@ -21,39 +20,27 @@ namespace easyvlans.Logger
             string directoryPath = Path.GetDirectoryName(filePath);
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
-            LogDispatcher.NewLogMessage += NewLogMessageHandler;
+            LogDispatcher.NewLogMessage += newLogMessageHandler;
         }
 
-        private void NewLogMessageHandler(DateTime timestamp, LogMessageSeverity severity, string message)
-        {
-            string textToAdd = $"[{timestamp.ToString("HH:mm:ss")}][{convertTypeToString(severity)}] {message}";
-            writeToFile(textToAdd);
-        }
+        private void newLogMessageHandler(DateTime timestamp, LogMessageSeverity severity, string message)
+            => writeToFile($"[{timestamp:HH:mm:ss}][{convertTypeToString(severity)}] {message}");
 
         private void writeToFile(string str)
         {
-            using (StreamWriter sw = new StreamWriter(filePath, true))
-            {
-                sw.WriteLine(str);
-            }
+            using StreamWriter sw = new(filePath, true);
+            sw.WriteLine(str);
         }
 
-        private string convertTypeToString(LogMessageSeverity severity)
-        {
-            switch (severity)
+        private static string convertTypeToString(LogMessageSeverity severity)
+            => severity switch
             {
-                case LogMessageSeverity.Verbose:
-                    return "VERBOSE";
-                case LogMessageSeverity.Info:
-                    return "INFO";
-                case LogMessageSeverity.Warning:
-                    return "WARN";
-                case LogMessageSeverity.Error:
-                    return "ERROR";
-            }
-            return "?";
-        }
+                LogMessageSeverity.Verbose => "VERBOSE",
+                LogMessageSeverity.Info => "INFO",
+                LogMessageSeverity.Warning => "WARN",
+                LogMessageSeverity.Error => "ERROR",
+                _ => "?",
+            };
 
     }
-
 }

@@ -15,12 +15,11 @@ using System.Windows.Forms;
 
 namespace easyvlans.GUI
 {
-
     public partial class MainForm
     {
-
         private class SwitchRowControls : RowControls<SwitchRowControls, Switch>
         {
+
             public Label _switchNameLabel;
             public Label _pendingChangesLabel;
             public Button _persistChangesButton;
@@ -34,7 +33,6 @@ namespace easyvlans.GUI
                 _persistChangesButton = cloneOrOriginal(mainForm.rowSwitchPersistChanges, itemIndex);
                 _readVlanConfigStatusLabel = cloneOrOriginal(mainForm.rowSwitchStatusRead, itemIndex);
                 _persistConfigStatusLabel = cloneOrOriginal(mainForm.rowSwitchStatusPersist, itemIndex);
-                //
                 if (itemIndex > 0)
                 {
                     int tableRowIndex = itemIndex + HEADER_ROWS;
@@ -46,13 +44,15 @@ namespace easyvlans.GUI
                     table.Controls.Add(_readVlanConfigStatusLabel, 3, tableRowIndex);
                     table.Controls.Add(_persistConfigStatusLabel, 4, tableRowIndex);
                 }
-                //
                 _persistChangesButton.Click += persistChangesButtonClickHandler;
             }
 
             protected override void debindItem()
             {
                 _item.ReadVlanConfigStatusChanged -= readVlanConfigStatusChangedHandler;
+                _item.ReadVlanConfigStatusUpdateTimeChanged -= readVlanConfigStatusUpdateTimeChangedHandler;
+                _item.PersistConfigStatusChanged -= persistConfigStatusChangedHandler;
+                _item.PersistVlanConfigStatusUpdateTimeChanged -= persistConfigStatusUpdateTimeChangedHandler;
                 _item.PortsWithPendingChangeCountChanged -= portsWithPendingChangeCountChangedHandler;
             }
 
@@ -63,6 +63,7 @@ namespace easyvlans.GUI
                 _item.PersistConfigStatusChanged += persistConfigStatusChangedHandler;
                 _item.PersistVlanConfigStatusUpdateTimeChanged += persistConfigStatusUpdateTimeChangedHandler;
                 _item.PortsWithPendingChangeCountChanged += portsWithPendingChangeCountChangedHandler;
+                //
                 _switchNameLabel.Text = _item.Label;
                 displayPortsWithPendingChangeCount();
                 displayReadVlanConfigStatus();
@@ -95,17 +96,13 @@ namespace easyvlans.GUI
             private void readVlanConfigStatusUpdateTimeChangedHandler(Switch @switch, DateTime newValue) => displayReadVlanConfigStatus();
             private void persistConfigStatusChangedHandler(Switch @switch, Status newValue) => displayPersistConfigStatus();
             private void persistConfigStatusUpdateTimeChangedHandler(Switch @switch, DateTime newValue) => displayPersistConfigStatus();
-
             private void portsWithPendingChangeCountChangedHandler(Switch @switch, int newValue) => displayPortsWithPendingChangeCount();
 
-            private async void persistChangesButtonClickHandler(object sender, EventArgs e)
-                => await _item?.PersistChangesAsync();
+            private async void persistChangesButtonClickHandler(object sender, EventArgs e) => await _item?.PersistChangesAsync();
 
-            private Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
-            private Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
+            private static readonly Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
+            private static readonly Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
 
         }
-
     }
-
 }

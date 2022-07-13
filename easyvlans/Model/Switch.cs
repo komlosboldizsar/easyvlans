@@ -23,85 +23,56 @@ namespace easyvlans.Model
         private readonly IPersistChangesMethod persistChangesMethod;
 
         public readonly List<Port> Ports = new();
-        private List<Port> portsWithPendingChange = new();
+        private readonly List<Port> portsWithPendingChange = new();
 
-        public Config Config { get; private set; }
+        public Config Config { get; set; }
 
-        public delegate void PortsWithPendingChangeCountChangedDelegate(Switch @switch, int newValue);
-        public event PortsWithPendingChangeCountChangedDelegate PortsWithPendingChangeCountChanged;
+        public event PropertyChangedDelegate<Switch, int> PortsWithPendingChangeCountChanged;
         private int _portsWithPendingChangeCount;
         public int PortsWithPendingChangeCount
         {
             get => _portsWithPendingChangeCount;
-            private set
-            {
-                if (value == _portsWithPendingChangeCount)
-                    return;
-                _portsWithPendingChangeCount = value;
-                PortsWithPendingChangeCountChanged?.Invoke(this, value);
-            }
+            private set => this.setProperty(ref _portsWithPendingChangeCount, value, PortsWithPendingChangeCountChanged);
         }
 
-        public delegate void ReadVlanConfigStatusChangedDelegate(Switch @switch, Status newValue);
-        public event ReadVlanConfigStatusChangedDelegate ReadVlanConfigStatusChanged;
+        public event PropertyChangedDelegate<Switch, Status> ReadVlanConfigStatusChanged;
         private Status _readVlanConfigStatus = Status.Unknown;
         public Status ReadVlanConfigStatus
         {
             get => _readVlanConfigStatus;
             private set
             {
-                if (value == _readVlanConfigStatus)
-                    return;
-                _readVlanConfigStatus = value;
-                ReadVlanConfigStatusChanged?.Invoke(this, value);
-                ReadVlanConfigStatusUpdateTime = DateTime.Now;
+                if (this.setProperty(ref _readVlanConfigStatus, value, ReadVlanConfigStatusChanged))
+                    ReadVlanConfigStatusUpdateTime = DateTime.Now;
             }
         }
 
-        public delegate void ReadVlanConfigStatusUpdateTimeChangedDelegate(Switch @switch, DateTime newValue);
-        public event ReadVlanConfigStatusUpdateTimeChangedDelegate ReadVlanConfigStatusUpdateTimeChanged;
+        public event PropertyChangedDelegate<Switch, DateTime> ReadVlanConfigStatusUpdateTimeChanged;
         private DateTime _readVlanConfigStatusUpdateTime = DateTime.Now;
         public DateTime ReadVlanConfigStatusUpdateTime
         {
             get => _readVlanConfigStatusUpdateTime;
-            private set
-            {
-                if (value == _readVlanConfigStatusUpdateTime)
-                    return;
-                _readVlanConfigStatusUpdateTime = value;
-                ReadVlanConfigStatusUpdateTimeChanged?.Invoke(this, value);
-            }
+            private set => this.setProperty(ref _readVlanConfigStatusUpdateTime, value, ReadVlanConfigStatusUpdateTimeChanged);
         }
 
-        public delegate void PersistConfigStatusChangedDelegate(Switch @switch, Status newValue);
-        public event PersistConfigStatusChangedDelegate PersistConfigStatusChanged;
+        public event PropertyChangedDelegate<Switch, Status> PersistConfigStatusChanged;
         private Status _persistConfigStatus = Status.Empty;
         public Status PersistVlanConfigStatus
         {
             get => _persistConfigStatus;
             private set
             {
-                if (value == _persistConfigStatus)
-                    return;
-                _persistConfigStatus = value;
-                PersistConfigStatusChanged?.Invoke(this, value);
-                PersistVlanConfigStatusUpdateTime = DateTime.Now;
+                if (this.setProperty(ref _persistConfigStatus, value, PersistConfigStatusChanged))
+                    PersistVlanConfigStatusUpdateTime = DateTime.Now;
             }
         }
 
-        public delegate void PersistVlanConfigStatusUpdateTimeChangedDelegate(Switch @switch, DateTime newValue);
-        public event PersistVlanConfigStatusUpdateTimeChangedDelegate PersistVlanConfigStatusUpdateTimeChanged;
+        public event PropertyChangedDelegate<Switch, DateTime> PersistVlanConfigStatusUpdateTimeChanged;
         private DateTime _persistVlanConfigStatusUpdateTime = DateTime.Now;
         public DateTime PersistVlanConfigStatusUpdateTime
         {
             get => _persistVlanConfigStatusUpdateTime;
-            private set
-            {
-                if (value == _persistVlanConfigStatusUpdateTime)
-                    return;
-                _persistVlanConfigStatusUpdateTime = value;
-                PersistVlanConfigStatusUpdateTimeChanged?.Invoke(this, value);
-            }
+            private set => this.setProperty(ref _persistVlanConfigStatusUpdateTime, value, PersistVlanConfigStatusUpdateTimeChanged);
         }
 
         public Switch(string id, string label, string ip, int port, string communityString, string accessVlanMembershipMethodName, string persistChangesMethodName)
@@ -134,8 +105,6 @@ namespace easyvlans.Model
             }
         }
 
-        internal void AssignConfig(Config config) => Config = config;
-
         internal void AssociatePort(Port port)
         {
             if ((port.Switch == this) && !Ports.Contains(port))
@@ -144,7 +113,7 @@ namespace easyvlans.Model
 
         public async Task<List<Variable>> SnmpBulkWalkAsync(string objectIdentifierStr)
         {
-            List<Variable> result = new List<Variable>();
+            List<Variable> result = new();
             await Messenger.BulkWalkAsync(VersionCode.V2, ipEndPoint, communityString, OctetString.Empty,
                 new ObjectIdentifier(objectIdentifierStr), result, 5, WalkMode.WithinSubtree, null, null);
             return result;
@@ -237,8 +206,7 @@ namespace easyvlans.Model
 
         private void notifyPortsChangesPersisted()
         {
-            foreach (Port userPort in portsWithPendingChange)
-                userPort.ChangesPersisted();
+            portsWithPendingChange.ForEach(up => up.ChangesPersisted());
             portsWithPendingChange.Clear();
             PortsWithPendingChangeCount = 0;
         }

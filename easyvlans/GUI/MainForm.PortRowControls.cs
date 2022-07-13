@@ -1,6 +1,7 @@
 ﻿using easyvlans.GUI;
 using easyvlans.GUI.Helpers;
 using easyvlans.GUI.Helpers.DropDowns;
+using easyvlans.Helpers;
 using easyvlans.Logger;
 using easyvlans.Model;
 using System;
@@ -15,7 +16,6 @@ using System.Windows.Forms;
 
 namespace easyvlans.GUI
 {
-
     public partial class MainForm
     {
         private class PortRowControls : RowControls<PortRowControls, Port>
@@ -40,7 +40,6 @@ namespace easyvlans.GUI
                 _setVlanToComboBox = cloneOrOriginal(mainForm.rowPortSetVlanTo, itemIndex);
                 _setButton = cloneOrOriginal(mainForm.rowPortSet, itemIndex);
                 _setVlanStatusLabel = cloneOrOriginal(mainForm.rowPostStatusSetVlan, itemIndex);
-                //
                 if (itemIndex > 0)
                 {
                     int tableRowIndex = itemIndex + HEADER_ROWS;
@@ -54,7 +53,6 @@ namespace easyvlans.GUI
                     table.Controls.Add(_setButton, 5, tableRowIndex);
                     table.Controls.Add(_setVlanStatusLabel, 6, tableRowIndex);
                 }
-                //
                 _setVlanToComboBox.SelectedIndexChanged += setVlanToComboBoxSelectedIndexChangedHandler;
                 _setButton.Click += setButtonClickHandler;
             }
@@ -91,8 +89,8 @@ namespace easyvlans.GUI
 
             private void displayVlanMembership()
             {
-                string vlanText;
-                Color foreColor;
+                string vlanText = CURRENT_VLAN_UNKNOWN;
+                Color foreColor = Color.LightGray;
                 if (_item.CurrentVlan != null)
                 {
                     vlanText = _item.CurrentVlan.Label;
@@ -102,11 +100,6 @@ namespace easyvlans.GUI
                 {
                     vlanText = CURRENT_VLAN_COMPLEX;
                     foreColor = Color.LightBlue;
-                }
-                else
-                {
-                    vlanText = CURRENT_VLAN_UNKNOWN;
-                    foreColor = Color.LightGray;
                 }
                 _currentVlanLabel.Text = vlanText;
                 _currentVlanLabel.ForeColor = foreColor;
@@ -133,27 +126,19 @@ namespace easyvlans.GUI
                     setVlanToComboBoxSelections[_item] = _setVlanToComboBox.SelectedValue as Vlan;
             }
 
-            private async void setButtonClickHandler(object sender, EventArgs e)
-                => await _item?.SetVlanTo(_setVlanToComboBox.SelectedValue as Vlan);
+            private async void setButtonClickHandler(object sender, EventArgs e) => await _item?.SetVlanTo(_setVlanToComboBox.SelectedValue as Vlan);
 
             private static readonly Dictionary<Port, IComboBoxAdapter> setVlanToComboBoxAdaptersByPort = new();
 
             private static IComboBoxAdapter getSetVlanToComboBoxAdapterForPort(Port port)
-            {
-                if (!setVlanToComboBoxAdaptersByPort.TryGetValue(port, out IComboBoxAdapter adapter))
-                {
-                    adapter = new ComboBoxAdapter<Vlan>(port.Vlans, v => v.Label, true, string.Empty);
-                    setVlanToComboBoxAdaptersByPort.Add(port, adapter);
-                }
-                return adapter;
-            }
+                => setVlanToComboBoxAdaptersByPort.GetAnyway(port, p => new ComboBoxAdapter<Vlan>(port.Vlans, v => v.Label, true, string.Empty));
 
             private static readonly Dictionary<Port, Vlan> setVlanToComboBoxSelections = new();
 
             private const string CURRENT_VLAN_COMPLEX = "complex";
             private const string CURRENT_VLAN_UNKNOWN = "unknown";
-            private Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
-            private Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
+            private static readonly Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
+            private static readonly Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
 
         }
 

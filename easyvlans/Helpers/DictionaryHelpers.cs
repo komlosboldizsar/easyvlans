@@ -8,6 +8,7 @@ namespace easyvlans.Helpers
 {
     public static class DictionaryHelpers
     {
+
         public static TValue GetAnyway<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TKey, TValue> createDelegate)
         {
             if (!dictionary.TryGetValue(key, out TValue value))
@@ -17,5 +18,9 @@ namespace easyvlans.Helpers
             }
             return value;
         }
+
+        public static TValue GetAnyway<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key) where TValue : new()
+            => GetAnyway(dictionary, key, k => new TValue());
+
     }
 }

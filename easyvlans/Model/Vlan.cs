@@ -6,15 +6,8 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    public class Vlan
+    public record Vlan(int ID, string Name)
     {
-        public int ID { get; init; }
-        public string Name { get; init; }
-        public Vlan(int id, string name)
-        {
-            ID = id;
-            Name = name;
-        }
         public string Label => $"{ID} - {Name}";
     }
 }

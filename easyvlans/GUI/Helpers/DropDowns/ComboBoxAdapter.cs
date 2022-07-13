@@ -13,18 +13,17 @@ namespace easyvlans.GUI.Helpers.DropDowns
         where T : class
     {
 
-        private IEnumerable<T> boundCollection;
-        private List<ItemProxy> proxyList = new List<ItemProxy>();
+        private readonly IEnumerable<T> boundCollection;
+        private readonly List<ItemProxy> proxyList = new();
 
-        public delegate string ToStringFunctionDelegate(T item);
-        ToStringFunctionDelegate toStringFunction;
+        private readonly Func<T, string> toStringFunction;
 
-        public bool ContainsNull { get; private set; }
-        private string nullLabel;
+        public bool ContainsNull { get; private init; }
+        private readonly string nullLabel;
 
         public bool ContainsListCollection => false;
 
-        public ComboBoxAdapter(IEnumerable<T> elements, ToStringFunctionDelegate toStringFunction, bool containsNull = false, string nullLabel = "")
+        public ComboBoxAdapter(IEnumerable<T> elements, Func<T, string> toStringFunction, bool containsNull = false, string nullLabel = "")
         {
             this.boundCollection = elements; 
             this.toStringFunction = toStringFunction ?? (o => o.ToString());
@@ -45,23 +44,11 @@ namespace easyvlans.GUI.Helpers.DropDowns
                 proxyList.Add(new ItemProxy(item, toStringFunction(item)));
         }
 
-        public object Clone()
-            => new ComboBoxAdapter<T>(boundCollection, toStringFunction, ContainsNull, nullLabel);
+        public object Clone() => new ComboBoxAdapter<T>(boundCollection, toStringFunction, ContainsNull, nullLabel);
 
-        private class ItemProxy
+        internal record ItemProxy(T Value, string Label)
         {
-
-            public T Value { get; private set; }
-            public string Label { get; private set; }
-
-            public ItemProxy(T value, string label)
-            {
-                Value = value;
-                Label = label;
-            }
-
             public override string ToString() => Label;
-
         }
 
     }

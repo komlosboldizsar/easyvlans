@@ -20,7 +20,7 @@ namespace easyvlans.Model
             foreach (KeyValuePair<string, Switch> switchKVP in switches)
             {
                 Switches.Add(switchKVP.Key, switchKVP.Value);
-                switchKVP.Value.AssignConfig(this);
+                switchKVP.Value.Config = this;
             }
             foreach (KeyValuePair<int, Vlan> vlanKVP in vlans)
                 Vlans.Add(vlanKVP.Key, vlanKVP.Value);

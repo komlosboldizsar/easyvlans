@@ -25,10 +25,10 @@ namespace easyvlans.Model
             return methodFactory?.CreateInstance(@switch);
         }
 
-        private IMethodFactory<TMethodInterface> defaultMethodFactory = new MethodFactory<TMethodInterface, TDefaultMethod>();
+        private readonly IMethodFactory<TMethodInterface> defaultMethodFactory = new MethodFactory<TMethodInterface, TDefaultMethod>();
         public TMethodInterface GetDefaultMethodInstance(Switch @switch) => defaultMethodFactory.CreateInstance(@switch);
 
-        private Dictionary<string, IMethodFactory<TMethodInterface>> knownMethodFactoriesDictionary = new();
+        private readonly Dictionary<string, IMethodFactory<TMethodInterface>> knownMethodFactoriesDictionary = new();
 
         protected void registerMethod<TMethod>() where TMethod : TMethodInterface, new()
         {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    internal class AccessVlanMembershipQSwitchMibMethod : MethodBase, IAccessVlanMembershipMethod
+    internal sealed class AccessVlanMembershipQSwitchMibMethod : MethodBase, IAccessVlanMembershipMethod
     {
 
         public string Name => "qswitchmib";
@@ -25,8 +25,7 @@ namespace easyvlans.Model
         public async Task<Dictionary<int, SnmpVlan>> ReadSnmpVlansAsync()
         {
             Dictionary<int, SnmpVlan> snmpVlans = new();
-            List<Variable> portVlanStaticTable = await Switch.SnmpBulkWalkAsync(OID_DOT1Q_VLAN_STATIC_TABLE);
-            foreach (Variable portVlanStaticTableRow in portVlanStaticTable)
+            foreach (Variable portVlanStaticTableRow in await Switch.SnmpBulkWalkAsync(OID_DOT1Q_VLAN_STATIC_TABLE))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanStaticTableRow.GetIdParts();
                 SnmpVlan snmpVlan = snmpVlans.GetAnyway(idParts.RowId, id => new SnmpVlan(id));
@@ -57,8 +56,7 @@ namespace easyvlans.Model
         public async Task<Dictionary<int, SnmpPort>> ReadSnmpPortsAsync()
         {
             Dictionary<int, SnmpPort> snmpPorts = new();
-            List<Variable> portVlanTable = await Switch.SnmpBulkWalkAsync(OID_DOT1Q_PORT_VLAN_TABLE);
-            foreach (Variable portVlanTableRow in portVlanTable)
+            foreach (Variable portVlanTableRow in await Switch.SnmpBulkWalkAsync(OID_DOT1Q_PORT_VLAN_TABLE))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
                 SnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId, id => new SnmpPort(id));
@@ -99,9 +97,16 @@ namespace easyvlans.Model
                     }
                 }
                 if ((ownerVlans == 1) && (lastOwnerSnmpVlan.ID == snmpPort.PVID) && userPort.Vlans.Contains(lastOwnerSnmpVlan.UserVlan))
+                {
                     userPort.CurrentVlan = lastOwnerSnmpVlan.UserVlan;
+                    userPort.HasComplexMembership = false;
+                }
                 else
+                {
                     userPort.CurrentVlan = null;
+                    if ((ownerVlans > 1) || (lastOwnerSnmpVlan.ID != snmpPort.PVID))
+                        userPort.HasComplexMembership = true;
+                }
             }
         }
 
@@ -109,14 +114,15 @@ namespace easyvlans.Model
 
         public async Task<bool> SetPortToVlanAsync(Port port, Vlan vlan)
         {
-            List<Variable> variablesFirst = new(), variablesLast = new();
-            variablesFirst.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));
+            List<Variable> variablesLast = new(), variablesFirst = new() {
+                new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID))
+            };
             (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index);
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
             variablesFirst.AddRange(variablesLast);
             await Switch.SnmpSetAsync(variablesFirst);
-            LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Switch.Label}] to VLAN [{vlan.Name}] ready.");
+            LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Switch.Label}] to VLAN [{vlan.Label}] ready.");
             return true;
         }
 
@@ -125,7 +131,7 @@ namespace easyvlans.Model
             foreach (Variable oldRow in await Switch.SnmpBulkWalkAsync(tableObjectIdentifier))
             {
                 SnmpVariableHelpers.IdParts idParts = oldRow.GetIdParts();
-                bool valueToSet = idParts.RowId == targetVlanId;
+                bool valueToSet = (idParts.RowId == targetVlanId);
                 byte[] snmpDataBytes = oldRow.Data.ToBytes();
                 snmpDataBytes.SetBit(portByteIndex + 3, portBitIndex, valueToSet);
                 Variable newRow = new Variable(oldRow.Id, DataFactory.CreateSnmpData(snmpDataBytes));

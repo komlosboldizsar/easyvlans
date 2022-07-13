@@ -24,7 +24,7 @@ namespace easyvlans.GUI
             protected static MainForm mainForm;
             protected static TableLayoutPanel table;
             protected static float originalRowHeight;
-            private static List<TRowControls> rowControls = new();
+            private static readonly List<TRowControls> rowControls = new();
             protected const int HEADER_ROWS = 1;
 
             public static void Init(MainForm mainForm, TableLayoutPanel table)
@@ -36,7 +36,7 @@ namespace easyvlans.GUI
 
             public static void Create(int itemIndex)
             {
-                TRowControls rowControls = new TRowControls()
+                TRowControls rowControls = new()
                 {
                     _rowStyle = (itemIndex > 0) ? new RowStyle(SizeType.Absolute, originalRowHeight) : table.RowStyles[HEADER_ROWS]
                 };
@@ -57,7 +57,7 @@ namespace easyvlans.GUI
             public static void Bind(IEnumerable<TItem> items)
             {
                 int itemCount = items.Count();
-                int rowCount = rowControls.Count();
+                int rowCount = rowControls.Count;
                 int maxCount = (itemCount > rowCount) ? itemCount : rowCount;
                 IEnumerator<TItem> itemsEnumerator = items.GetEnumerator();
                 bool itemsEnumeratorValid = itemsEnumerator.MoveNext();
@@ -115,12 +115,12 @@ namespace easyvlans.GUI
             {
                 string labelText = statusStrings[status];
                 if (status != Status.Empty)
-                    labelText += string.Format(" ({0:HH\\:mm\\:ss})", statusUpdateTime);
+                    labelText += $" ({statusUpdateTime:HH:mm:ss})";
                 label.Text = labelText;
                 label.ForeColor = statusColors[status];
             }
 
-            private static Dictionary<Status, string> statusStrings = new Dictionary<Status, string>()
+            private static readonly Dictionary<Status, string> statusStrings = new Dictionary<Status, string>()
             {
                 { Status.Empty, "-" },
                 { Status.Unknown, "unknown" },
@@ -129,7 +129,7 @@ namespace easyvlans.GUI
                 { Status.Unsuccessful, "error" }
             };
 
-            private static Dictionary<Status, Color> statusColors = new Dictionary<Status, Color>()
+            private static readonly Dictionary<Status, Color> statusColors = new Dictionary<Status, Color>()
             {
                 { Status.Empty, SystemColors.ControlDark },
                 { Status.Unknown, SystemColors.ControlDark },

@@ -18,8 +18,8 @@ namespace easyvlans.GUI
     public partial class MainForm : Form
     {
 
-        private Config config;
-        private string parsingError;
+        private readonly Config config;
+        private readonly string parsingError;
 
         public MainForm() => InitializeComponent();
 
@@ -28,7 +28,7 @@ namespace easyvlans.GUI
             LogDispatcher.NewLogMessage += addLogMessage;
             this.config = config;
             this.parsingError = parsingError;
-            Load += load;
+            Load += loadAsync;
             InitializeComponent();
         }
 
@@ -36,7 +36,7 @@ namespace easyvlans.GUI
         {
             if (!showVerboseLog.Checked && (severity == LogMessageSeverity.Verbose))
                 return;
-            string textToAdd = $"[{timestamp.ToString("HH:mm:ss")}] {message}\r\n";
+            string textToAdd = $"[{timestamp:HH:mm:ss}] {message}\r\n";
             logTextBox.AppendText(textToAdd);
             int textLength = logTextBox.TextLength;
             int selectionLength = textToAdd.Length;
@@ -56,12 +56,12 @@ namespace easyvlans.GUI
 
         private void reloadLogMessages()
         {
-            logTextBox.Text = "";
+            logTextBox.Text = string.Empty;
             foreach (LogMessage logMessage in LogDispatcher.Messages)
                 addLogMessage(logMessage.Timestamp, logMessage.Severity, logMessage.Message);
         }
 
-        private Dictionary<LogMessageSeverity, Color> logColors = new Dictionary<LogMessageSeverity, Color>()
+        private static readonly Dictionary<LogMessageSeverity, Color> logColors = new()
         {
             { LogMessageSeverity.Error, Color.Red },
             { LogMessageSeverity.Warning, Color.Orange },
@@ -69,7 +69,7 @@ namespace easyvlans.GUI
             { LogMessageSeverity.Verbose, Color.LightBlue }
         };
 
-        private async void load(object sender, EventArgs e)
+        private async void loadAsync(object sender, EventArgs e)
         {
             reloadLogMessages();
             string errorToShow = parsingError;
@@ -149,20 +149,17 @@ namespace easyvlans.GUI
 
         private void showPortPage(PortPage portPage)
         {
-            foreach (Control ctrl in portPageButtonContainer.Controls)
+            foreach (Button btn in portPageButtonContainer.Controls.OfType<Button>())
             {
-                if (ctrl is Button btn)
-                {
-                    bool selected = (btn.Tag == portPage);
-                    btn.BackColor = selected ? Color.DarkBlue : SystemColors.Control;
-                    btn.ForeColor = selected ? Color.White : SystemColors.ControlText;
-                }
+                bool selected = ReferenceEquals(btn.Tag, portPage); // == gives a CS0252
+                btn.BackColor = selected ? Color.DarkBlue : SystemColors.Control;
+                btn.ForeColor = selected ? Color.White : SystemColors.ControlText;
             }
             IEnumerable<Port> shownPorts = config.Ports.Where(p => ((p.Page == null) || (p.Page == portPage)));
             PortRowControls.Bind(shownPorts);
         }
 
-        private void openUrl(string url) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+        private static void openUrl(string url) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
 
         private void githubLinkClickHandler(object sender, LinkLabelLinkClickedEventArgs e) => openUrl(URL_GITHUB);
         private void issueReportLinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => openUrl(URL_GITHUB_ISSUEREPORT);

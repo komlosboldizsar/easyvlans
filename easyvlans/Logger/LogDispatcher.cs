@@ -12,7 +12,7 @@ namespace easyvlans.Logger
         public delegate void NewLogMessageDelegate(DateTime Timestamp, LogMessageSeverity severity, string message);
         public static event NewLogMessageDelegate NewLogMessage;
 
-        public static List<LogMessage> Messages { get; } = new List<LogMessage>();
+        public static readonly List<LogMessage> Messages = new();
 
         public static void Log(LogMessageSeverity severity, string message)
         {
@@ -25,8 +25,6 @@ namespace easyvlans.Logger
         public static void W(string message) => Log(LogMessageSeverity.Warning, message);
         public static void I(string message) => Log(LogMessageSeverity.Info, message);
         public static void V(string message) => Log(LogMessageSeverity.Verbose, message);
-
-
 
     }
 }
