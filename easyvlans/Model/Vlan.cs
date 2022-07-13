@@ -15,5 +15,6 @@ namespace easyvlans.Model
             ID = id;
             Name = name;
         }
+        public string Label => $"{ID} - {Name}";
     }
 }

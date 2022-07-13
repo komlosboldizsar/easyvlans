@@ -95,7 +95,7 @@ namespace easyvlans.GUI
                 Color foreColor;
                 if (_item.CurrentVlan != null)
                 {
-                    vlanText = vlanToStr(_item.CurrentVlan);
+                    vlanText = _item.CurrentVlan.Label;
                     foreColor = _item.PendingChanges ? COLOR_HAS_PENDING_CHANGES : COLOR_NO_PENDING_CHANGES;
                 }
                 else if (_item.HasComplexMembership)
@@ -142,13 +142,11 @@ namespace easyvlans.GUI
             {
                 if (!setVlanToComboBoxAdaptersByPort.TryGetValue(port, out IComboBoxAdapter adapter))
                 {
-                    adapter = new ComboBoxAdapter<Vlan>(port.Vlans, vlanToStr, true, string.Empty);
+                    adapter = new ComboBoxAdapter<Vlan>(port.Vlans, v => v.Label, true, string.Empty);
                     setVlanToComboBoxAdaptersByPort.Add(port, adapter);
                 }
                 return adapter;
             }
-
-            private static string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
 
             private static readonly Dictionary<Port, Vlan> setVlanToComboBoxSelections = new();
 

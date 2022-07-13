@@ -185,18 +185,18 @@ namespace easyvlans.Model
                 LogDispatcher.E($"Couldn't set VLAN membership of port [{port.Label}] @ switch [{Label}], because no method is associated.");
                 return false;
             }
-            LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}]...");
+            LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Label}]...");
             LogDispatcher.V($"Method for setting VLAN membership of port [{port.Label}] @ switch [{Label}]: [{accessVlanMembershipMethod.Name}].");
             try
             {
                 await accessVlanMembershipMethod.SetPortToVlanAsync(port, vlan);
                 portUpdated(port);
-                LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}] ready.");
+                LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Label}] ready.");
                 return true;
             }
             catch (Exception ex)
             {
-                LogDispatcher.E($"Unsuccessful setting of membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Name}]. Error message: [{ex.Message}]");
+                LogDispatcher.E($"Unsuccessful setting of membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Label}]. Error message: [{ex.Message}]");
                 return false;
             }
         }
