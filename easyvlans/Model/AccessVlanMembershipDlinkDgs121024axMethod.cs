@@ -50,7 +50,7 @@ namespace easyvlans.Model
 
         public void BindUserToSnmpVlans(Dictionary<int, SnmpVlan> snmpVlans)
         {
-            foreach (UserVlan userVlan in Switch.Config.Vlans.Values)
+            foreach (Vlan userVlan in Switch.Config.Vlans.Values)
                 if (snmpVlans.TryGetValue(userVlan.ID, out SnmpVlan snmpVlan))
                     snmpVlan.UserVlan = userVlan;
         }
@@ -78,7 +78,7 @@ namespace easyvlans.Model
 
         public void CalculateSnmpPortVlanMemberships(Dictionary<int, SnmpVlan> snmpVlans, Dictionary<int, SnmpPort> snmpPorts)
         {
-            foreach (UserPort userPort in Switch.Ports)
+            foreach (Port userPort in Switch.Ports)
             {
                 if (!snmpPorts.TryGetValue(userPort.Index, out SnmpPort snmpPort))
                 {
@@ -114,7 +114,7 @@ namespace easyvlans.Model
 
         private (int, int) getByteBitIndex(int portIndex) => (((portIndex - 1) / 8), (7 - ((portIndex - 1) % 8)));
 
-        public async Task<bool> SetPortToVlanAsync(UserPort port, UserVlan vlan)
+        public async Task<bool> SetPortToVlanAsync(Port port, Vlan vlan)
         {
             List<Variable> pvidValue = new(), egressSet = new(), egressClear = new(), untaggedSet = new(), untaggedClear = new();
             pvidValue.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));

@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    public class UserPort
+    public class Port
     {
 
         public string Label { get; init; }
         public Switch Switch { get; init; }
         public int Index { get; init; }
-        public List<UserVlan> Vlans { get; } = new List<UserVlan>();
-        public UserPortPage Page { get; init; }
+        public List<Vlan> Vlans { get; } = new List<Vlan>();
+        public PortPage Page { get; init; }
 
-        public delegate void CurrentVlanChangedDelegate(UserPort port, UserVlan newValue);
+        public delegate void CurrentVlanChangedDelegate(Port port, Vlan newValue);
         public event CurrentVlanChangedDelegate CurrentVlanChanged;
-        private UserVlan _currentVlan;
-        public UserVlan CurrentVlan
+        private Vlan _currentVlan;
+        public Vlan CurrentVlan
         {
             get => _currentVlan;
             set
@@ -31,7 +31,7 @@ namespace easyvlans.Model
             }
         }
 
-        public delegate void HasComplexMembershipChangedDelegate(UserPort port, bool newValue);
+        public delegate void HasComplexMembershipChangedDelegate(Port port, bool newValue);
         public event HasComplexMembershipChangedDelegate HasComplexMembershipChanged;
         private bool _hasComplexMembership;
         public bool HasComplexMembership
@@ -46,7 +46,7 @@ namespace easyvlans.Model
             }
         }
 
-        public delegate void StatusChangedDelegate(UserPort port, PortStatus newValue);
+        public delegate void StatusChangedDelegate(Port port, PortStatus newValue);
         public event StatusChangedDelegate StatusChanged;
         private PortStatus _status;
         public PortStatus Status
@@ -61,7 +61,7 @@ namespace easyvlans.Model
             }
         }
 
-        public delegate void PendingChangesChangedDelegate(UserPort port, bool newValue);
+        public delegate void PendingChangesChangedDelegate(Port port, bool newValue);
         public event PendingChangesChangedDelegate PendingChangesChanged;
         private bool _pendingChanges;
         public bool PendingChanges
@@ -76,7 +76,7 @@ namespace easyvlans.Model
             }
         }
 
-        public UserPort(string label, Switch @switch, int index, IEnumerable<UserVlan> vlans, UserPortPage page)
+        public Port(string label, Switch @switch, int index, IEnumerable<Vlan> vlans, PortPage page)
         {
             Status = PortStatus.Unknown;
             Label = label;
@@ -87,7 +87,7 @@ namespace easyvlans.Model
             Page = page;
         }
 
-        public async Task SetVlanTo(UserVlan vlan)
+        public async Task SetVlanTo(Vlan vlan)
         {
             if (!await Switch.SetPortToVlanAsync(this, vlan))
                 return;

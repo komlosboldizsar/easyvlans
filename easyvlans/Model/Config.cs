@@ -11,18 +11,18 @@ namespace easyvlans.Model
     {
 
         public Dictionary<string, Switch> Switches { get; } = new Dictionary<string, Switch>();
-        public Dictionary<int, UserVlan> Vlans { get; } = new Dictionary<int, UserVlan>();
-        public List<UserPort> Ports { get; } = new List<UserPort>();
-        public List<UserPortPage> PortPages { get; } = new List<UserPortPage>();
+        public Dictionary<int, Vlan> Vlans { get; } = new Dictionary<int, Vlan>();
+        public List<Port> Ports { get; } = new List<Port>();
+        public List<PortPage> PortPages { get; } = new List<PortPage>();
 
-        public Config(Dictionary<string, Switch> switches, Dictionary<int, UserVlan> vlans, List<UserPort> ports, List<UserPortPage> portPages)
+        public Config(Dictionary<string, Switch> switches, Dictionary<int, Vlan> vlans, List<Port> ports, List<PortPage> portPages)
         {
             foreach (KeyValuePair<string, Switch> switchKVP in switches)
             {
                 Switches.Add(switchKVP.Key, switchKVP.Value);
                 switchKVP.Value.AssignConfig(this);
             }
-            foreach (KeyValuePair<int, UserVlan> vlanKVP in vlans)
+            foreach (KeyValuePair<int, Vlan> vlanKVP in vlans)
                 Vlans.Add(vlanKVP.Key, vlanKVP.Value);
             Ports.AddRange(ports);
             PortPages.AddRange(portPages);

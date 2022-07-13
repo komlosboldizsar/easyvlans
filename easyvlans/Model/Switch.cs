@@ -22,8 +22,8 @@ namespace easyvlans.Model
         private readonly IAccessVlanMembershipMethod accessVlanMembershipMethod;
         private readonly IPersistChangesMethod persistChangesMethod;
 
-        public readonly List<UserPort> Ports = new();
-        private List<UserPort> portsWithPendingChange = new();
+        public readonly List<Port> Ports = new();
+        private List<Port> portsWithPendingChange = new();
 
         public Config Config { get; private set; }
 
@@ -89,7 +89,7 @@ namespace easyvlans.Model
 
         internal void AssignConfig(Config config) => Config = config;
 
-        internal void AssociatePort(UserPort port)
+        internal void AssociatePort(Port port)
         {
             if ((port.Switch == this) && !Ports.Contains(port))
                 Ports.Add(port);
@@ -126,7 +126,7 @@ namespace easyvlans.Model
             }
         }
 
-        public async Task<bool> SetPortToVlanAsync(UserPort port, UserVlan vlan)
+        public async Task<bool> SetPortToVlanAsync(Port port, Vlan vlan)
         {
             if ((port.Switch != this) || !Ports.Contains(port))
                 return false;
@@ -151,7 +151,7 @@ namespace easyvlans.Model
             }
         }
 
-        private void portUpdated(UserPort port)
+        private void portUpdated(Port port)
         {
             if (portsWithPendingChange.Contains(port))
                 return;
@@ -184,7 +184,7 @@ namespace easyvlans.Model
 
         private void changesPersisted()
         {
-            foreach (UserPort userPort in portsWithPendingChange)
+            foreach (Port userPort in portsWithPendingChange)
                 userPort.ChangesPersisted();
             portsWithPendingChange.Clear();
             PortsWithPendingChangeCount = 0;

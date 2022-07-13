@@ -112,7 +112,7 @@ namespace easyvlans.GUI
                 return;
             }
             int portPageIndex = 0;
-            foreach (UserPortPage portPage in config.PortPages)
+            foreach (PortPage portPage in config.PortPages)
             {
                 Button newPortPageButton = (portPageIndex > 0) ? portPageButton.Clone() : portPageButton;
                 newPortPageButton.Text = portPage.Title;
@@ -145,9 +145,9 @@ namespace easyvlans.GUI
             SwitchRowControls.Bind(config.Switches.Values);
         }
 
-        private void portPageButtonClick(object sender, EventArgs e) => showPortPage(((Button)sender).Tag as UserPortPage);
+        private void portPageButtonClick(object sender, EventArgs e) => showPortPage(((Button)sender).Tag as PortPage);
 
-        private void showPortPage(UserPortPage portPage)
+        private void showPortPage(PortPage portPage)
         {
             foreach (Control ctrl in portPageButtonContainer.Controls)
             {
@@ -158,7 +158,7 @@ namespace easyvlans.GUI
                     btn.ForeColor = selected ? Color.White : SystemColors.ControlText;
                 }
             }
-            IEnumerable<UserPort> shownPorts = config.Ports.Where(p => ((p.Page == null) || (p.Page == portPage)));
+            IEnumerable<Port> shownPorts = config.Ports.Where(p => ((p.Page == null) || (p.Page == portPage)));
             PortRowControls.Bind(shownPorts);
         }
 

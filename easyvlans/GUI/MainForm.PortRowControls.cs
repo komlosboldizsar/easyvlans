@@ -18,7 +18,7 @@ namespace easyvlans.GUI
 
     public partial class MainForm
     {
-        private class PortRowControls : RowControls<PortRowControls, UserPort>
+        private class PortRowControls : RowControls<PortRowControls, Port>
         {
 
             private Label _portLabel;
@@ -83,7 +83,7 @@ namespace easyvlans.GUI
                 _setVlanToComboBox_changingAdapter = true;
                 _setVlanToComboBox.SetAdapterAsDataSource(getSetVlanToComboBoxAdapterForPort(_item));
                 _setVlanToComboBox_changingAdapter = false;
-                if (setVlanToComboBoxSelections.TryGetValue(_item, out UserVlan selectedVlan))
+                if (setVlanToComboBoxSelections.TryGetValue(_item, out Vlan selectedVlan))
                     _setVlanToComboBox.SelectByValue(selectedVlan);
             }
 
@@ -116,11 +116,11 @@ namespace easyvlans.GUI
                 _stateLabel.ForeColor = portStatusColors[_item.Status];
             }
 
-            private void portsStatusChangedHandler(UserPort port, PortStatus newValue) => displayStatus();
-            private void pendingChangesChangedHandler(UserPort port, bool newValue) => displayVlanMembership();
-            private void hasComplexMembershipChangedHandler(UserPort port, bool newValue) => displayVlanMembership();
+            private void portsStatusChangedHandler(Port port, PortStatus newValue) => displayStatus();
+            private void pendingChangesChangedHandler(Port port, bool newValue) => displayVlanMembership();
+            private void hasComplexMembershipChangedHandler(Port port, bool newValue) => displayVlanMembership();
 
-            private void currentVlanChangedHandler(UserPort port, UserVlan newValue)
+            private void currentVlanChangedHandler(Port port, Vlan newValue)
             {
                 if (port == _item)
                     _setVlanToComboBox.SelectedIndex = 0;
@@ -131,27 +131,27 @@ namespace easyvlans.GUI
             {
                 _setButton.Enabled = (_setVlanToComboBox.SelectedIndex > 0);
                 if (!_setVlanToComboBox_changingAdapter)
-                    setVlanToComboBoxSelections[_item] = _setVlanToComboBox.SelectedValue as UserVlan;
+                    setVlanToComboBoxSelections[_item] = _setVlanToComboBox.SelectedValue as Vlan;
             }
 
             private async void setButtonClickHandler(object sender, EventArgs e)
-                => await _item?.SetVlanTo(_setVlanToComboBox.SelectedValue as UserVlan);
+                => await _item?.SetVlanTo(_setVlanToComboBox.SelectedValue as Vlan);
 
-            private static readonly Dictionary<UserPort, IComboBoxAdapter> setVlanToComboBoxAdaptersByPort = new();
+            private static readonly Dictionary<Port, IComboBoxAdapter> setVlanToComboBoxAdaptersByPort = new();
 
-            private static IComboBoxAdapter getSetVlanToComboBoxAdapterForPort(UserPort port)
+            private static IComboBoxAdapter getSetVlanToComboBoxAdapterForPort(Port port)
             {
                 if (!setVlanToComboBoxAdaptersByPort.TryGetValue(port, out IComboBoxAdapter adapter))
                 {
-                    adapter = new ComboBoxAdapter<UserVlan>(port.Vlans, vlanToStr, true, string.Empty);
+                    adapter = new ComboBoxAdapter<Vlan>(port.Vlans, vlanToStr, true, string.Empty);
                     setVlanToComboBoxAdaptersByPort.Add(port, adapter);
                 }
                 return adapter;
             }
 
-            private static string vlanToStr(UserVlan vlan) => $"{vlan.ID} - {vlan.Name}";
+            private static string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
 
-            private static readonly Dictionary<UserPort, UserVlan> setVlanToComboBoxSelections = new();
+            private static readonly Dictionary<Port, Vlan> setVlanToComboBoxSelections = new();
 
             private static readonly Dictionary<PortStatus, string> portStatusStrings = new()
             {

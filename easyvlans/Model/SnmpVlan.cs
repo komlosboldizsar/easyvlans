@@ -11,7 +11,7 @@ namespace easyvlans.Model
         public int ID { get; init; }
         public byte[] EgressPorts { get; set; }
         public byte[] UntaggedPorts { get; set; }
-        public UserVlan UserVlan { get; set; }
+        public Vlan UserVlan { get; set; }
         public SnmpVlan(int id) => ID = id;
     }
 }
