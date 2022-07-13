@@ -42,18 +42,65 @@ namespace easyvlans.Model
             }
         }
 
-        public delegate void StatusChangedDelegate(Switch @switch, SwitchStatus newValue);
-        public event StatusChangedDelegate StatusChanged;
-        private SwitchStatus _status = SwitchStatus.NotConnected;
-        public SwitchStatus Status
+        public delegate void ReadVlanConfigStatusChangedDelegate(Switch @switch, Status newValue);
+        public event ReadVlanConfigStatusChangedDelegate ReadVlanConfigStatusChanged;
+        private Status _readVlanConfigStatus = Status.Unknown;
+        public Status ReadVlanConfigStatus
         {
-            get => _status;
+            get => _readVlanConfigStatus;
             private set
             {
-                if (value == _status)
+                if (value == _readVlanConfigStatus)
                     return;
-                _status = value;
-                StatusChanged?.Invoke(this, value);
+                _readVlanConfigStatus = value;
+                ReadVlanConfigStatusChanged?.Invoke(this, value);
+                ReadVlanConfigStatusUpdateTime = DateTime.Now;
+            }
+        }
+
+        public delegate void ReadVlanConfigStatusUpdateTimeChangedDelegate(Switch @switch, DateTime newValue);
+        public event ReadVlanConfigStatusUpdateTimeChangedDelegate ReadVlanConfigStatusUpdateTimeChanged;
+        private DateTime _readVlanConfigStatusUpdateTime = DateTime.Now;
+        public DateTime ReadVlanConfigStatusUpdateTime
+        {
+            get => _readVlanConfigStatusUpdateTime;
+            private set
+            {
+                if (value == _readVlanConfigStatusUpdateTime)
+                    return;
+                _readVlanConfigStatusUpdateTime = value;
+                ReadVlanConfigStatusUpdateTimeChanged?.Invoke(this, value);
+            }
+        }
+
+        public delegate void PersistConfigStatusChangedDelegate(Switch @switch, Status newValue);
+        public event PersistConfigStatusChangedDelegate PersistConfigStatusChanged;
+        private Status _persistConfigStatus = Status.Empty;
+        public Status PersistVlanConfigStatus
+        {
+            get => _persistConfigStatus;
+            private set
+            {
+                if (value == _persistConfigStatus)
+                    return;
+                _persistConfigStatus = value;
+                PersistConfigStatusChanged?.Invoke(this, value);
+                PersistVlanConfigStatusUpdateTime = DateTime.Now;
+            }
+        }
+
+        public delegate void PersistVlanConfigStatusUpdateTimeChangedDelegate(Switch @switch, DateTime newValue);
+        public event PersistVlanConfigStatusUpdateTimeChangedDelegate PersistVlanConfigStatusUpdateTimeChanged;
+        private DateTime _persistVlanConfigStatusUpdateTime = DateTime.Now;
+        public DateTime PersistVlanConfigStatusUpdateTime
+        {
+            get => _persistVlanConfigStatusUpdateTime;
+            private set
+            {
+                if (value == _persistVlanConfigStatusUpdateTime)
+                    return;
+                _persistVlanConfigStatusUpdateTime = value;
+                PersistVlanConfigStatusUpdateTimeChanged?.Invoke(this, value);
             }
         }
 
@@ -113,15 +160,18 @@ namespace easyvlans.Model
                 LogDispatcher.E($"Couldn't read configuration of switch [{Label}], because no method is associated.");
                 return;
             }
+            ReadVlanConfigStatus = Status.Querying;
             LogDispatcher.I($"Reading configuration of switch [{Label}]...");
             LogDispatcher.V($"Method for reading configuration of switch [{Label}]: [{accessVlanMembershipMethod.Name}].");
             try
             {
                 await accessVlanMembershipMethod.ReadConfigAsync();
+                ReadVlanConfigStatus = Status.Successful;
                 LogDispatcher.I($"Reading configuration of switch [{Label}] ready.");
             }
             catch (Exception ex)
             {
+                ReadVlanConfigStatus = Status.Unsuccessful;
                 LogDispatcher.E($"Unsuccessfull reading of configuration of switch [{Label}]. Error message: [{ex.Message}]");
             }
         }
@@ -166,23 +216,26 @@ namespace easyvlans.Model
                 LogDispatcher.E($"Couldn't persist changes of switch [{Label}], because no method is associated.");
                 return false;
             }
+            PersistVlanConfigStatus = Status.Querying;
             LogDispatcher.I($"Persisting changes of switch [{Label}]...");
             LogDispatcher.V($"Method for persisting changes of switch [{Label}]: [{persistChangesMethod.Name}].");
             try
             {
                 await persistChangesMethod.Do();
-                changesPersisted();
+                PersistVlanConfigStatus = Status.Successful;
+                notifyPortsChangesPersisted();
                 LogDispatcher.I($"Persisting changes of switch [{Label}] ready.");
                 return true;
             }
             catch (Exception ex)
             {
+                PersistVlanConfigStatus = Status.Unsuccessful;
                 LogDispatcher.E($"Didn't succeeded to persist changes of switch [{Label}] with method [{persistChangesMethod.Name}]. Error message: [{ex.Message}]");
             }
             return false;
         }
 
-        private void changesPersisted()
+        private void notifyPortsChangesPersisted()
         {
             foreach (Port userPort in portsWithPendingChange)
                 userPort.ChangesPersisted();

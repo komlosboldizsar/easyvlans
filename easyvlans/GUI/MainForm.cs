@@ -84,12 +84,12 @@ namespace easyvlans.GUI
                 rowPortCurrentVlan.Text = "N/A";
                 rowPortSetVlanTo.Enabled = false;
                 rowPortSet.Enabled = false;
-                rowPortState.Text = "N/A";
+                rowPostStatusSetVlan.Text = "N/A";
                 rowSwitchSwitchName.Text = "N/A";
                 rowSwitchSwitchName.ForeColor = Color.Red;
                 rowSwitchPendingChanges.Text = "N/A";
                 rowSwitchPersistChanges.Enabled = false;
-                rowSwitchState.Text = "N/A";
+                rowSwitchStatusRead.Text = "N/A";
                 MessageBox.Show(errorToShow, "Initialization error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

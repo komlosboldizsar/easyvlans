@@ -27,7 +27,7 @@ namespace easyvlans.GUI
             private Label _currentVlanLabel;
             private ComboBox _setVlanToComboBox;
             private Button _setButton;
-            private Label _stateLabel;
+            private Label _setVlanStatusLabel;
 
             private bool _setVlanToComboBox_changingAdapter;
 
@@ -39,7 +39,7 @@ namespace easyvlans.GUI
                 _currentVlanLabel = cloneOrOriginal(mainForm.rowPortCurrentVlan, itemIndex);
                 _setVlanToComboBox = cloneOrOriginal(mainForm.rowPortSetVlanTo, itemIndex);
                 _setButton = cloneOrOriginal(mainForm.rowPortSet, itemIndex);
-                _stateLabel = cloneOrOriginal(mainForm.rowPortState, itemIndex);
+                _setVlanStatusLabel = cloneOrOriginal(mainForm.rowPostStatusSetVlan, itemIndex);
                 //
                 if (itemIndex > 0)
                 {
@@ -52,7 +52,7 @@ namespace easyvlans.GUI
                     table.Controls.Add(_currentVlanLabel, 3, tableRowIndex);
                     table.Controls.Add(_setVlanToComboBox, 4, tableRowIndex);
                     table.Controls.Add(_setButton, 5, tableRowIndex);
-                    table.Controls.Add(_stateLabel, 6, tableRowIndex);
+                    table.Controls.Add(_setVlanStatusLabel, 6, tableRowIndex);
                 }
                 //
                 _setVlanToComboBox.SelectedIndexChanged += setVlanToComboBoxSelectedIndexChangedHandler;
@@ -61,7 +61,8 @@ namespace easyvlans.GUI
 
             protected override void debindItem()
             {
-                _item.StatusChanged -= portsStatusChangedHandler;
+                _item.SetVlanMembershipStatusChanged -= setVlanMembershipStatusChangedHandler;
+                _item.SetVlanMembershipStatusUpdateTimeChanged -= setVlanMembershipStatusUpdateTimeChangedHandler;
                 _item.PendingChangesChanged -= pendingChangesChangedHandler;
                 _item.HasComplexMembershipChanged -= hasComplexMembershipChangedHandler;
                 _item.CurrentVlanChanged -= currentVlanChangedHandler;
@@ -69,7 +70,8 @@ namespace easyvlans.GUI
 
             protected override void bindItem()
             {
-                _item.StatusChanged += portsStatusChangedHandler;
+                _item.SetVlanMembershipStatusChanged += setVlanMembershipStatusChangedHandler;
+                _item.SetVlanMembershipStatusUpdateTimeChanged += setVlanMembershipStatusUpdateTimeChangedHandler;
                 _item.PendingChangesChanged += pendingChangesChangedHandler;
                 _item.HasComplexMembershipChanged += hasComplexMembershipChangedHandler;
                 _item.CurrentVlanChanged += currentVlanChangedHandler;
@@ -79,7 +81,7 @@ namespace easyvlans.GUI
                 _portIndexLabel.Text = _item.Index.ToString();
                 displayVlanMembership();
                 _setButton.Enabled = false;
-                displayStatus();
+                displaySetVlanMembershipStatus();
                 _setVlanToComboBox_changingAdapter = true;
                 _setVlanToComboBox.SetAdapterAsDataSource(getSetVlanToComboBoxAdapterForPort(_item));
                 _setVlanToComboBox_changingAdapter = false;
@@ -110,13 +112,10 @@ namespace easyvlans.GUI
                 _currentVlanLabel.ForeColor = foreColor;
             }
 
-            private void displayStatus()
-            {
-                _stateLabel.Text = portStatusStrings[_item.Status];
-                _stateLabel.ForeColor = portStatusColors[_item.Status];
-            }
+            private void displaySetVlanMembershipStatus() => displayStatus(_setVlanStatusLabel, _item.SetVlanMembershipStatus, _item.SetVlanMembershipStatusUpdateTime);
 
-            private void portsStatusChangedHandler(Port port, PortStatus newValue) => displayStatus();
+            private void setVlanMembershipStatusChangedHandler(Port port, Status newValue) => displaySetVlanMembershipStatus();
+            private void setVlanMembershipStatusUpdateTimeChangedHandler(Port port, DateTime newValue) => displaySetVlanMembershipStatus();
             private void pendingChangesChangedHandler(Port port, bool newValue) => displayVlanMembership();
             private void hasComplexMembershipChangedHandler(Port port, bool newValue) => displayVlanMembership();
 
@@ -152,26 +151,6 @@ namespace easyvlans.GUI
             private static string vlanToStr(Vlan vlan) => $"{vlan.ID} - {vlan.Name}";
 
             private static readonly Dictionary<Port, Vlan> setVlanToComboBoxSelections = new();
-
-            private static readonly Dictionary<PortStatus, string> portStatusStrings = new()
-            {
-                { PortStatus.Unknown, "unknown" },
-                { PortStatus.VlanRead, "VLAN setting loaded" },
-                { PortStatus.SettingVlan, "changing VLAN setting..." },
-                { PortStatus.VlanSetNotPersisted, "VLAN set (not permanent)" },
-                { PortStatus.VlanSetFailed, "changing VLAN failed!" },
-                { PortStatus.VlanSetPersisted, "VLAN set (permanent)" }
-            };
-
-            private static readonly Dictionary<PortStatus, Color> portStatusColors = new()
-            {
-                { PortStatus.Unknown, Color.Black },
-                { PortStatus.VlanRead, Color.Black },
-                { PortStatus.SettingVlan, Color.DarkGreen },
-                { PortStatus.VlanSetNotPersisted, Color.DarkGreen },
-                { PortStatus.VlanSetFailed, Color.Red },
-                { PortStatus.VlanSetPersisted, Color.DarkGreen }
-            };
 
             private const string CURRENT_VLAN_COMPLEX = "complex";
             private const string CURRENT_VLAN_UNKNOWN = "unknown";

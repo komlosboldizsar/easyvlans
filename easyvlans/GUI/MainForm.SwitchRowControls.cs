@@ -24,14 +24,16 @@ namespace easyvlans.GUI
             public Label _switchNameLabel;
             public Label _pendingChangesLabel;
             public Button _persistChangesButton;
-            public Label _stateLabel;
+            public Label _readVlanConfigStatusLabel;
+            public Label _persistConfigStatusLabel;
 
             protected override void createControls(int itemIndex)
             {
                 _switchNameLabel = cloneOrOriginal(mainForm.rowSwitchSwitchName, itemIndex);
                 _pendingChangesLabel = cloneOrOriginal(mainForm.rowSwitchPendingChanges, itemIndex);
                 _persistChangesButton = cloneOrOriginal(mainForm.rowSwitchPersistChanges, itemIndex);
-                _stateLabel = cloneOrOriginal(mainForm.rowSwitchState, itemIndex);
+                _readVlanConfigStatusLabel = cloneOrOriginal(mainForm.rowSwitchStatusRead, itemIndex);
+                _persistConfigStatusLabel = cloneOrOriginal(mainForm.rowSwitchStatusPersist, itemIndex);
                 //
                 if (itemIndex > 0)
                 {
@@ -41,7 +43,8 @@ namespace easyvlans.GUI
                     table.Controls.Add(_switchNameLabel, 0, tableRowIndex);
                     table.Controls.Add(_pendingChangesLabel, 1, tableRowIndex);
                     table.Controls.Add(_persistChangesButton, 2, tableRowIndex);
-                    table.Controls.Add(_stateLabel, 3, tableRowIndex);
+                    table.Controls.Add(_readVlanConfigStatusLabel, 3, tableRowIndex);
+                    table.Controls.Add(_persistConfigStatusLabel, 4, tableRowIndex);
                 }
                 //
                 _persistChangesButton.Click += persistChangesButtonClickHandler;
@@ -49,24 +52,25 @@ namespace easyvlans.GUI
 
             protected override void debindItem()
             {
-                _item.StatusChanged -= statusChangedHandler;
+                _item.ReadVlanConfigStatusChanged -= readVlanConfigStatusChangedHandler;
                 _item.PortsWithPendingChangeCountChanged -= portsWithPendingChangeCountChangedHandler;
             }
 
             protected override void bindItem()
             {
-                _item.StatusChanged += statusChangedHandler;
+                _item.ReadVlanConfigStatusChanged += readVlanConfigStatusChangedHandler;
+                _item.ReadVlanConfigStatusUpdateTimeChanged += readVlanConfigStatusUpdateTimeChangedHandler;
+                _item.PersistConfigStatusChanged += persistConfigStatusChangedHandler;
+                _item.PersistVlanConfigStatusUpdateTimeChanged += persistConfigStatusUpdateTimeChangedHandler;
                 _item.PortsWithPendingChangeCountChanged += portsWithPendingChangeCountChangedHandler;
                 _switchNameLabel.Text = _item.Label;
                 displayPortsWithPendingChangeCount();
-                displayStatus();
+                displayReadVlanConfigStatus();
+                displayPersistConfigStatus();
             }
 
-            private void displayStatus()
-            {
-                _stateLabel.Text = switchStatusStrings[_item.Status];
-                _stateLabel.ForeColor = switchStatusColors[_item.Status];
-            }
+            private void displayReadVlanConfigStatus() => displayStatus(_readVlanConfigStatusLabel, _item.ReadVlanConfigStatus, _item.ReadVlanConfigStatusUpdateTime);
+            private void displayPersistConfigStatus() => displayStatus(_persistConfigStatusLabel, _item.PersistVlanConfigStatus, _item.PersistVlanConfigStatusUpdateTime);
 
             private void displayPortsWithPendingChangeCount()
             {
@@ -87,39 +91,15 @@ namespace easyvlans.GUI
                 }
             }
 
-            private void statusChangedHandler(Switch @switch, SwitchStatus newValue) => displayStatus();
+            private void readVlanConfigStatusChangedHandler(Switch @switch, Status newValue) => displayReadVlanConfigStatus();
+            private void readVlanConfigStatusUpdateTimeChangedHandler(Switch @switch, DateTime newValue) => displayReadVlanConfigStatus();
+            private void persistConfigStatusChangedHandler(Switch @switch, Status newValue) => displayPersistConfigStatus();
+            private void persistConfigStatusUpdateTimeChangedHandler(Switch @switch, DateTime newValue) => displayPersistConfigStatus();
+
             private void portsWithPendingChangeCountChangedHandler(Switch @switch, int newValue) => displayPortsWithPendingChangeCount();
 
             private async void persistChangesButtonClickHandler(object sender, EventArgs e)
                 => await _item?.PersistChangesAsync();
-
-            private Dictionary<SwitchStatus, string> switchStatusStrings = new Dictionary<SwitchStatus, string>()
-            {
-                { SwitchStatus.NotConnected, "not connected" },
-                { SwitchStatus.Connecting, "connecting..." },
-                { SwitchStatus.CantConnect, "couldn't connect!" },
-                { SwitchStatus.Connected, "connected" },
-                { SwitchStatus.NoAccessMode, "no access method defined!" },
-                { SwitchStatus.VlansRead, "VLAN settings loaded" },
-                { SwitchStatus.PortVlanChanged, "VLAN setting of a port changed" },
-                { SwitchStatus.PortVlanChangeError, "VLAN setting of a port failed!" },
-                { SwitchStatus.ConfigSaved, "configuration saved as startup" },
-                { SwitchStatus.ConfigSaveError, "saving configuration as startup failed!" }
-            };
-
-            private Dictionary<SwitchStatus, Color> switchStatusColors = new Dictionary<SwitchStatus, Color>()
-            {
-                { SwitchStatus.NotConnected, Color.Black },
-                { SwitchStatus.Connecting, Color.Black },
-                { SwitchStatus.CantConnect, Color.Red },
-                { SwitchStatus.Connected, Color.DarkGreen },
-                { SwitchStatus.NoAccessMode, Color.Red },
-                { SwitchStatus.VlansRead, Color.DarkGreen },
-                { SwitchStatus.PortVlanChanged, Color.DarkGreen },
-                { SwitchStatus.PortVlanChangeError, Color.Red },
-                { SwitchStatus.ConfigSaved, Color.DarkGreen },
-                { SwitchStatus.ConfigSaveError, Color.Red }
-            };
 
             private Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
             private Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;

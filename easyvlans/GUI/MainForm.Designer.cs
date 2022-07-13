@@ -42,8 +42,8 @@ namespace easyvlans.GUI
             this.rowPortPortIndex = new System.Windows.Forms.Label();
             this.rowPortCurrentVlan = new System.Windows.Forms.Label();
             this.rowPortSetVlanTo = new System.Windows.Forms.ComboBox();
-            this.rowPortState = new System.Windows.Forms.Label();
-            this.titlePortState = new System.Windows.Forms.Label();
+            this.rowPostStatusSetVlan = new System.Windows.Forms.Label();
+            this.titlePortStatus = new System.Windows.Forms.Label();
             this.logTextBox = new System.Windows.Forms.RichTextBox();
             this.portTableContainer = new System.Windows.Forms.Panel();
             this.switchTableContainer = new System.Windows.Forms.Panel();
@@ -54,8 +54,10 @@ namespace easyvlans.GUI
             this.rowSwitchSwitchName = new System.Windows.Forms.Label();
             this.rowSwitchPendingChanges = new System.Windows.Forms.Label();
             this.rowSwitchPersistChanges = new System.Windows.Forms.Button();
-            this.titleSwitchState = new System.Windows.Forms.Label();
-            this.rowSwitchState = new System.Windows.Forms.Label();
+            this.titleSwitchStatusRead = new System.Windows.Forms.Label();
+            this.rowSwitchStatusRead = new System.Windows.Forms.Label();
+            this.titleSwitchStatusPersist = new System.Windows.Forms.Label();
+            this.rowSwitchStatusPersist = new System.Windows.Forms.Label();
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.githubLink = new System.Windows.Forms.LinkLabel();
@@ -92,8 +94,8 @@ namespace easyvlans.GUI
             this.portTable.Controls.Add(this.rowPortPortIndex, 2, 1);
             this.portTable.Controls.Add(this.rowPortCurrentVlan, 3, 1);
             this.portTable.Controls.Add(this.rowPortSetVlanTo, 4, 1);
-            this.portTable.Controls.Add(this.rowPortState, 6, 1);
-            this.portTable.Controls.Add(this.titlePortState, 6, 0);
+            this.portTable.Controls.Add(this.rowPostStatusSetVlan, 6, 1);
+            this.portTable.Controls.Add(this.titlePortStatus, 6, 0);
             this.portTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.portTable.Location = new System.Drawing.Point(10, 10);
             this.portTable.Name = "portTable";
@@ -230,28 +232,28 @@ namespace easyvlans.GUI
             this.rowPortSetVlanTo.Size = new System.Drawing.Size(144, 28);
             this.rowPortSetVlanTo.TabIndex = 12;
             // 
-            // rowPortState
+            // rowPostStatusSetVlan
             // 
-            this.rowPortState.AutoSize = true;
-            this.rowPortState.Dock = System.Windows.Forms.DockStyle.Left;
-            this.rowPortState.Location = new System.Drawing.Point(703, 35);
-            this.rowPortState.Name = "rowPortState";
-            this.rowPortState.Size = new System.Drawing.Size(91, 35);
-            this.rowPortState.TabIndex = 13;
-            this.rowPortState.Text = "In progress...";
-            this.rowPortState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.rowPostStatusSetVlan.AutoSize = true;
+            this.rowPostStatusSetVlan.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rowPostStatusSetVlan.Location = new System.Drawing.Point(703, 35);
+            this.rowPostStatusSetVlan.Name = "rowPostStatusSetVlan";
+            this.rowPostStatusSetVlan.Size = new System.Drawing.Size(91, 35);
+            this.rowPostStatusSetVlan.TabIndex = 13;
+            this.rowPostStatusSetVlan.Text = "In progress...";
+            this.rowPostStatusSetVlan.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // titlePortState
+            // titlePortStatus
             // 
-            this.titlePortState.AutoSize = true;
-            this.titlePortState.Dock = System.Windows.Forms.DockStyle.Left;
-            this.titlePortState.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.titlePortState.Location = new System.Drawing.Point(703, 0);
-            this.titlePortState.Name = "titlePortState";
-            this.titlePortState.Size = new System.Drawing.Size(43, 35);
-            this.titlePortState.TabIndex = 14;
-            this.titlePortState.Text = "State";
-            this.titlePortState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.titlePortStatus.AutoSize = true;
+            this.titlePortStatus.Dock = System.Windows.Forms.DockStyle.Left;
+            this.titlePortStatus.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.titlePortStatus.Location = new System.Drawing.Point(703, 0);
+            this.titlePortStatus.Name = "titlePortStatus";
+            this.titlePortStatus.Size = new System.Drawing.Size(82, 35);
+            this.titlePortStatus.TabIndex = 14;
+            this.titlePortStatus.Text = "Status (set)";
+            this.titlePortStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // logTextBox
             // 
@@ -288,10 +290,11 @@ namespace easyvlans.GUI
             // switchTable
             // 
             this.switchTable.AutoSize = true;
-            this.switchTable.ColumnCount = 4;
+            this.switchTable.ColumnCount = 5;
             this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
+            this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 180F));
             this.switchTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.switchTable.Controls.Add(this.titleSwitchSwitchName, 0, 0);
             this.switchTable.Controls.Add(this.titleSwitchPendingChanges, 1, 0);
@@ -299,8 +302,10 @@ namespace easyvlans.GUI
             this.switchTable.Controls.Add(this.rowSwitchSwitchName, 0, 1);
             this.switchTable.Controls.Add(this.rowSwitchPendingChanges, 1, 1);
             this.switchTable.Controls.Add(this.rowSwitchPersistChanges, 2, 1);
-            this.switchTable.Controls.Add(this.titleSwitchState, 3, 0);
-            this.switchTable.Controls.Add(this.rowSwitchState, 3, 1);
+            this.switchTable.Controls.Add(this.titleSwitchStatusRead, 3, 0);
+            this.switchTable.Controls.Add(this.rowSwitchStatusRead, 3, 1);
+            this.switchTable.Controls.Add(this.titleSwitchStatusPersist, 4, 0);
+            this.switchTable.Controls.Add(this.rowSwitchStatusPersist, 4, 1);
             this.switchTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.switchTable.Location = new System.Drawing.Point(10, 10);
             this.switchTable.Name = "switchTable";
@@ -380,28 +385,51 @@ namespace easyvlans.GUI
             this.rowSwitchPersistChanges.Text = "persist";
             this.rowSwitchPersistChanges.UseVisualStyleBackColor = true;
             // 
-            // titleSwitchState
+            // titleSwitchStatusRead
             // 
-            this.titleSwitchState.AutoSize = true;
-            this.titleSwitchState.Dock = System.Windows.Forms.DockStyle.Left;
-            this.titleSwitchState.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.titleSwitchState.Location = new System.Drawing.Point(423, 0);
-            this.titleSwitchState.Name = "titleSwitchState";
-            this.titleSwitchState.Size = new System.Drawing.Size(43, 35);
-            this.titleSwitchState.TabIndex = 6;
-            this.titleSwitchState.Text = "State";
-            this.titleSwitchState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.titleSwitchStatusRead.AutoSize = true;
+            this.titleSwitchStatusRead.Dock = System.Windows.Forms.DockStyle.Left;
+            this.titleSwitchStatusRead.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.titleSwitchStatusRead.Location = new System.Drawing.Point(423, 0);
+            this.titleSwitchStatusRead.Name = "titleSwitchStatusRead";
+            this.titleSwitchStatusRead.Size = new System.Drawing.Size(93, 35);
+            this.titleSwitchStatusRead.TabIndex = 6;
+            this.titleSwitchStatusRead.Text = "Status (read)";
+            this.titleSwitchStatusRead.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // rowSwitchState
+            // rowSwitchStatusRead
             // 
-            this.rowSwitchState.AutoSize = true;
-            this.rowSwitchState.Dock = System.Windows.Forms.DockStyle.Left;
-            this.rowSwitchState.Location = new System.Drawing.Point(423, 35);
-            this.rowSwitchState.Name = "rowSwitchState";
-            this.rowSwitchState.Size = new System.Drawing.Size(91, 35);
-            this.rowSwitchState.TabIndex = 7;
-            this.rowSwitchState.Text = "In progress...";
-            this.rowSwitchState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.rowSwitchStatusRead.AutoSize = true;
+            this.rowSwitchStatusRead.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rowSwitchStatusRead.Location = new System.Drawing.Point(423, 35);
+            this.rowSwitchStatusRead.Name = "rowSwitchStatusRead";
+            this.rowSwitchStatusRead.Size = new System.Drawing.Size(150, 35);
+            this.rowSwitchStatusRead.TabIndex = 7;
+            this.rowSwitchStatusRead.Text = "In progress (11:48:53)";
+            this.rowSwitchStatusRead.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // titleSwitchStatusPersist
+            // 
+            this.titleSwitchStatusPersist.AutoSize = true;
+            this.titleSwitchStatusPersist.Dock = System.Windows.Forms.DockStyle.Left;
+            this.titleSwitchStatusPersist.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.titleSwitchStatusPersist.Location = new System.Drawing.Point(603, 0);
+            this.titleSwitchStatusPersist.Name = "titleSwitchStatusPersist";
+            this.titleSwitchStatusPersist.Size = new System.Drawing.Size(106, 35);
+            this.titleSwitchStatusPersist.TabIndex = 8;
+            this.titleSwitchStatusPersist.Text = "Status (persist)";
+            this.titleSwitchStatusPersist.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // rowSwitchStatusPersist
+            // 
+            this.rowSwitchStatusPersist.AutoSize = true;
+            this.rowSwitchStatusPersist.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rowSwitchStatusPersist.Location = new System.Drawing.Point(603, 35);
+            this.rowSwitchStatusPersist.Name = "rowSwitchStatusPersist";
+            this.rowSwitchStatusPersist.Size = new System.Drawing.Size(97, 35);
+            this.rowSwitchStatusPersist.TabIndex = 9;
+            this.rowSwitchStatusPersist.Text = "OK (11:45:01)";
+            this.rowSwitchStatusPersist.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // bottomPanel
             // 
@@ -527,9 +555,9 @@ namespace easyvlans.GUI
         private System.Windows.Forms.Label rowPortPortIndex;
         private System.Windows.Forms.Label rowPortCurrentVlan;
         private System.Windows.Forms.ComboBox rowPortSetVlanTo;
-        private System.Windows.Forms.Label rowPortState;
+        private System.Windows.Forms.Label rowPostStatusSetVlan;
         private System.Windows.Forms.Panel portTableContainer;
-        private System.Windows.Forms.Label titlePortState;
+        private System.Windows.Forms.Label titlePortStatus;
         private System.Windows.Forms.Panel switchTableContainer;
         private System.Windows.Forms.TableLayoutPanel switchTable;
         private System.Windows.Forms.Label titleSwitchSwitchName;
@@ -538,14 +566,16 @@ namespace easyvlans.GUI
         private System.Windows.Forms.Label rowSwitchSwitchName;
         private System.Windows.Forms.Label rowSwitchPendingChanges;
         private System.Windows.Forms.Button rowSwitchPersistChanges;
-        private System.Windows.Forms.Label titleSwitchState;
-        private System.Windows.Forms.Label rowSwitchState;
+        private System.Windows.Forms.Label titleSwitchStatusRead;
+        private System.Windows.Forms.Label rowSwitchStatusRead;
         private System.Windows.Forms.Panel bottomPanel;
         private System.Windows.Forms.CheckBox showVerboseLog;
         private System.Windows.Forms.FlowLayoutPanel portPageButtonContainer;
         private System.Windows.Forms.Button portPageButton;
         private System.Windows.Forms.LinkLabel githubLink;
         private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.Label titleSwitchStatusPersist;
+        private System.Windows.Forms.Label rowSwitchStatusPersist;
     }
 }
 

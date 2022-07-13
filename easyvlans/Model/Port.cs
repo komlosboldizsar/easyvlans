@@ -46,18 +46,34 @@ namespace easyvlans.Model
             }
         }
 
-        public delegate void StatusChangedDelegate(Port port, PortStatus newValue);
-        public event StatusChangedDelegate StatusChanged;
-        private PortStatus _status;
-        public PortStatus Status
+        public delegate void PersistConfigStatusChangedDelegate(Port port, Status newValue);
+        public event PersistConfigStatusChangedDelegate SetVlanMembershipStatusChanged;
+        private Status _setVlanMembershipStatus = Status.Empty;
+        public Status SetVlanMembershipStatus
         {
-            get => _status;
-            internal set
+            get => _setVlanMembershipStatus;
+            private set
             {
-                if (value == _status)
+                if (value == _setVlanMembershipStatus)
                     return;
-                _status = value;
-                StatusChanged?.Invoke(this, value);
+                _setVlanMembershipStatus = value;
+                SetVlanMembershipStatusChanged?.Invoke(this, value);
+                SetVlanMembershipStatusUpdateTime = DateTime.Now;
+            }
+        }
+
+        public delegate void SetVlanMembershipStatusUpdateTimeChangedDelegate(Port port, DateTime newValue);
+        public event SetVlanMembershipStatusUpdateTimeChangedDelegate SetVlanMembershipStatusUpdateTimeChanged;
+        private DateTime _setVlanMembershipStatusUpdateTime = DateTime.Now;
+        public DateTime SetVlanMembershipStatusUpdateTime
+        {
+            get => _setVlanMembershipStatusUpdateTime;
+            private set
+            {
+                if (value == _setVlanMembershipStatusUpdateTime)
+                    return;
+                _setVlanMembershipStatusUpdateTime = value;
+                SetVlanMembershipStatusUpdateTimeChanged?.Invoke(this, value);
             }
         }
 
@@ -78,7 +94,6 @@ namespace easyvlans.Model
 
         public Port(string label, Switch @switch, int index, IEnumerable<Vlan> vlans, PortPage page)
         {
-            Status = PortStatus.Unknown;
             Label = label;
             Switch = @switch;
             @switch.AssociatePort(this);
@@ -89,8 +104,13 @@ namespace easyvlans.Model
 
         public async Task SetVlanTo(Vlan vlan)
         {
+            SetVlanMembershipStatus = Status.Querying;
             if (!await Switch.SetPortToVlanAsync(this, vlan))
+            {
+                SetVlanMembershipStatus = Status.Unsuccessful;
                 return;
+            }
+            SetVlanMembershipStatus = Status.Successful;
             CurrentVlan = vlan;
             PendingChanges = true;
         }

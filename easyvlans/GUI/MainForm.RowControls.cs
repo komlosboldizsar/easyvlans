@@ -1,5 +1,6 @@
 ﻿using easyvlans.GUI;
 using easyvlans.GUI.Helpers;
+using easyvlans.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -109,6 +110,33 @@ namespace easyvlans.GUI
 
             protected static T cloneOrOriginal<T>(T originalControl, int itemIndex) where T : Control
                 => (itemIndex == 0) ? originalControl : originalControl.Clone();
+
+            protected static void displayStatus(Label label, Status status, DateTime statusUpdateTime)
+            {
+                string labelText = statusStrings[status];
+                if (status != Status.Empty)
+                    labelText += string.Format(" ({0:HH\\:mm\\:ss})", statusUpdateTime);
+                label.Text = labelText;
+                label.ForeColor = statusColors[status];
+            }
+
+            private static Dictionary<Status, string> statusStrings = new Dictionary<Status, string>()
+            {
+                { Status.Empty, "-" },
+                { Status.Unknown, "unknown" },
+                { Status.Querying, "in progress" },
+                { Status.Successful, "ready" },
+                { Status.Unsuccessful, "error" }
+            };
+
+            private static Dictionary<Status, Color> statusColors = new Dictionary<Status, Color>()
+            {
+                { Status.Empty, SystemColors.ControlDark },
+                { Status.Unknown, SystemColors.ControlDark },
+                { Status.Querying, SystemColors.ControlText },
+                { Status.Successful, SystemColors.ControlText },
+                { Status.Unsuccessful, Color.Red }
+            };
 
         }
 

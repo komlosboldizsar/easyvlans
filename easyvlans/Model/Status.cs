@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    public enum PortStatus
+    public enum Status
     {
+        Empty,
         Unknown,
-        VlanRead,
-        SettingVlan,
-        VlanSetNotPersisted,
-        VlanSetFailed,
-        VlanSetPersisted
+        Querying,
+        Successful,
+        Unsuccessful
     }
 }
