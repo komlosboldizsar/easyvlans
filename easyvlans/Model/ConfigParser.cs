@@ -16,6 +16,13 @@ namespace easyvlans.Model
 
         private const string TAG_ROOT = "easyvlans";
 
+        private const string TAG_SETTINGS = "settings";
+        private const string TAG_SETTINGS_SNMP = "snmp";
+        private const string ATTRIBUTE_SETTINGS_SNMP_ENABLED = "enabled";
+        private const string ATTRIBUTE_SETTINGS_SNMP_PORT = "port";
+        private const string ATTRIBUTE_SETTINGS_SNMP_COMMUNITY_READ = "community_read";
+        private const string ATTRIBUTE_SETTINGS_SNMP_COMMUNITY_WRITE = "community_write";
+
         private const string TAG_SWITCHES = "switches";
         private const string TAG_SWITCH = "switch";
         private const string ATTRIBUTE_SWITCH_ID = "id";
@@ -25,6 +32,7 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_SWITCH_COMMUNITY_STRING = "community_string";
         private const string ATTRIBUTE_SWITCH_ACCESS_VLAN_MEMBERSHIP = "method_access_vlan_membership";
         private const string ATTRIBUTE_SWITCH_METHOD_PERSIST = "method_persist";
+        private const string ATTRIBUTE_SWITCH_SNMP_INDEX = "snmp_index";
 
         private const string TAG_VLANS = "vlans";
         private const string TAG_VLAN = "vlan";
@@ -40,12 +48,14 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_PORT_SWITCH = "switch";
         private const string ATTRIBUTE_PORT_INDEX = "index";
         private const string ATTRIBUTE_PORT_VLANS = "vlans";
+        private const string ATTRIBUTE_PORT_SNMP_INDEX = "snmp_index";
 
         private const string TAG_PAGE = "page";
         private const string ATTRIBUTE_PAGE_TITLE = "title";
         private const string ATTRIBUTE_PAGE_DEFAULT = "default";
 
         private const string STR_TRUE = "true";
+        private const string STR_FALSE = "false";
 
         public Config LoadConfig()
         {
@@ -58,6 +68,7 @@ namespace easyvlans.Model
                     XmlNode root = doc.DocumentElement;
                     if (root.LocalName != TAG_ROOT)
                         throw new ConfigParsingException("Root tag of configuration XML is invalid!");
+                    Config.SettingsGroups settings = null;
                     Dictionary<string, Switch> switches = null;
                     Dictionary<int, Vlan> vlans = null;
                     Dictionary<string, List<Vlan>> vlansets = null;
@@ -67,6 +78,9 @@ namespace easyvlans.Model
                     {
                         switch (node.LocalName)
                         {
+                            case TAG_SETTINGS:
+                                settings = loadSettings(node);
+                                break;
                             case TAG_SWITCHES:
                                 switches = loadSwitches(node);
                                 break;
@@ -78,13 +92,15 @@ namespace easyvlans.Model
                                 break;
                         }
                     }
+                    if (settings == null)
+                        throw new ConfigParsingException("Couldn't load settings from configuration XML!");
                     if (switches == null)
                         throw new ConfigParsingException("Couldn't load switches from configuration XML!");
                     if (vlans == null)
                         throw new ConfigParsingException("Couldn't load VLANs from configuration XML!");
                     if (ports == null)
                         throw new ConfigParsingException("Couldn't load ports from configuration XML!");
-                    return new Config(switches, vlans, ports, pages);
+                    return new Config(settings, switches, vlans, ports, pages);
                 }
                 catch (ConfigParsingException)
                 {
@@ -99,6 +115,60 @@ namespace easyvlans.Model
             {
                 throw new ConfigParsingException("Couldn't find config.xml!");
             }
+        }
+
+        private Config.SettingsGroups loadSettings(XmlNode parentNode)
+        {
+            Config.SettingsGroups settings = new();
+            foreach (XmlNode node in parentNode.ChildNodes)
+            {
+                switch (node.LocalName)
+                {
+                    case TAG_SETTINGS_SNMP:
+                        if (settings.Snmp != null)
+                            throw new ConfigParsingException($"Multiple SNMP setting tags (<{TAG_SETTINGS}>/<{TAG_SETTINGS_SNMP}>)!");
+                        settings.Snmp = loadSnmpSettings(node);
+                        break;
+                }
+            }
+            return settings;
+        }
+
+        private Config.SnmpSettings loadSnmpSettings(XmlNode node)
+        {
+            Config.SnmpSettings settings = new Config.SnmpSettings();
+            string enabledStr = node.Attributes[ATTRIBUTE_SETTINGS_SNMP_ENABLED]?.Value;
+            if (enabledStr != null)
+            {
+                settings.Enabled = enabledStr switch
+                {
+                    STR_TRUE => true,
+                    STR_FALSE => false,
+                    _ => throw new ConfigParsingException($"Invalid value for SNMP setting: <{TAG_SETTINGS}>/<{TAG_SETTINGS_SNMP}>, attribute: {ATTRIBUTE_SETTINGS_SNMP_ENABLED}! It must be '{STR_TRUE}' or '{STR_FALSE}'.")
+                };
+            }
+            string portStr = node.Attributes[ATTRIBUTE_SETTINGS_SNMP_PORT]?.Value;
+            if (portStr != null)
+            {
+                if (!int.TryParse(portStr, out int port) || (port < 1) || (port > 65535))
+                    throw new ConfigParsingException($"Invalid value for SNMP setting: <{TAG_SETTINGS}>/<{TAG_SETTINGS_SNMP}>, attribute: {ATTRIBUTE_SETTINGS_SNMP_PORT}! It must be an integer between 1 and 65535.");
+                settings.Port = port;
+            }
+            string communityRead = node.Attributes[ATTRIBUTE_SETTINGS_SNMP_COMMUNITY_READ]?.Value;
+            if (communityRead != null)
+            {
+                if (string.IsNullOrWhiteSpace(communityRead))
+                    throw new ConfigParsingException($"Invalid value for SNMP setting: <{TAG_SETTINGS}>/<{TAG_SETTINGS_SNMP}>, attribute: {ATTRIBUTE_SETTINGS_SNMP_COMMUNITY_READ}! It must be a non-empty string.");
+                settings.CommunityRead = communityRead;
+            }
+            string communityWrite = node.Attributes[ATTRIBUTE_SETTINGS_SNMP_COMMUNITY_WRITE]?.Value;
+            if (communityWrite != null)
+            {
+                if (string.IsNullOrWhiteSpace(communityWrite))
+                    throw new ConfigParsingException($"Invalid value for SNMP setting: <{TAG_SETTINGS}>/<{TAG_SETTINGS_SNMP}>, attribute: {ATTRIBUTE_SETTINGS_SNMP_COMMUNITY_WRITE}! It must be a non-empty string.");
+                settings.CommunityWrite = communityWrite;
+            }
+            return settings;
         }
 
         private Dictionary<string, Switch> loadSwitches(XmlNode parentNode)
@@ -130,7 +200,17 @@ namespace easyvlans.Model
                     throw new ConfigParsingException($"Community string of switch (XML attribute: {ATTRIBUTE_SWITCH_COMMUNITY_STRING}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
                 string switchMethodAccessVlanMembership = node.Attributes[ATTRIBUTE_SWITCH_ACCESS_VLAN_MEMBERSHIP]?.Value;
                 string switchMethodPersist = node.Attributes[ATTRIBUTE_SWITCH_METHOD_PERSIST]?.Value;
-                Switch @switch = new Switch(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchMethodAccessVlanMembership, switchMethodPersist);
+                string snmpIndexStr = node.Attributes[ATTRIBUTE_SWITCH_SNMP_INDEX]?.Value;
+                int? snmpIndex = null;
+                if (snmpIndexStr != null)
+                {
+                    if (string.IsNullOrWhiteSpace(snmpIndexStr))
+                        throw new ConfigParsingException($"SNMP index of switch (XML attribute: {ATTRIBUTE_SWITCH_SNMP_INDEX}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
+                    if (!int.TryParse(snmpIndexStr, out int snmpIndexInt) || (snmpIndex < 1))
+                        throw new ConfigParsingException($"SNMP index of switch (XML attribute: {ATTRIBUTE_SWITCH_SNMP_INDEX}) must be a valid positive integer at {tagIndex}. <{TAG_SWITCH}> tag!");
+                    snmpIndex = snmpIndexInt;
+                }
+                Switch @switch = new Switch(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchMethodAccessVlanMembership, switchMethodPersist, snmpIndex);
                 switches.Add(switchId, @switch);
                 tagIndex++;
             }
@@ -221,7 +301,17 @@ namespace easyvlans.Model
                 throw new ConfigParsingException($"Index of port (XML attribute: {ATTRIBUTE_PORT_INDEX}) is invalid at {tagIndex}. <{TAG_PORT}> tag!");
             string portVlans = node.Attributes[ATTRIBUTE_PORT_VLANS]?.Value;
             List<Vlan> vlansForPort = filterVlans(portVlans, vlans, vlansets, "port", tagIndex, TAG_PORT);
-            return new Port(portLabel, @switch, portIndex, vlansForPort, page);
+            string snmpIndexStr = node.Attributes[ATTRIBUTE_PORT_SNMP_INDEX]?.Value;
+            int? snmpIndex = null;
+            if (snmpIndexStr != null)
+            {
+                if (string.IsNullOrWhiteSpace(snmpIndexStr))
+                    throw new ConfigParsingException($"SNMP index of port (XML attribute: {ATTRIBUTE_PORT_SNMP_INDEX}) can't be empty at {tagIndex}. <{TAG_PORT}> tag!");
+                if (!int.TryParse(snmpIndexStr, out int snmpIndexInt) || (snmpIndex < 1))
+                    throw new ConfigParsingException($"SNMP index of port (XML attribute: {ATTRIBUTE_PORT_SNMP_INDEX}) must be a valid positive integer at {tagIndex}. <{TAG_PORT}> tag!");
+                snmpIndex = snmpIndexInt;
+            }
+            return new Port(portLabel, @switch, portIndex, vlansForPort, page, snmpIndex);
         }
 
         private List<Vlan> filterVlans(string filterString, Dictionary<int, Vlan> vlans, Dictionary<string, List<Vlan>> vlansets, string filteringForWhat, int filteringForWhatTagIndex, string filteringForWhatTagString)

@@ -24,6 +24,13 @@ namespace easyvlans
             {
                 LogDispatcher.I("Loading configuration...");
                 config = (new ConfigParser()).LoadConfig();
+                if (config.Settings.Snmp?.Enabled == true)
+                {
+                    SnmpAgent snmpAgent = new();
+                    snmpAgent.CreateEngine(config.Settings.Snmp);
+                    snmpAgent.AddDataFromConfig(config);
+                    snmpAgent.StartListening();
+                }
             }
             catch (ConfigParsingException e)
             {

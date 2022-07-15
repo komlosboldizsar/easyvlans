@@ -15,6 +15,7 @@ namespace easyvlans.Model
         public readonly int Index;
         public readonly List<Vlan> Vlans = new();
         public readonly PortPage Page;
+        public readonly int? SnmpIndex;
 
         public event PropertyChangedDelegate<Port, Vlan> CurrentVlanChanged;
         private Vlan _currentVlan;
@@ -60,7 +61,7 @@ namespace easyvlans.Model
             internal set => this.setProperty(ref _pendingChanges, value, PendingChangesChanged);
         }
 
-        public Port(string label, Switch @switch, int index, IEnumerable<Vlan> vlans, PortPage page)
+        public Port(string label, Switch @switch, int index, IEnumerable<Vlan> vlans, PortPage page, int? snmpIndex)
         {
             Label = label;
             Switch = @switch;
@@ -68,6 +69,7 @@ namespace easyvlans.Model
             Index = index;
             Vlans.AddRange(vlans);
             Page = page;
+            SnmpIndex = snmpIndex;
         }
 
         public async Task SetVlanTo(Vlan vlan)

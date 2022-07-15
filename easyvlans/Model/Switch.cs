@@ -17,6 +17,7 @@ namespace easyvlans.Model
 
         public readonly string ID;
         public readonly string Label;
+        public readonly int? SnmpIndex;
         private readonly IPEndPoint ipEndPoint;
         private readonly OctetString communityString;
         private readonly IAccessVlanMembershipMethod accessVlanMembershipMethod;
@@ -75,7 +76,7 @@ namespace easyvlans.Model
             private set => this.setProperty(ref _persistVlanConfigStatusUpdateTime, value, PersistVlanConfigStatusUpdateTimeChanged);
         }
 
-        public Switch(string id, string label, string ip, int port, string communityString, string accessVlanMembershipMethodName, string persistChangesMethodName)
+        public Switch(string id, string label, string ip, int port, string communityString, string accessVlanMembershipMethodName, string persistChangesMethodName, int? snmpIndex)
         {
             ID = id;
             Label = label;
@@ -85,6 +86,7 @@ namespace easyvlans.Model
             logMethodFoundOrNot("accessing and setting VLAN memberships", accessVlanMembershipMethodName, accessVlanMembershipMethod);
             persistChangesMethod = PersistChangesMethods.Instance.GetInstance(persistChangesMethodName, this);
             logMethodFoundOrNot("persisting changes", persistChangesMethodName, persistChangesMethod);
+            SnmpIndex = snmpIndex;
         }
 
         private void logMethodFoundOrNot(string methodPurpose, string methodName, IMethod method)
