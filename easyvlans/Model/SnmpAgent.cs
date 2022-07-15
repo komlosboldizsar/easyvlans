@@ -42,12 +42,8 @@ namespace easyvlans.Model
 
         public void AddDataFromConfig(Config config)
         {
-            foreach (Switch @switch in config.Switches.Values)
-                if (@switch.SnmpIndex != null)
-                    _objectStore.Add(new SwitchDataTable(@switch));
-            foreach (Port port in config.Ports)
-                if (port.SnmpIndex != null)
-                    _objectStore.Add(new PortDataTable(port));
+            _objectStore.AddRange(config.Switches.Values.Where(s => s.SnmpIndex != null).Select(s => new SwitchDataTable(s)));
+            _objectStore.AddRange(config.Ports.Where(p => p.SnmpIndex != null).Select(p => new PortDataTable(p)));
         }
 
         public void StartListening()
