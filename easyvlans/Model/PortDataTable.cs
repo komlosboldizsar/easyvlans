@@ -12,20 +12,23 @@ namespace easyvlans.Model
     {
 
         public PortDataTable(Port port) : base(port) { }
-        protected override ScalarObject[] getObjects() => new ScalarObject[]
+
+        protected override IVariableFactory[] VariableFactories => new IVariableFactory[]
         {
-            new IndexVariable(_item),
-            new LabelVariable(_item),
-            new SwitchSnmpIndexVariable(_item),
-            new SwitchLabelVariable(_item),
-            new CurrentVlanIdVariable(_item),
-            new CurrentVlanNameVariable(_item),
-            new HasComplexMembershipVariable(_item),
-            new SetVlanMembershipStatusVariable(_item),
-            new PendingChangesVariable(_item)
+            new VariableFactory<DataProviders.Index>(INDEX_Index),
+            new VariableFactory<DataProviders.Label>(INDEX_Label),
+            new VariableFactory<DataProviders.SwitchSnmpIndex>(INDEX_SwitchSnmpIndex),
+            new VariableFactory<DataProviders.SwitchLabel>(INDEX_SwitchLabel),
+            new VariableFactory<DataProviders.CurrentVlanId>(INDEX_CurrentVlanId),
+            new VariableFactory<DataProviders.CurrentVlanName>(INDEX_CurrentVlanName),
+            new VariableFactory<DataProviders.HasComplexMembership>(INDEX_HasComplexMembership),
+            new VariableFactory<DataProviders.SetVlanMembershipStatus>(INDEX_SetVlanMembershipStatus),
+            new VariableFactory<DataProviders.PendingChanges>(INDEX_PendingChanges)
         };
 
-        public static readonly string OID_TABLE = $"{SnmpAgent.OID_BASE}.2";
+        protected override string TableOid => $"{SnmpAgent.OID_BASE}.2";
+        protected override int GetItemIndex() => (int)_item.SnmpIndex;
+
         public const int INDEX_Index = 1;
         public const int INDEX_Label = 2;
         public const int INDEX_SwitchSnmpIndex = 3;
@@ -36,137 +39,55 @@ namespace easyvlans.Model
         public const int INDEX_SetVlanMembershipStatus = 8;
         public const int INDEX_PendingChanges = 9;
 
-        private abstract class OidGeneratorBase : OidGeneratorBaseBase
+        private class DataProviders
         {
-            protected override string TableID => OID_TABLE;
-            protected override int GetItemIndex(Port port) => (int)port.SnmpIndex;
-        }
 
-        private class IndexVariable : Variable<IndexVariable.OidGenerator>
-        {
-            public IndexVariable(Port port) : base(port) { }
-            public override ISnmpData Data
+            public class Index : VariableDataProvider
             {
-                get => new Integer32(_item.Index);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new Integer32(Item.Index);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_Index;
-            }
-        }
 
-        private class LabelVariable : Variable<LabelVariable.OidGenerator>
-        {
-            public LabelVariable(Port port) : base(port) { }
-            public override ISnmpData Data
+            public class Label : VariableDataProvider
             {
-                get => new OctetString(_item.Label);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new OctetString(Item.Label);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_Label;
-            }
-        }
 
-        private class SwitchSnmpIndexVariable : Variable<SwitchSnmpIndexVariable.OidGenerator>
-        {
-            public SwitchSnmpIndexVariable(Port port) : base(port) { }
-            public override ISnmpData Data
+            public class SwitchSnmpIndex : VariableDataProvider
             {
-                get => new Integer32(_item.Switch.SnmpIndex ?? 0);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new Integer32(Item.Switch.SnmpIndex ?? 0);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_SwitchSnmpIndex;
-            }
-        }
 
-        private class SwitchLabelVariable : Variable<SwitchLabelVariable.OidGenerator>
-        {
-            public SwitchLabelVariable(Port port) : base(port) { }
-            public override ISnmpData Data
+            public class SwitchLabel : VariableDataProvider
             {
-                get => new OctetString(_item.Switch.Label);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new OctetString(Item.Switch.Label);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_SwitchLabel;
-            }
-        }
 
-        private class CurrentVlanIdVariable : Variable<CurrentVlanIdVariable.OidGenerator>
-        {
-            public CurrentVlanIdVariable(Port port) : base(port) { }
-            public override ISnmpData Data
+            public class CurrentVlanId : VariableDataProvider
             {
-                get => new Integer32(_item.CurrentVlan?.ID ?? 0);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new Integer32(Item.CurrentVlan?.ID ?? 0);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_CurrentVlanId;
-            }
-        }
 
-        private class CurrentVlanNameVariable : Variable<CurrentVlanNameVariable.OidGenerator>
-        {
-            public CurrentVlanNameVariable(Port port) : base(port) { }
-            public override ISnmpData Data
+            public class CurrentVlanName : VariableDataProvider
             {
-                get => new OctetString(_item.CurrentVlan?.Name ?? CURRENT_VLAN_UNKNOWN);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new OctetString(Item.CurrentVlan?.Name ?? CURRENT_VLAN_UNKNOWN);
+                private const string CURRENT_VLAN_UNKNOWN = "(unknown)";
             }
-            private const string CURRENT_VLAN_UNKNOWN = "(unknown)";
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_CurrentVlanName;
-            }
-        }
 
-        private class HasComplexMembershipVariable : Variable<HasComplexMembershipVariable.OidGenerator>
-        {
-            public HasComplexMembershipVariable(Port port) : base(port) { }
-            public override ISnmpData Data
+            public class HasComplexMembership : VariableDataProvider
             {
-                get => new Integer32(_item.HasComplexMembership ? 1 : 0);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new Integer32(Item.HasComplexMembership ? 1 : 0);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_HasComplexMembership;
-            }
-        }
 
-        private class SetVlanMembershipStatusVariable : Variable<SetVlanMembershipStatusVariable.OidGenerator>
-        {
-            public SetVlanMembershipStatusVariable(Port port) : base(port) { }
-            public override ISnmpData Data
+            public class SetVlanMembershipStatus : VariableDataProvider
             {
-                get => new Integer32((int)_item.SetVlanMembershipStatus);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new Integer32((int)Item.SetVlanMembershipStatus);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_SetVlanMembershipStatus;
-            }
-        }
 
-        private class PendingChangesVariable : Variable<PendingChangesVariable.OidGenerator>
-        {
-            public PendingChangesVariable(Port port) : base(port) { }
-            public override ISnmpData Data
+            public class PendingChanges : VariableDataProvider
             {
-                get => new Integer32(_item.PendingChanges ? 1 : 0);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new Integer32(Item.PendingChanges ? 1 : 0);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_PendingChanges;
-            }
+
         }
 
     }

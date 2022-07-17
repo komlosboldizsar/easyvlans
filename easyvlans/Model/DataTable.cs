@@ -12,38 +12,62 @@ namespace easyvlans.Model
     {
 
         protected readonly TKnownItem _item;
-        public DataTable(TKnownItem item)
-        {
-            _item = item;
-            _objects.AddRange(getObjects());
-        }
-        protected abstract ScalarObject[] getObjects();
         protected readonly List<ScalarObject> _objects = new();
         protected override IEnumerable<ScalarObject> Objects => _objects;
 
-        protected abstract class Variable<TOidGenerator> : ScalarObject
-            where TOidGenerator : IOidGenerator, new()
+        public DataTable(TKnownItem item)
         {
-            protected readonly TKnownItem _item;
-            public Variable(TKnownItem item)
-                : base(new ObjectIdentifier(_oidGenerator.Generate(item)))
+            _item = item;
+            _objects.AddRange(VariableFactories.Select(vf => vf.CreateVariable($"{TableOid}.{GetItemIndex()}", item)));
+        }
+
+        protected abstract IVariableFactory[] VariableFactories { get; }
+        protected abstract string TableOid { get; }
+        protected abstract int GetItemIndex();
+
+        protected class UniversalVariable : ScalarObject
+        {
+
+            protected readonly VariableDataProvider _dataProvider;
+
+            public UniversalVariable(string oid, VariableDataProvider dataProvider)
+                : base(new ObjectIdentifier(oid))
+                => _dataProvider = dataProvider;
+
+            public override ISnmpData Data
             {
-                _item = item;
+                get => _dataProvider.Get();
+                set => _dataProvider.Set(value);
             }
-            private static TOidGenerator _oidGenerator = new TOidGenerator();
+
         }
 
-        protected interface IOidGenerator
+        protected abstract class VariableDataProvider
         {
-            string Generate(TKnownItem item);
+            public TKnownItem Item { get; init; }
+            public virtual ISnmpData Get() => throw new AccessFailureException();
+            public virtual void Set(ISnmpData data) => throw new AccessFailureException();
         }
 
-        protected abstract class OidGeneratorBaseBase : IOidGenerator
+        protected interface IVariableFactory
         {
-            protected abstract string TableID { get; }
-            protected abstract int GetItemIndex(TKnownItem item);
-            protected abstract int PropertyIndex { get; }
-            public string Generate(TKnownItem item) => $"{TableID}.{GetItemIndex(item)}.{PropertyIndex}";
+            public ScalarObject CreateVariable(string itemOid, TKnownItem item);
+        }
+
+        protected class VariableFactory<TDataProvider> : IVariableFactory
+            where TDataProvider : VariableDataProvider, new()
+        {
+
+            int _propertyIndex;
+
+            public VariableFactory(int propertyIndex) => _propertyIndex = propertyIndex;
+
+            public ScalarObject CreateVariable(string itemOid, TKnownItem item)
+            {
+                VariableDataProvider dataProvider = new TDataProvider() { Item = item };
+                return new UniversalVariable($"{itemOid}.{_propertyIndex}", dataProvider);
+            }
+
         }
 
     }

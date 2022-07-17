@@ -12,96 +12,53 @@ namespace easyvlans.Model
     {
 
         public SwitchDataTable(Switch @switch) : base(@switch) { }
-        protected override ScalarObject[] getObjects() => new ScalarObject[]
+
+        protected override IVariableFactory[] VariableFactories => new IVariableFactory[]
         {
-            new IdVariable(_item),
-            new LabelVariable(_item),
-            new PortsWithPendingChangeCountVariable(_item),
-            new ReadVlanConfigStatusVariable(_item),
-            new PersistVlanConfigStatusVariable(_item)
+            new VariableFactory<DataProviders.Id>(INDEX_Id),
+            new VariableFactory<DataProviders.Label>(INDEX_Label),
+            new VariableFactory<DataProviders.PortsWithPendingChangeCount>(INDEX_PortsWithPendingChangeCount),
+            new VariableFactory<DataProviders.ReadVlanConfigStatus>(INDEX_ReadVlanConfigStatus),
+            new VariableFactory<DataProviders.PersistVlanConfigStatus>(INDEX_PersistVlanConfigStatus)
         };
 
-        public static readonly string OID_TABLE = $"{SnmpAgent.OID_BASE}.1";
         public const int INDEX_Id = 1;
         public const int INDEX_Label = 2;
         public const int INDEX_PortsWithPendingChangeCount = 3;
         public const int INDEX_ReadVlanConfigStatus = 4;
         public const int INDEX_PersistVlanConfigStatus = 5;
 
-        private abstract class OidGeneratorBase : OidGeneratorBaseBase
-        {
-            protected override string TableID => OID_TABLE;
-            protected override int GetItemIndex(Switch item) => (int)item.SnmpIndex;
-        }
+        protected override string TableOid => $"{SnmpAgent.OID_BASE}.1";
+        protected override int GetItemIndex() => (int)_item.SnmpIndex;
 
-        private class IdVariable : Variable<IdVariable.OidGenerator>
+        private class DataProviders
         {
-            public IdVariable(Switch @switch) : base(@switch) { }
-            public override ISnmpData Data
-            {
-                get => new OctetString(_item.ID);
-                set => throw new AccessFailureException();
-            }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_Id;
-            }
-        }
 
-        private class LabelVariable : Variable<LabelVariable.OidGenerator>
-        {
-            public LabelVariable(Switch @switch) : base(@switch) { }
-            public override ISnmpData Data
+            public class Id : VariableDataProvider
             {
-                get => new OctetString(_item.Label);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new OctetString(Item.ID);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_Label;
-            }
-        }
 
-        private class PortsWithPendingChangeCountVariable : Variable<PortsWithPendingChangeCountVariable.OidGenerator>
-        {
-            public PortsWithPendingChangeCountVariable(Switch @switch) : base(@switch) { }
-            public override ISnmpData Data
+            public class Label : VariableDataProvider
             {
-                get => new Integer32(_item.PortsWithPendingChangeCount);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new OctetString(Item.Label);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_PortsWithPendingChangeCount;
-            }
-        }
 
-        private class ReadVlanConfigStatusVariable : Variable<ReadVlanConfigStatusVariable.OidGenerator>
-        {
-            public ReadVlanConfigStatusVariable(Switch @switch) : base(@switch) { }
-            public override ISnmpData Data
+            public class PortsWithPendingChangeCount : VariableDataProvider
             {
-                get => new Integer32(_item.PortsWithPendingChangeCount);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new Integer32(Item.PortsWithPendingChangeCount);
             }
-            public class OidGenerator : OidGeneratorBase
-            {
-                protected override int PropertyIndex => INDEX_ReadVlanConfigStatus;
-            }
-        }
 
-        private class PersistVlanConfigStatusVariable : Variable<PersistVlanConfigStatusVariable.OidGenerator>
-        {
-            public PersistVlanConfigStatusVariable(Switch @switch) : base(@switch) { }
-            public override ISnmpData Data
+            public class ReadVlanConfigStatus : VariableDataProvider
             {
-                get => new Integer32(_item.PortsWithPendingChangeCount);
-                set => throw new AccessFailureException();
+                public override ISnmpData Get() => new Integer32(Item.PortsWithPendingChangeCount);
             }
-            public class OidGenerator : OidGeneratorBase
+
+            public class PersistVlanConfigStatus : VariableDataProvider
             {
-                protected override int PropertyIndex => INDEX_PersistVlanConfigStatus;
+                public override ISnmpData Get() => new Integer32(Item.PortsWithPendingChangeCount);
             }
+
         }
 
     }
