@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace easyvlans.Model.Remote.Snmp
 {
 
-    internal abstract class DataTable<TKnownItem> : TableObject
+    internal abstract class DataTable<TKnownItem> : MyTableObject
     {
 
         public readonly TKnownItem Item;
@@ -35,7 +35,7 @@ namespace easyvlans.Model.Remote.Snmp
             }
         }
 
-        protected class UniversalVariable : ScalarObject
+        internal class UniversalVariable : ScalarObject
         {
 
             protected readonly VariableDataProvider _dataProvider;
@@ -52,7 +52,7 @@ namespace easyvlans.Model.Remote.Snmp
 
         }
 
-        protected abstract class VariableDataProvider
+        internal abstract class VariableDataProvider
         {
             public TKnownItem Item { get; init; }
             public virtual ISnmpData Get() => throw new AccessFailureException();

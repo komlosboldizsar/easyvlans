@@ -15,7 +15,7 @@ namespace easyvlans.Model.Remote.Snmp
     internal class SnmpAgent
     {
 
-        private ObjectStore _objectStore;
+        private MyObjectStore _objectStore;
         private int _port;
         private SnmpEngine _engine;
 
@@ -25,7 +25,7 @@ namespace easyvlans.Model.Remote.Snmp
 
         public void CreateEngine(Config.SnmpSettings config)
         {
-            _objectStore = new ObjectStore();
+            _objectStore = new();
             IMembershipProvider v1MembershipProvider = new Version1MembershipProvider(
                 new OctetString(config.CommunityRead ?? COMMUNITY_READ_DEFAULT),
                 new OctetString(config.CommunityWrite ?? COMMUNITY_WRITE_DEFAULT));
