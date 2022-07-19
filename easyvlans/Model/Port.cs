@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    public class Port
+    public class Port : IRemoteable
     {
 
         public readonly string Label;
@@ -15,7 +15,7 @@ namespace easyvlans.Model
         public readonly int Index;
         public readonly List<Vlan> Vlans = new();
         public readonly PortPage Page;
-        public readonly int? SnmpIndex;
+        public int? RemoteIndex { get; init; }
 
         public event PropertyChangedDelegate<Port, Vlan> CurrentVlanChanged;
         private Vlan _currentVlan;
@@ -61,7 +61,7 @@ namespace easyvlans.Model
             internal set => this.setProperty(ref _pendingChanges, value, PendingChangesChanged);
         }
 
-        public Port(string label, Switch @switch, int index, IEnumerable<Vlan> vlans, PortPage page, int? snmpIndex)
+        public Port(string label, Switch @switch, int index, IEnumerable<Vlan> vlans, PortPage page, int? remoteIndex)
         {
             Label = label;
             Switch = @switch;
@@ -69,7 +69,7 @@ namespace easyvlans.Model
             Index = index;
             Vlans.AddRange(vlans);
             Page = page;
-            SnmpIndex = snmpIndex;
+            RemoteIndex = remoteIndex;
         }
 
         public async Task SetVlanTo(Vlan vlan)

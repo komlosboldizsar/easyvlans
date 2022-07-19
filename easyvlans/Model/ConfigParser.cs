@@ -32,7 +32,7 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_SWITCH_COMMUNITY_STRING = "community_string";
         private const string ATTRIBUTE_SWITCH_ACCESS_VLAN_MEMBERSHIP = "method_access_vlan_membership";
         private const string ATTRIBUTE_SWITCH_METHOD_PERSIST = "method_persist";
-        private const string ATTRIBUTE_SWITCH_SNMP_INDEX = "snmp_index";
+        private const string ATTRIBUTE_SWITCH_REMOTE_INDEX = "remote_index";
 
         private const string TAG_VLANS = "vlans";
         private const string TAG_VLAN = "vlan";
@@ -48,7 +48,7 @@ namespace easyvlans.Model
         private const string ATTRIBUTE_PORT_SWITCH = "switch";
         private const string ATTRIBUTE_PORT_INDEX = "index";
         private const string ATTRIBUTE_PORT_VLANS = "vlans";
-        private const string ATTRIBUTE_PORT_SNMP_INDEX = "snmp_index";
+        private const string ATTRIBUTE_PORT_REMOTE_INDEX = "remote_index";
 
         private const string TAG_PAGE = "page";
         private const string ATTRIBUTE_PAGE_TITLE = "title";
@@ -63,7 +63,7 @@ namespace easyvlans.Model
             {
                 try
                 {
-                    XmlDocument doc = new XmlDocument();
+                    XmlDocument doc = new();
                     doc.Load(FILE_CONFIG);
                     XmlNode root = doc.DocumentElement;
                     if (root.LocalName != TAG_ROOT)
@@ -200,17 +200,17 @@ namespace easyvlans.Model
                     throw new ConfigParsingException($"Community string of switch (XML attribute: {ATTRIBUTE_SWITCH_COMMUNITY_STRING}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
                 string switchMethodAccessVlanMembership = node.Attributes[ATTRIBUTE_SWITCH_ACCESS_VLAN_MEMBERSHIP]?.Value;
                 string switchMethodPersist = node.Attributes[ATTRIBUTE_SWITCH_METHOD_PERSIST]?.Value;
-                string snmpIndexStr = node.Attributes[ATTRIBUTE_SWITCH_SNMP_INDEX]?.Value;
-                int? snmpIndex = null;
-                if (snmpIndexStr != null)
+                string remoteIndexStr = node.Attributes[ATTRIBUTE_SWITCH_REMOTE_INDEX]?.Value;
+                int? remoteIndex = null;
+                if (remoteIndexStr != null)
                 {
-                    if (string.IsNullOrWhiteSpace(snmpIndexStr))
-                        throw new ConfigParsingException($"SNMP index of switch (XML attribute: {ATTRIBUTE_SWITCH_SNMP_INDEX}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
-                    if (!int.TryParse(snmpIndexStr, out int snmpIndexInt) || (snmpIndex < 1))
-                        throw new ConfigParsingException($"SNMP index of switch (XML attribute: {ATTRIBUTE_SWITCH_SNMP_INDEX}) must be a valid positive integer at {tagIndex}. <{TAG_SWITCH}> tag!");
-                    snmpIndex = snmpIndexInt;
+                    if (string.IsNullOrWhiteSpace(remoteIndexStr))
+                        throw new ConfigParsingException($"Remote index of switch (XML attribute: {ATTRIBUTE_SWITCH_REMOTE_INDEX}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
+                    if (!int.TryParse(remoteIndexStr, out int remoteIndexInt) || (remoteIndexInt < 1))
+                        throw new ConfigParsingException($"Remote index of switch (XML attribute: {ATTRIBUTE_SWITCH_REMOTE_INDEX}) must be a valid positive integer at {tagIndex}. <{TAG_SWITCH}> tag!");
+                    remoteIndex = remoteIndexInt;
                 }
-                Switch @switch = new Switch(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchMethodAccessVlanMembership, switchMethodPersist, snmpIndex);
+                Switch @switch = new(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchMethodAccessVlanMembership, switchMethodPersist, remoteIndex);
                 switches.Add(switchId, @switch);
                 tagIndex++;
             }
@@ -250,7 +250,7 @@ namespace easyvlans.Model
             string vlanName = node.Attributes[ATTRIBUTE_VLAN_NAME]?.Value;
             if (string.IsNullOrWhiteSpace(vlanName))
                 throw new ConfigParsingException($"Name of VLAN (XML attribute: {ATTRIBUTE_VLAN_NAME}) can't be empty at {tagIndex}. <{TAG_VLAN}> tag!");
-            return new Vlan(vlanId, vlanName);
+            return new(vlanId, vlanName);
         }
 
         private (string, List<Vlan>) loadVlanset(XmlNode node, int tagIndex, Dictionary<int, Vlan> vlans)
@@ -301,17 +301,17 @@ namespace easyvlans.Model
                 throw new ConfigParsingException($"Index of port (XML attribute: {ATTRIBUTE_PORT_INDEX}) is invalid at {tagIndex}. <{TAG_PORT}> tag!");
             string portVlans = node.Attributes[ATTRIBUTE_PORT_VLANS]?.Value;
             List<Vlan> vlansForPort = filterVlans(portVlans, vlans, vlansets, "port", tagIndex, TAG_PORT);
-            string snmpIndexStr = node.Attributes[ATTRIBUTE_PORT_SNMP_INDEX]?.Value;
-            int? snmpIndex = null;
-            if (snmpIndexStr != null)
+            string remoteIndexStr = node.Attributes[ATTRIBUTE_PORT_REMOTE_INDEX]?.Value;
+            int? remoteIndex = null;
+            if (remoteIndexStr != null)
             {
-                if (string.IsNullOrWhiteSpace(snmpIndexStr))
-                    throw new ConfigParsingException($"SNMP index of port (XML attribute: {ATTRIBUTE_PORT_SNMP_INDEX}) can't be empty at {tagIndex}. <{TAG_PORT}> tag!");
-                if (!int.TryParse(snmpIndexStr, out int snmpIndexInt) || (snmpIndex < 1))
-                    throw new ConfigParsingException($"SNMP index of port (XML attribute: {ATTRIBUTE_PORT_SNMP_INDEX}) must be a valid positive integer at {tagIndex}. <{TAG_PORT}> tag!");
-                snmpIndex = snmpIndexInt;
+                if (string.IsNullOrWhiteSpace(remoteIndexStr))
+                    throw new ConfigParsingException($"Remote index of port (XML attribute: {ATTRIBUTE_PORT_REMOTE_INDEX}) can't be empty at {tagIndex}. <{TAG_PORT}> tag!");
+                if (!int.TryParse(remoteIndexStr, out int remoteIndexInt) || (remoteIndexInt < 1))
+                    throw new ConfigParsingException($"Remote index of port (XML attribute: {ATTRIBUTE_PORT_REMOTE_INDEX}) must be a valid positive integer at {tagIndex}. <{TAG_PORT}> tag!");
+                remoteIndex = remoteIndexInt;
             }
-            return new Port(portLabel, @switch, portIndex, vlansForPort, page, snmpIndex);
+            return new(portLabel, @switch, portIndex, vlansForPort, page, remoteIndex);
         }
 
         private List<Vlan> filterVlans(string filterString, Dictionary<int, Vlan> vlans, Dictionary<string, List<Vlan>> vlansets, string filteringForWhat, int filteringForWhatTagIndex, string filteringForWhatTagString)
@@ -323,13 +323,13 @@ namespace easyvlans.Model
                 string key = _key;
                 bool exclude = key.StartsWith('!');
                 if (exclude)
-                    key = key.Substring(1);
+                    key = key[1..];
                 bool set = false;
                 if (vlansets != null)
                 {
                     set = key.StartsWith('#');
                     if (set)
-                        key = key.Substring(1);
+                        key = key[1..];
                 }
                 if (set && (vlansets == null))
                     throw new ConfigParsingException($"Not allowed to use VLAN sets in the filter string for {filteringForWhat} at {filteringForWhatTagIndex}. <{filteringForWhatTagString}> tag!");
@@ -375,7 +375,7 @@ namespace easyvlans.Model
                 throw new ConfigParsingException($"Title of page (XML attribute: {ATTRIBUTE_PAGE_TITLE}) can't be empty at {tagIndex}. <{TAG_PAGE}> tag!");
             string pageDefaultString = node.Attributes[ATTRIBUTE_PAGE_DEFAULT]?.Value;
             bool pageDefault = (pageDefaultString == STR_TRUE);
-            return new PortPage(pageTitle, pageDefault);
+            return new(pageTitle, pageDefault);
         }
 
     }

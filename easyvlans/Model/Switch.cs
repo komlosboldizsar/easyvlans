@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 namespace easyvlans.Model
 {
 
-    public partial class Switch
+    public class Switch : IRemoteable
     {
 
         public readonly string ID;
         public readonly string Label;
-        public readonly int? SnmpIndex;
+        public int? RemoteIndex { get; init; }
         private readonly IPEndPoint ipEndPoint;
         private readonly OctetString communityString;
         private readonly IAccessVlanMembershipMethod accessVlanMembershipMethod;
@@ -76,7 +76,7 @@ namespace easyvlans.Model
             private set => this.setProperty(ref _persistVlanConfigStatusUpdateTime, value, PersistVlanConfigStatusUpdateTimeChanged);
         }
 
-        public Switch(string id, string label, string ip, int port, string communityString, string accessVlanMembershipMethodName, string persistChangesMethodName, int? snmpIndex)
+        public Switch(string id, string label, string ip, int port, string communityString, string accessVlanMembershipMethodName, string persistChangesMethodName, int? remoteIndex)
         {
             ID = id;
             Label = label;
@@ -86,7 +86,7 @@ namespace easyvlans.Model
             logMethodFoundOrNot("accessing and setting VLAN memberships", accessVlanMembershipMethodName, accessVlanMembershipMethod);
             persistChangesMethod = PersistChangesMethods.Instance.GetInstance(persistChangesMethodName, this);
             logMethodFoundOrNot("persisting changes", persistChangesMethodName, persistChangesMethod);
-            SnmpIndex = snmpIndex;
+            RemoteIndex = remoteIndex;
         }
 
         private void logMethodFoundOrNot(string methodPurpose, string methodName, IMethod method)

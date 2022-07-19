@@ -42,8 +42,8 @@ namespace easyvlans.Model
 
         public void AddDataFromConfig(Config config)
         {
-            _objectStore.AddRange(config.Switches.Values.Where(s => s.SnmpIndex != null).Select(s => new SwitchDataTable(s)));
-            _objectStore.AddRange(config.Ports.Where(p => p.SnmpIndex != null).Select(p => new PortDataTable(p)));
+            _objectStore.AddRange(config.Switches.Values.Where(s => s.RemoteIndex != null).Select(s => new SwitchDataTable(s)));
+            _objectStore.AddRange(config.Ports.Where(p => p.RemoteIndex != null).Select(p => new PortDataTable(p)));
         }
 
         public void StartListening()

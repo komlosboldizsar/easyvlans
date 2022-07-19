@@ -17,7 +17,7 @@ namespace easyvlans.Model
         {
             new VariableFactory<DataProviders.Index>(INDEX_Index),
             new VariableFactory<DataProviders.Label>(INDEX_Label),
-            new VariableFactory<DataProviders.SwitchSnmpIndex>(INDEX_SwitchSnmpIndex),
+            new VariableFactory<DataProviders.SwitchRemoteIndex>(INDEX_SwitchRemoteIndex),
             new VariableFactory<DataProviders.SwitchLabel>(INDEX_SwitchLabel),
             new VariableFactory<DataProviders.CurrentVlanId>(INDEX_CurrentVlanId),
             new VariableFactory<DataProviders.CurrentVlanName>(INDEX_CurrentVlanName),
@@ -27,11 +27,10 @@ namespace easyvlans.Model
         };
 
         protected override string TableOid => $"{SnmpAgent.OID_BASE}.2";
-        protected override int GetItemIndex() => (int)_item.SnmpIndex;
 
         public const int INDEX_Index = 1;
         public const int INDEX_Label = 2;
-        public const int INDEX_SwitchSnmpIndex = 3;
+        public const int INDEX_SwitchRemoteIndex = 3;
         public const int INDEX_SwitchLabel = 4;
         public const int INDEX_CurrentVlanId = 5;
         public const int INDEX_CurrentVlanName = 6;
@@ -52,9 +51,9 @@ namespace easyvlans.Model
                 public override ISnmpData Get() => new OctetString(Item.Label);
             }
 
-            public class SwitchSnmpIndex : VariableDataProvider
+            public class SwitchRemoteIndex : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32(Item.Switch.SnmpIndex ?? 0);
+                public override ISnmpData Get() => new Integer32(Item.Switch.RemoteIndex ?? 0);
             }
 
             public class SwitchLabel : VariableDataProvider

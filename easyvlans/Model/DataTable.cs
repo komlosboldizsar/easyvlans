@@ -23,7 +23,12 @@ namespace easyvlans.Model
 
         protected abstract IVariableFactory[] VariableFactories { get; }
         protected abstract string TableOid { get; }
-        protected abstract int GetItemIndex();
+        protected virtual int GetItemIndex()
+        {
+            if (!(_item is IRemoteable remoteable))
+                throw new NotImplementedException($"{nameof(DataTable<object>)}.{nameof(GetItemIndex)}() default implementation is only usable for subclasses/implementations of {nameof(IRemoteable)} interface.");
+            return (int)remoteable.RemoteIndex;
+        } 
 
         protected class UniversalVariable : ScalarObject
         {

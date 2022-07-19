@@ -29,7 +29,6 @@ namespace easyvlans.Model
         public const int INDEX_PersistVlanConfigStatus = 5;
 
         protected override string TableOid => $"{SnmpAgent.OID_BASE}.1";
-        protected override int GetItemIndex() => (int)_item.SnmpIndex;
 
         private class DataProviders
         {
