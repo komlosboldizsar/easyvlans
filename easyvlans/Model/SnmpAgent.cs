@@ -60,7 +60,7 @@ namespace easyvlans.Model
             public void Log(ISnmpContext context) { }
         }
 
-        public const string OID_BASE = "1.3.6.9";
+        public const string OID_BASE = "1.3.6.1.4.1.59150.1";
 
     }
 }
