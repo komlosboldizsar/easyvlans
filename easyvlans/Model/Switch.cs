@@ -1,5 +1,6 @@
 ﻿using easyvlans.Helpers;
 using easyvlans.Logger;
+using easyvlans.Model.Remote.Snmp;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 using System;

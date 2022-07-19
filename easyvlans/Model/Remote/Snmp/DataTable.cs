@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace easyvlans.Model
+namespace easyvlans.Model.Remote.Snmp
 {
     internal abstract class DataTable<TKnownItem> : TableObject
     {
@@ -28,7 +28,7 @@ namespace easyvlans.Model
             if (!(_item is IRemoteable remoteable))
                 throw new NotImplementedException($"{nameof(DataTable<object>)}.{nameof(GetItemIndex)}() default implementation is only usable for subclasses/implementations of {nameof(IRemoteable)} interface.");
             return (int)remoteable.RemoteIndex;
-        } 
+        }
 
         protected class UniversalVariable : ScalarObject
         {

@@ -10,7 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace easyvlans.Model
+namespace easyvlans.Model.Remote.Snmp
 {
     internal class SnmpAgent
     {

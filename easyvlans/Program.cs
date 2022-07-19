@@ -1,5 +1,6 @@
 using easyvlans.Logger;
 using easyvlans.Model;
+using easyvlans.Model.Remote.Snmp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
