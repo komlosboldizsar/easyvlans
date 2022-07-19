@@ -8,26 +8,31 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model.Remote.Snmp
 {
+
     internal abstract class DataTable<TKnownItem> : TableObject
     {
 
-        protected readonly TKnownItem _item;
+        public readonly TKnownItem Item;
         protected readonly List<ScalarObject> _objects = new();
         protected override IEnumerable<ScalarObject> Objects => _objects;
 
         public DataTable(TKnownItem item)
         {
-            _item = item;
-            _objects.AddRange(VariableFactories.Select(vf => vf.CreateVariable($"{TableOid}.{GetItemIndex()}", item)));
+            Item = item;
+            _objects.AddRange(VariableFactories.Select(vf => vf.CreateVariable(this)));
         }
 
         protected abstract IVariableFactory[] VariableFactories { get; }
         protected abstract string TableOid { get; }
-        protected virtual int GetItemIndex()
+        protected virtual int EntryOidIndex { get; } = 1;
+        protected virtual int ItemIndex
         {
-            if (!(_item is IRemoteable remoteable))
-                throw new NotImplementedException($"{nameof(DataTable<object>)}.{nameof(GetItemIndex)}() default implementation is only usable for subclasses/implementations of {nameof(IRemoteable)} interface.");
-            return (int)remoteable.RemoteIndex;
+            get
+            {
+                if (Item is not IRemoteable remoteable)
+                    throw new NotImplementedException($"{nameof(DataTable<object>)}.{nameof(ItemIndex)}.get() default implementation is only usable for subclasses/implementations of {nameof(IRemoteable)} interface.");
+                return (int)remoteable.RemoteIndex;
+            }
         }
 
         protected class UniversalVariable : ScalarObject
@@ -56,7 +61,7 @@ namespace easyvlans.Model.Remote.Snmp
 
         protected interface IVariableFactory
         {
-            public ScalarObject CreateVariable(string itemOid, TKnownItem item);
+            public ScalarObject CreateVariable(DataTable<TKnownItem> table);
         }
 
         protected class VariableFactory<TDataProvider> : IVariableFactory
@@ -67,10 +72,10 @@ namespace easyvlans.Model.Remote.Snmp
 
             public VariableFactory(int propertyIndex) => _propertyIndex = propertyIndex;
 
-            public ScalarObject CreateVariable(string itemOid, TKnownItem item)
+            public ScalarObject CreateVariable(DataTable<TKnownItem> table)
             {
-                VariableDataProvider dataProvider = new TDataProvider() { Item = item };
-                return new UniversalVariable($"{itemOid}.{_propertyIndex}", dataProvider);
+                VariableDataProvider dataProvider = new TDataProvider() { Item = table.Item };
+                return new UniversalVariable($"{table.TableOid}.{table.EntryOidIndex}.{_propertyIndex}.{table.ItemIndex}", dataProvider);
             }
 
         }
