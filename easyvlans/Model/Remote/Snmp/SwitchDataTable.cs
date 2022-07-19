@@ -50,12 +50,12 @@ namespace easyvlans.Model.Remote.Snmp
 
             public class ReadVlanConfigStatus : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32(Item.PortsWithPendingChangeCount);
+                public override ISnmpData Get() => new Integer32((int)Item.ReadVlanConfigStatus);
             }
 
             public class PersistVlanConfigStatus : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32(Item.PortsWithPendingChangeCount);
+                public override ISnmpData Get() => new Integer32((int)Item.PersistVlanConfigStatus);
             }
 
         }
