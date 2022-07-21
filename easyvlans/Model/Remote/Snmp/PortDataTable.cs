@@ -74,7 +74,7 @@ namespace easyvlans.Model.Remote.Snmp
 
             public class HasComplexMembership : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32(Item.HasComplexMembership ? 1 : 0);
+                public override ISnmpData Get() => new Integer32(Item.HasComplexMembership ? 1 : 2);
             }
 
             public class SetVlanMembershipStatus : VariableDataProvider
@@ -84,7 +84,7 @@ namespace easyvlans.Model.Remote.Snmp
 
             public class PendingChanges : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32(Item.PendingChanges ? 1 : 0);
+                public override ISnmpData Get() => new Integer32(Item.PendingChanges ? 1 : 2);
             }
 
         }
