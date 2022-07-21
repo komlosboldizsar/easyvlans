@@ -107,17 +107,17 @@ namespace easyvlans.GUI
 
             private void displaySetVlanMembershipStatus() => displayStatus(_setVlanStatusLabel, _item.SetVlanMembershipStatus, _item.SetVlanMembershipStatusUpdateTime);
 
-            private void setVlanMembershipStatusChangedHandler(Port port, Status newValue) => displaySetVlanMembershipStatus();
-            private void setVlanMembershipStatusUpdateTimeChangedHandler(Port port, DateTime newValue) => displaySetVlanMembershipStatus();
-            private void pendingChangesChangedHandler(Port port, bool newValue) => displayVlanMembership();
-            private void hasComplexMembershipChangedHandler(Port port, bool newValue) => displayVlanMembership();
+            private void setVlanMembershipStatusChangedHandler(Port port, Status newValue) => table.InvokeIfRequired(displaySetVlanMembershipStatus);
+            private void setVlanMembershipStatusUpdateTimeChangedHandler(Port port, DateTime newValue) => table.InvokeIfRequired(displaySetVlanMembershipStatus);
+            private void pendingChangesChangedHandler(Port port, bool newValue) => table.InvokeIfRequired(displayVlanMembership);
+            private void hasComplexMembershipChangedHandler(Port port, bool newValue) => table.InvokeIfRequired(displayVlanMembership);
 
             private void currentVlanChangedHandler(Port port, Vlan newValue)
-            {
-                if (port == _item)
-                    _setVlanToComboBox.SelectedIndex = 0;
-                displayVlanMembership();
-            }
+                => table.InvokeIfRequired(() => {
+                    if (port == _item)
+                        _setVlanToComboBox.SelectedIndex = 0;
+                    displayVlanMembership();
+                });
 
             private void setVlanToComboBoxSelectedIndexChangedHandler(object sender, EventArgs e)
             {

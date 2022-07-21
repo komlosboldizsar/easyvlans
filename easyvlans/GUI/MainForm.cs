@@ -25,12 +25,15 @@ namespace easyvlans.GUI
 
         public MainForm(Config config, string parsingError)
         {
-            LogDispatcher.NewLogMessage += addLogMessage;
+            LogDispatcher.NewLogMessage += newLogMessageHandler;
             this.config = config;
             this.parsingError = parsingError;
             Load += loadAsync;
             InitializeComponent();
         }
+
+        private void newLogMessageHandler(DateTime Timestamp, LogMessageSeverity severity, string message)
+            => logTextBox.InvokeIfRequired(() => addLogMessage(Timestamp, severity, message));
 
         private void addLogMessage(DateTime timestamp, LogMessageSeverity severity, string message)
         {

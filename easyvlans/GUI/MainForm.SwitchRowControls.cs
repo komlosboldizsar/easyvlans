@@ -92,11 +92,11 @@ namespace easyvlans.GUI
                 }
             }
 
-            private void readVlanConfigStatusChangedHandler(Switch @switch, Status newValue) => displayReadVlanConfigStatus();
-            private void readVlanConfigStatusUpdateTimeChangedHandler(Switch @switch, DateTime newValue) => displayReadVlanConfigStatus();
-            private void persistConfigStatusChangedHandler(Switch @switch, Status newValue) => displayPersistConfigStatus();
-            private void persistConfigStatusUpdateTimeChangedHandler(Switch @switch, DateTime newValue) => displayPersistConfigStatus();
-            private void portsWithPendingChangeCountChangedHandler(Switch @switch, int newValue) => displayPortsWithPendingChangeCount();
+            private void readVlanConfigStatusChangedHandler(Switch @switch, Status newValue) => table.InvokeIfRequired(displayReadVlanConfigStatus);
+            private void readVlanConfigStatusUpdateTimeChangedHandler(Switch @switch, DateTime newValue) => table.InvokeIfRequired(displayReadVlanConfigStatus);
+            private void persistConfigStatusChangedHandler(Switch @switch, Status newValue) => table.InvokeIfRequired(displayPersistConfigStatus);
+            private void persistConfigStatusUpdateTimeChangedHandler(Switch @switch, DateTime newValue) => table.InvokeIfRequired(displayPersistConfigStatus);
+            private void portsWithPendingChangeCountChangedHandler(Switch @switch, int newValue) => table.InvokeIfRequired(displayPortsWithPendingChangeCount);
 
             private async void persistChangesButtonClickHandler(object sender, EventArgs e) => await _item?.PersistChangesAsync();
 
