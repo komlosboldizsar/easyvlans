@@ -64,6 +64,18 @@ namespace easyvlans.Model.Remote.Snmp
             public class CurrentVlanId : VariableDataProvider
             {
                 public override ISnmpData Get() => new Integer32(Item.CurrentVlan?.ID ?? 0);
+                public override async void Set(ISnmpData data)
+                {
+                    if (data is Integer32 intData)
+                    {
+                        int vlanId = intData.ToInt32();
+                        Vlan vlan = Item.Vlans.FirstOrDefault(v => v.ID == vlanId);
+                        if (vlan == null)
+                            throw new ArgumentOutOfRangeException(nameof(data), "VLAN with given ID not found or not valid for this port.");
+                        if (!await Item.SetVlanTo(vlan))
+                            throw new OperationException("Setting port to be the member of the given VLAN not successful.");
+                    }
+                }
             }
 
             public class CurrentVlanName : VariableDataProvider

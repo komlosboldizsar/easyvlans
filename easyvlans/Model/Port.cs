@@ -73,17 +73,18 @@ namespace easyvlans.Model
             RemoteIndex = remoteIndex;
         }
 
-        public async Task SetVlanTo(Vlan vlan)
+        public async Task<bool> SetVlanTo(Vlan vlan)
         {
             SetVlanMembershipStatus = Status.Querying;
             if (!await Switch.SetPortToVlanAsync(this, vlan))
             {
                 SetVlanMembershipStatus = Status.Unsuccessful;
-                return;
+                return false;
             }
             SetVlanMembershipStatus = Status.Successful;
             CurrentVlan = vlan;
             PendingChanges = true;
+            return true;
         }
 
         internal void ChangesPersisted() => PendingChanges = false;

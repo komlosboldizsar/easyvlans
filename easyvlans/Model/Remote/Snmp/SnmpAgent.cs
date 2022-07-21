@@ -33,7 +33,8 @@ namespace easyvlans.Model.Remote.Snmp
             var handlerFactory = new MessageHandlerFactory(new[]
             {
                 new HandlerMapping("v1", "GET", new GetV1MessageHandler()),
-                new HandlerMapping("v1", "GETNEXT", new GetNextV1MessageHandler())
+                new HandlerMapping("v1", "GETNEXT", new GetNextV1MessageHandler()),
+                new HandlerMapping("v1", "SET", new SetV1MessageHandler())
             });
             var pipelineFactory = new SnmpApplicationFactory(new MyLogger(), _objectStore, membershipProvider, handlerFactory);
             _port = config.Port ?? PORT_DEFAULT;
