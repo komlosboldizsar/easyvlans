@@ -3,6 +3,7 @@ using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -96,7 +97,7 @@ namespace easyvlans.Model
                         lastOwnerSnmpVlan = snmpVlan;
                     }
                 }
-                if ((ownerVlans == 1) && (lastOwnerSnmpVlan.ID == snmpPort.PVID) && userPort.Vlans.Contains(lastOwnerSnmpVlan.UserVlan))
+                if ((ownerVlans == 1) && (lastOwnerSnmpVlan?.ID == snmpPort.PVID))
                 {
                     userPort.CurrentVlan = lastOwnerSnmpVlan.UserVlan;
                     userPort.HasComplexMembership = false;
@@ -104,7 +105,7 @@ namespace easyvlans.Model
                 else
                 {
                     userPort.CurrentVlan = null;
-                    if ((ownerVlans > 1) || (lastOwnerSnmpVlan.ID != snmpPort.PVID))
+                    if ((ownerVlans > 1) || (lastOwnerSnmpVlan?.ID != snmpPort.PVID))
                         userPort.HasComplexMembership = true;
                 }
             }
