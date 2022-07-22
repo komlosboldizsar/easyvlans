@@ -22,6 +22,7 @@ namespace easyvlans.Model.Remote.Snmp
             new VariableFactory<DataProviders.CurrentVlanId>(INDEX_CurrentVlanId),
             new VariableFactory<DataProviders.CurrentVlanName>(INDEX_CurrentVlanName),
             new VariableFactory<DataProviders.HasComplexMembership>(INDEX_HasComplexMembership),
+            new VariableFactory<DataProviders.HasNotAllowedMembership>(INDEX_HasNotAllowedMembership),
             new VariableFactory<DataProviders.SetVlanMembershipStatus>(INDEX_SetVlanMembershipStatus),
             new VariableFactory<DataProviders.PendingChanges>(INDEX_PendingChanges)
         };
@@ -35,8 +36,9 @@ namespace easyvlans.Model.Remote.Snmp
         public const int INDEX_CurrentVlanId = 5;
         public const int INDEX_CurrentVlanName = 6;
         public const int INDEX_HasComplexMembership = 7;
-        public const int INDEX_SetVlanMembershipStatus = 8;
-        public const int INDEX_PendingChanges = 9;
+        public const int INDEX_HasNotAllowedMembership = 8;
+        public const int INDEX_SetVlanMembershipStatus = 9;
+        public const int INDEX_PendingChanges = 10;
 
         private class DataProviders
         {
@@ -87,6 +89,11 @@ namespace easyvlans.Model.Remote.Snmp
             public class HasComplexMembership : VariableDataProvider
             {
                 public override ISnmpData Get() => new Integer32(Item.HasComplexMembership ? 1 : 2);
+            }
+
+            public class HasNotAllowedMembership : VariableDataProvider
+            {
+                public override ISnmpData Get() => new Integer32(Item.HasNotAllowedMembership ? 1 : 2);
             }
 
             public class SetVlanMembershipStatus : VariableDataProvider

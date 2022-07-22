@@ -23,7 +23,11 @@ namespace easyvlans.Model
         public Vlan CurrentVlan
         {
             get => _currentVlan;
-            set => this.setProperty(ref _currentVlan, value, CurrentVlanChanged);
+            set
+            {
+                if (this.setProperty(ref _currentVlan, value, CurrentVlanChanged))
+                    HasNotAllowedMembership = (value != null) && !Vlans.Contains(value);
+            }
         }
 
         public event PropertyChangedDelegate<Port, bool> HasComplexMembershipChanged;
@@ -32,6 +36,14 @@ namespace easyvlans.Model
         {
             get => _hasComplexMembership;
             internal set => this.setProperty(ref _hasComplexMembership, value, HasComplexMembershipChanged);
+        }
+
+        public event PropertyChangedDelegate<Port, bool> HasNotAllowedMembershipChanged;
+        private bool _hasNotAllowedMembership;
+        public bool HasNotAllowedMembership
+        {
+            get => _hasNotAllowedMembership;
+            private set => this.setProperty(ref _hasNotAllowedMembership, value, HasNotAllowedMembershipChanged);
         }
 
         public event PropertyChangedDelegate<Port, Status> SetVlanMembershipStatusChanged;
