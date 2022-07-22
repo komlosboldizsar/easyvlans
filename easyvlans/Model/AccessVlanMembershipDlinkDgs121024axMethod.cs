@@ -33,10 +33,10 @@ namespace easyvlans.Model
                 switch (idParts.NodeId)
                 {
                     case OID_DOT1Q_VLAN_ALL_MEMBERSHIP:
-                        snmpVlan.EgressPorts = portVlanStaticTableRow.Data.ToBytes().Skip(2).ToArray();
+                        snmpVlan.EgressPorts = (portVlanStaticTableRow.Data as OctetString).GetRaw();
                         break;
                     case OID_DOT1Q_VLAN_UNTAGGED_MEMBERSHIP:
-                        snmpVlan.UntaggedPorts = portVlanStaticTableRow.Data.ToBytes().Skip(2).ToArray();
+                        snmpVlan.UntaggedPorts = (portVlanStaticTableRow.Data as OctetString).GetRaw();
                         break;
                 }
             }
@@ -136,9 +136,9 @@ namespace easyvlans.Model
             {
                 SnmpVariableHelpers.IdParts idParts = oldRow.GetIdParts();
                 bool valueToSet = (idParts.RowId == targetVlanId);
-                byte[] snmpDataBytes = oldRow.Data.ToBytes();
-                snmpDataBytes.SetBit(portByteIndex + 2, portBitIndex, valueToSet);
-                Variable newRow = new Variable(oldRow.Id, DataFactory.CreateSnmpData(snmpDataBytes));
+                byte[] snmpDataBytes = (oldRow.Data as OctetString).GetRaw();
+                snmpDataBytes.SetBit(portByteIndex, portBitIndex, valueToSet);
+                Variable newRow = new(oldRow.Id, new OctetString(snmpDataBytes));
                 (valueToSet ? variablesSet : variablesClear).Add(newRow);
             }
         }
