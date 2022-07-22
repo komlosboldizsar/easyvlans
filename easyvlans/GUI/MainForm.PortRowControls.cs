@@ -137,7 +137,7 @@ namespace easyvlans.GUI
 
             private const string CURRENT_VLAN_COMPLEX = "complex";
             private const string CURRENT_VLAN_UNKNOWN = "unknown";
-            private static readonly Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
+            private static readonly Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlText;
             private static readonly Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
 
         }
