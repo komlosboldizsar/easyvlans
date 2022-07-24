@@ -20,7 +20,8 @@ namespace easyvlans.Model
         public readonly string Label;
         public int? RemoteIndex { get; init; }
         private readonly IPEndPoint ipEndPoint;
-        private readonly OctetString communityString;
+        private readonly OctetString readCommunityString;
+        private readonly OctetString writeCommunityString;
         private readonly IAccessVlanMembershipMethod accessVlanMembershipMethod;
         private readonly IPersistChangesMethod persistChangesMethod;
 
@@ -77,12 +78,21 @@ namespace easyvlans.Model
             private set => this.setProperty(ref _persistVlanConfigStatusUpdateTime, value, PersistVlanConfigStatusUpdateTimeChanged);
         }
 
-        public Switch(string id, string label, string ip, int port, string communityString, string accessVlanMembershipMethodName, string persistChangesMethodName, int? remoteIndex)
+        public Switch(string id, string label, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, string persistChangesMethodName, int? remoteIndex)
         {
             ID = id;
             Label = label;
             ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
-            this.communityString = new OctetString(communityString);
+            string[] communityStringParts = communityStrings.Split(':');
+            if (communityStringParts.Length > 1)
+            {
+                readCommunityString = new OctetString(communityStringParts[0]);
+                writeCommunityString = new OctetString(communityStringParts[1]);
+            }
+            else
+            {
+                readCommunityString = writeCommunityString = new OctetString(communityStrings);
+            }
             accessVlanMembershipMethod = AccessVlanMembershipMethods.Instance.GetInstance(accessVlanMembershipMethodName, this);
             logMethodFoundOrNot("accessing and setting VLAN memberships", accessVlanMembershipMethodName, accessVlanMembershipMethod);
             persistChangesMethod = PersistChangesMethods.Instance.GetInstance(persistChangesMethodName, this);
@@ -117,13 +127,13 @@ namespace easyvlans.Model
         public async Task<List<Variable>> SnmpBulkWalkAsync(string objectIdentifierStr)
         {
             List<Variable> result = new();
-            await Messenger.BulkWalkAsync(VersionCode.V2, ipEndPoint, communityString, OctetString.Empty,
+            await Messenger.BulkWalkAsync(VersionCode.V2, ipEndPoint, readCommunityString, OctetString.Empty,
                 new ObjectIdentifier(objectIdentifierStr), result, 5, WalkMode.WithinSubtree, null, null);
             return result;
         }
 
         public async Task SnmpSetAsync(List<Variable> variables)
-            => await Messenger.SetAsync(VersionCode.V2, ipEndPoint, communityString, variables);
+            => await Messenger.SetAsync(VersionCode.V2, ipEndPoint, writeCommunityString, variables);
 
         public async Task ReadConfigAsync()
         {
