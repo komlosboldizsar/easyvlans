@@ -117,7 +117,7 @@ namespace easyvlans.GUI
             int portPageIndex = 0;
             foreach (PortPage portPage in config.PortPages)
             {
-                Button newPortPageButton = (portPageIndex > 0) ? portPageButton.Clone() : portPageButton;
+                Button newPortPageButton = (portPageIndex > 0) ? portPageButton.CloneT() : portPageButton;
                 newPortPageButton.Text = portPage.Title;
                 newPortPageButton.Tag = portPage;
                 newPortPageButton.Click += portPageButtonClick;
@@ -127,25 +127,29 @@ namespace easyvlans.GUI
             }
         }
 
+        private RecyclerTableLayoutManager<Port, PortRowManager> portTableManager;
+
         private void createPortsTable()
         {
             if (config.Ports.Count == 0)
                 return; // Todo...
             int maxPortRowCount = config.Ports.Where(p => p.Page == null).Count() + config.Ports.GroupBy(p => p.Page).Max(gp => gp.Count());
-            PortRowControls.Init(this, portTable);
-            PortRowControls.CreateAll(maxPortRowCount);
+            portTableManager = new(this, portTable, 1);
+            portTableManager.CreateAllRows(maxPortRowCount);
         }
 
         private void showDefaultPortPage()
             => showPortPage(config.PortPages.FirstOrDefault(pp => pp.IsDefault) ?? config.PortPages.FirstOrDefault());
 
+        private RecyclerTableLayoutManager<Switch, SwitchRowManager> switchTableManager;
+
         private void createAndShowSwitchesTable()
         {
             if (config.Switches.Count == 0)
                 return; // Todo...
-            SwitchRowControls.Init(this, switchTable);
-            SwitchRowControls.CreateAll(config.Switches.Count);
-            SwitchRowControls.Bind(config.Switches.Values);
+            switchTableManager = new(this, switchTable, 1);
+            switchTableManager.CreateAllRows(config.Switches.Count);
+            switchTableManager.BindItems(config.Switches.Values);
         }
 
         private void portPageButtonClick(object sender, EventArgs e) => showPortPage(((Button)sender).Tag as PortPage);
@@ -159,7 +163,7 @@ namespace easyvlans.GUI
                 btn.ForeColor = selected ? Color.White : SystemColors.ControlText;
             }
             IEnumerable<Port> shownPorts = config.Ports.Where(p => ((p.Page == null) || (p.Page == portPage)));
-            PortRowControls.Bind(shownPorts);
+            portTableManager.BindItems(shownPorts);
         }
 
         private static void openUrl(string url) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
