@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    internal class MethodBase
+    public interface ISetPortToVlanMethod : ISwitchOperationMethod
     {
-        public Switch Switch { get; init; }
+        Task<bool> DoAsync(Port port, Vlan vlan);
     }
 }

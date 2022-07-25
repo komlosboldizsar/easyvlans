@@ -19,11 +19,8 @@ namespace easyvlans.Model
         public readonly string ID;
         public readonly string Label;
         public int? RemoteIndex { get; init; }
-        private readonly IPEndPoint ipEndPoint;
-        private readonly OctetString readCommunityString;
-        private readonly OctetString writeCommunityString;
-        private readonly IAccessVlanMembershipMethod accessVlanMembershipMethod;
-        private readonly IPersistChangesMethod persistChangesMethod;
+
+        public ISwitchOperationMethodCollection OperationMethodCollection { get; set; }
 
         public readonly List<Port> Ports = new();
         private readonly List<Port> portsWithPendingChange = new();
@@ -78,44 +75,11 @@ namespace easyvlans.Model
             private set => this.setProperty(ref _persistVlanConfigStatusUpdateTime, value, PersistVlanConfigStatusUpdateTimeChanged);
         }
 
-        public Switch(string id, string label, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, string persistChangesMethodName, int? remoteIndex)
+        public Switch(string id, string label, int? remoteIndex)
         {
             ID = id;
             Label = label;
-            ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
-            string[] communityStringParts = communityStrings.Split(':');
-            if (communityStringParts.Length > 1)
-            {
-                readCommunityString = new OctetString(communityStringParts[0]);
-                writeCommunityString = new OctetString(communityStringParts[1]);
-            }
-            else
-            {
-                readCommunityString = writeCommunityString = new OctetString(communityStrings);
-            }
-            accessVlanMembershipMethod = AccessVlanMembershipMethods.Instance.GetInstance(accessVlanMembershipMethodName, this);
-            logMethodFoundOrNot("accessing and setting VLAN memberships", accessVlanMembershipMethodName, accessVlanMembershipMethod);
-            persistChangesMethod = PersistChangesMethods.Instance.GetInstance(persistChangesMethodName, this);
-            logMethodFoundOrNot("persisting changes", persistChangesMethodName, persistChangesMethod);
             RemoteIndex = remoteIndex;
-        }
-
-        private void logMethodFoundOrNot(string methodPurpose, string methodName, IMethod method)
-        {
-            if (methodName == null)
-            {
-                if (method == null)
-                    LogDispatcher.W($"No default method found for {methodPurpose} of switch [{Label}].");
-                else
-                    LogDispatcher.V($"Using default method for {methodPurpose} of switch [{Label}].");
-            }
-            else
-            {
-                if (method == null)
-                    LogDispatcher.W($"No method found with name [{methodName}] for {methodPurpose} of switch [{Label}].");
-                else
-                    LogDispatcher.V($"Found method with name [{methodName}] for {methodPurpose} of switch [{Label}].");
-            }
         }
 
         internal void AssociatePort(Port port)
@@ -124,30 +88,19 @@ namespace easyvlans.Model
                 Ports.Add(port);
         }
 
-        public async Task<List<Variable>> SnmpBulkWalkAsync(string objectIdentifierStr)
-        {
-            List<Variable> result = new();
-            await Messenger.BulkWalkAsync(VersionCode.V2, ipEndPoint, readCommunityString, OctetString.Empty,
-                new ObjectIdentifier(objectIdentifierStr), result, 5, WalkMode.WithinSubtree, null, null);
-            return result;
-        }
-
-        public async Task SnmpSetAsync(List<Variable> variables)
-            => await Messenger.SetAsync(VersionCode.V2, ipEndPoint, writeCommunityString, variables);
-
         public async Task ReadConfigAsync()
         {
-            if (accessVlanMembershipMethod == null)
+            if (OperationMethodCollection.ReadConfigMethod == null)
             {
                 LogDispatcher.E($"Couldn't read configuration of switch [{Label}], because no method is associated.");
                 return;
             }
             ReadVlanConfigStatus = Status.Querying;
             LogDispatcher.I($"Reading configuration of switch [{Label}]...");
-            LogDispatcher.V($"Method for reading configuration of switch [{Label}]: [{accessVlanMembershipMethod.Name}].");
+            LogDispatcher.V($"Method for reading configuration of switch [{Label}]: [{OperationMethodCollection.SetPortToVlanMethod.DetailedCode}].");
             try
             {
-                await accessVlanMembershipMethod.ReadConfigAsync();
+                await OperationMethodCollection.ReadConfigMethod.DoAsync();
                 ReadVlanConfigStatus = Status.Successful;
                 LogDispatcher.I($"Reading configuration of switch [{Label}] ready.");
             }
@@ -162,16 +115,16 @@ namespace easyvlans.Model
         {
             if ((port.Switch != this) || !Ports.Contains(port))
                 return false;
-            if (accessVlanMembershipMethod == null)
+            if (OperationMethodCollection.SetPortToVlanMethod == null)
             {
                 LogDispatcher.E($"Couldn't set VLAN membership of port [{port.Label}] @ switch [{Label}], because no method is associated.");
                 return false;
             }
             LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Label}]...");
-            LogDispatcher.V($"Method for setting VLAN membership of port [{port.Label}] @ switch [{Label}]: [{accessVlanMembershipMethod.Name}].");
+            LogDispatcher.V($"Method for setting VLAN membership of port [{port.Label}] @ switch [{Label}]: [{OperationMethodCollection.SetPortToVlanMethod.DetailedCode}].");
             try
             {
-                await accessVlanMembershipMethod.SetPortToVlanAsync(port, vlan);
+                await OperationMethodCollection.SetPortToVlanMethod.DoAsync(port, vlan);
                 portUpdated(port);
                 LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{Label}] to VLAN [{vlan.Label}] ready.");
                 return true;
@@ -193,17 +146,17 @@ namespace easyvlans.Model
 
         public async Task<bool> PersistChangesAsync()
         {
-            if (persistChangesMethod == null)
+            if (OperationMethodCollection.PersistChangesMethod == null)
             {
                 LogDispatcher.E($"Couldn't persist changes of switch [{Label}], because no method is associated.");
                 return false;
             }
             PersistVlanConfigStatus = Status.Querying;
             LogDispatcher.I($"Persisting changes of switch [{Label}]...");
-            LogDispatcher.V($"Method for persisting changes of switch [{Label}]: [{persistChangesMethod.Name}].");
+            LogDispatcher.V($"Method for persisting changes of switch [{Label}]: [{OperationMethodCollection.PersistChangesMethod.DetailedCode}].");
             try
             {
-                await persistChangesMethod.Do();
+                await OperationMethodCollection.PersistChangesMethod.DoAsync();
                 PersistVlanConfigStatus = Status.Successful;
                 notifyPortsChangesPersisted();
                 LogDispatcher.I($"Persisting changes of switch [{Label}] ready.");
@@ -212,7 +165,7 @@ namespace easyvlans.Model
             catch (Exception ex)
             {
                 PersistVlanConfigStatus = Status.Unsuccessful;
-                LogDispatcher.E($"Didn't succeeded to persist changes of switch [{Label}] with method [{persistChangesMethod.Name}]. Error message: [{ex.Message}]");
+                LogDispatcher.E($"Didn't succeeded to persist changes of switch [{Label}] with method [{OperationMethodCollection.PersistChangesMethod.DetailedCode}]. Error message: [{ex.Message}]");
             }
             return false;
         }

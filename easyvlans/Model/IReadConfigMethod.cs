@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    public interface IPersistChangesMethod : ISwitchOperationMethod
+    public interface IReadConfigMethod : ISwitchOperationMethod
     {
         Task DoAsync();
     }

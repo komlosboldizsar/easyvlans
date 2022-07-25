@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    public interface IPersistChangesMethod : ISwitchOperationMethod
-    {
-        Task DoAsync();
-    }
+    public interface ISwitchOperationMethod : IMethod { }
 }

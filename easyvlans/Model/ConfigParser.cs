@@ -27,11 +27,6 @@ namespace easyvlans.Model
         private const string TAG_SWITCH = "switch";
         private const string ATTRIBUTE_SWITCH_ID = "id";
         private const string ATTRIBUTE_SWITCH_LABEL = "label";
-        private const string ATTRIBUTE_SWITCH_IP = "ip";
-        private const string ATTRIBUTE_SWITCH_PORT = "port";
-        private const string ATTRIBUTE_SWITCH_COMMUNITY_STRING = "community_string";
-        private const string ATTRIBUTE_SWITCH_ACCESS_VLAN_MEMBERSHIP = "method_access_vlan_membership";
-        private const string ATTRIBUTE_SWITCH_METHOD_PERSIST = "method_persist";
         private const string ATTRIBUTE_SWITCH_REMOTE_INDEX = "remote_index";
 
         private const string TAG_VLANS = "vlans";
@@ -185,21 +180,6 @@ namespace easyvlans.Model
                 string switchLabel = node.Attributes[ATTRIBUTE_SWITCH_LABEL]?.Value;
                 if (string.IsNullOrWhiteSpace(switchLabel))
                     throw new ConfigParsingException($"Label of switch (XML attribute: {ATTRIBUTE_SWITCH_LABEL}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
-                string switchIp = node.Attributes[ATTRIBUTE_SWITCH_IP]?.Value;
-                if (string.IsNullOrWhiteSpace(switchIp))
-                    throw new ConfigParsingException($"IP address of switch (XML attribute: {ATTRIBUTE_SWITCH_IP}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
-                if (!REGEXP_IP_ADDRESS.IsMatch(switchIp))
-                    throw new ConfigParsingException($"IP address of switch (XML attribute: {ATTRIBUTE_SWITCH_IP}) is invalid at {tagIndex}. <{TAG_SWITCH}> tag!");
-                string switchPortStr = node.Attributes[ATTRIBUTE_SWITCH_PORT]?.Value;
-                if (string.IsNullOrWhiteSpace(switchPortStr))
-                    throw new ConfigParsingException($"Port of switch (XML attribute: {ATTRIBUTE_SWITCH_PORT}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
-                if (!int.TryParse(switchPortStr, out int switchPort))
-                    throw new ConfigParsingException($"Port of switch (XML attribute: {ATTRIBUTE_SWITCH_PORT}) is invalid at {tagIndex}. <{TAG_SWITCH}> tag!");
-                string switchCommunityRead = node.Attributes[ATTRIBUTE_SWITCH_COMMUNITY_STRING]?.Value;
-                if (string.IsNullOrWhiteSpace(switchCommunityRead))
-                    throw new ConfigParsingException($"Community string of switch (XML attribute: {ATTRIBUTE_SWITCH_COMMUNITY_STRING}) can't be empty at {tagIndex}. <{TAG_SWITCH}> tag!");
-                string switchMethodAccessVlanMembership = node.Attributes[ATTRIBUTE_SWITCH_ACCESS_VLAN_MEMBERSHIP]?.Value;
-                string switchMethodPersist = node.Attributes[ATTRIBUTE_SWITCH_METHOD_PERSIST]?.Value;
                 string remoteIndexStr = node.Attributes[ATTRIBUTE_SWITCH_REMOTE_INDEX]?.Value;
                 int? remoteIndex = null;
                 if (remoteIndexStr != null)
@@ -210,14 +190,24 @@ namespace easyvlans.Model
                         throw new ConfigParsingException($"Remote index of switch (XML attribute: {ATTRIBUTE_SWITCH_REMOTE_INDEX}) must be a valid positive integer at {tagIndex}. <{TAG_SWITCH}> tag!");
                     remoteIndex = remoteIndexInt;
                 }
-                Switch @switch = new(switchId, switchLabel, switchIp, switchPort, switchCommunityRead, switchMethodAccessVlanMembership, switchMethodPersist, remoteIndex);
+                Switch @switch = new(switchId, switchLabel, remoteIndex);
+                @switch.OperationMethodCollection = loadSwitchOperationMethods(node, @switch).FirstOrDefault();
                 switches.Add(switchId, @switch);
                 tagIndex++;
             }
             return switches;
         }
 
-        private readonly Regex REGEXP_IP_ADDRESS = new Regex(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private IEnumerable<ISwitchOperationMethodCollection> loadSwitchOperationMethods(XmlNode switchNode, Switch @switch)
+        {
+            foreach (XmlNode childNode in switchNode.ChildNodes)
+            {
+                ISwitchOperationMethodCollection switchOperationMethodCollection = SwitchOperationMethodCollectionRegister.Instance.GetMethodInstance(childNode, @switch);
+                if (switchOperationMethodCollection == null)
+                    throw new ConfigParsingException($"No switch operation method found with code \"{childNode.LocalName}\"."); // TODO: better error reporting
+                yield return switchOperationMethodCollection;
+            }
+        }
 
         private (Dictionary<int, Vlan>, Dictionary<string, List<Vlan>>) loadVlansAndVlanssets(XmlNode parentNode)
         {

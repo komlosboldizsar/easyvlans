@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    internal interface IMethod
+    public interface IMethod
     {
-        string Name { get; }
-        Switch Switch { init; }
+        string Code { get; }
+        string DetailedCode { get; }
+        public interface IFactory<TMethodInterface>
+        {
+            string Code { get; }
+        }
     }
 }
