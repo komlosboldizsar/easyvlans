@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace easyvlans.Model
+namespace easyvlans.Model.SwitchOperationMethods
 {
 
     internal sealed class SnmpAccessVlanMembershipDlinkDgs121024axMethod : ISnmpAccessVlanMembershipMethod
@@ -108,7 +108,7 @@ namespace easyvlans.Model
                         lastOwnerSnmpVlan = snmpVlan;
                     }
                 }
-                if ((ownerVlans == 1) && (lastOwnerSnmpVlan?.ID == snmpPort.PVID))
+                if (ownerVlans == 1 && lastOwnerSnmpVlan?.ID == snmpPort.PVID)
                 {
                     userPort.CurrentVlan = lastOwnerSnmpVlan.UserVlan;
                     userPort.HasComplexMembership = false;
@@ -116,13 +116,13 @@ namespace easyvlans.Model
                 else
                 {
                     userPort.CurrentVlan = null;
-                    if ((ownerVlans > 1) || (lastOwnerSnmpVlan?.ID != snmpPort.PVID))
+                    if (ownerVlans > 1 || lastOwnerSnmpVlan?.ID != snmpPort.PVID)
                         userPort.HasComplexMembership = true;
                 }
             }
         }
 
-        private (int, int) getByteBitIndex(int portIndex) => (((portIndex - 1) / 8), (7 - ((portIndex - 1) % 8)));
+        private (int, int) getByteBitIndex(int portIndex) => ((portIndex - 1) / 8, 7 - (portIndex - 1) % 8);
 
         async Task<bool> ISetPortToVlanMethod.DoAsync(Port port, Vlan vlan)
         {
@@ -147,7 +147,7 @@ namespace easyvlans.Model
             foreach (Variable oldRow in await _parent.SnmpConnection.BulkWalkAsync(tableObjectIdentifier))
             {
                 SnmpVariableHelpers.IdParts idParts = oldRow.GetIdParts();
-                bool valueToSet = (idParts.RowId == targetVlanId);
+                bool valueToSet = idParts.RowId == targetVlanId;
                 byte[] snmpDataBytes = (oldRow.Data as OctetString).GetRaw();
                 snmpDataBytes.SetBit(portByteIndex, portBitIndex, valueToSet);
                 Variable newRow = new(oldRow.Id, new OctetString(snmpDataBytes));

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace easyvlans.Model
+namespace easyvlans.Model.SwitchOperationMethods
 {
     public interface ISnmpConnection
     {

@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 
-namespace easyvlans.Model
+namespace easyvlans.Model.SwitchOperationMethods
 {
     internal sealed class SwitchOperationMethodCollectionRegister : MethodRegisterBase<ISwitchOperationMethodCollection, ISwitchOperationMethodCollection.IFactory>
     {

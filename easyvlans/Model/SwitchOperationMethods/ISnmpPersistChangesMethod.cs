@@ -1,4 +1,4 @@
-﻿namespace easyvlans.Model
+﻿namespace easyvlans.Model.SwitchOperationMethods
 {
     internal interface ISnmpPersistChangesMethod : ISnmpMethod, IPersistChangesMethod
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace easyvlans.Model
+namespace easyvlans.Model.SwitchOperationMethods
 {
 
     internal sealed class SnmpPersistChangesCiscoCopyMethod : ISnmpPersistChangesMethod

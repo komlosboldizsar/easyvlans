@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace easyvlans.Model
+namespace easyvlans.Model.SwitchOperationMethods
 {
     public interface ISwitchOperationMethodCollection : IMethod
     {

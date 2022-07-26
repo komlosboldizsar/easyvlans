@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace easyvlans.Model
+namespace easyvlans.Model.SwitchOperationMethods
 {
     internal class SnmpV2Connection : ISnmpConnection
     {

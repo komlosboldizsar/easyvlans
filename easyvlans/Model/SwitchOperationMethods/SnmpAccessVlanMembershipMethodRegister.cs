@@ -1,4 +1,4 @@
-﻿namespace easyvlans.Model
+﻿namespace easyvlans.Model.SwitchOperationMethods
 {
     internal sealed class SnmpAccessVlanMembershipMethodRegister : MethodRegisterBase<ISnmpAccessVlanMembershipMethod, ISnmpAccessVlanMembershipMethod.IFactory>
     {

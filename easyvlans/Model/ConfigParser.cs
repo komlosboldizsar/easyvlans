@@ -1,4 +1,5 @@
-﻿using System;
+﻿using easyvlans.Model.SwitchOperationMethods;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

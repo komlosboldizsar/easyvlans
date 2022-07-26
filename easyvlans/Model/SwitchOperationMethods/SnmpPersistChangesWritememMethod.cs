@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace easyvlans.Model
+namespace easyvlans.Model.SwitchOperationMethods
 {
 
     internal sealed class SnmpPersistChangesWritememMethod : ISnmpPersistChangesMethod
@@ -26,7 +26,7 @@ namespace easyvlans.Model
             => await _parent.SnmpConnection.SetAsync(new List<Variable>() {
                 new Variable(new ObjectIdentifier(OID_WRITEMEM), new Integer32(1))
             });
-        
+
         private const string OID_WRITEMEM = "1.3.6.1.4.1.9.2.1.54";
 
     }
