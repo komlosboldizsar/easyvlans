@@ -1,9 +1,7 @@
-﻿using Lextm.SharpSnmpLib;
-
-namespace easyvlans.Model.SwitchOperationMethods
+﻿namespace easyvlans.Model.SwitchOperationMethods
 {
 
-    internal sealed class SnmpPersistChangesDlinkDgs121024axMethod : ISnmpPersistChangesMethod
+    internal sealed class SnmpPersistChangesDlinkDgs121024axMethod : SnmpPersistChangesDlinkDgs1210MethodBase
     {
 
         public const string CODE = "dlinkdgs121024ax";
@@ -15,17 +13,11 @@ namespace easyvlans.Model.SwitchOperationMethods
                 => new SnmpPersistChangesDlinkDgs121024axMethod(parent);
         }
 
-        private ISnmpSwitchOperationMethodCollection _parent;
-        public SnmpPersistChangesDlinkDgs121024axMethod(ISnmpSwitchOperationMethodCollection parent) => _parent = parent;
-        public string Code => CODE;
-        public string DetailedCode => $"{_parent.Code}[{CODE}]";
+        public SnmpPersistChangesDlinkDgs121024axMethod(ISnmpSwitchOperationMethodCollection parent)
+            : base(parent) { }
 
-        async Task IPersistChangesMethod.DoAsync()
-            => await _parent.SnmpConnection.SetAsync(new List<Variable>() {
-                new Variable(new ObjectIdentifier(OID_COMPANYSYSTEM_SYSSAVE), new Integer32(1))
-            });
-
-        private const string OID_COMPANYSYSTEM_SYSSAVE = "1.3.6.1.4.1.171.10.76.10.1.10.0";
+        public override string Code => CODE;
+        public override int MibSubtreeIndex => 10;
 
     }
 
