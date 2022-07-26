@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "easyvlans": {
+      "commandName": "Project",
+      "workingDirectory": "..\\_OUTPUT"
+    }
+  }
+}
