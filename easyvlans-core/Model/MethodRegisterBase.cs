@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    internal abstract class MethodRegisterBase<TMethodInterface, TFactoryInterface>
+    public abstract class MethodRegisterBase<TMethodInterface, TFactoryInterface>
         where TMethodInterface : class, IMethod
         where TFactoryInterface : class, IMethod.IFactory<TMethodInterface>
     {
 
-        public MethodRegisterBase() => registerKnownFactories();
+        protected MethodRegisterBase() => registerKnownFactories();
 
         private readonly Dictionary<string, TFactoryInterface> registeredFactories = new();
 

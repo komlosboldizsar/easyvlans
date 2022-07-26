@@ -14,7 +14,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         ISetPortToVlanMethod SetPortToVlanMethod { get; }
         IPersistChangesMethod PersistChangesMethod { get; }
 
-        internal interface IFactory : IFactory<ISwitchOperationMethodCollection>
+        public interface IFactory : IFactory<ISwitchOperationMethodCollection>
         {
             ISwitchOperationMethodCollection GetInstance(XmlNode configNode, Switch @switch);
         }

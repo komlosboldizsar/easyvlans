@@ -35,7 +35,7 @@ namespace easyvlans.Model
         public bool HasComplexMembership
         {
             get => _hasComplexMembership;
-            internal set => this.setProperty(ref _hasComplexMembership, value, HasComplexMembershipChanged);
+            set => this.setProperty(ref _hasComplexMembership, value, HasComplexMembershipChanged);
         }
 
         public event PropertyChangedDelegate<Port, bool> HasNotAllowedMembershipChanged;

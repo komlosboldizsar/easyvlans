@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>icon2.ico</ApplicationIcon>
     <Authors>Komlós Boldizsár &lt;komlos.boldizsar@gmail.com&gt;</Authors>
@@ -25,6 +25,11 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
+    <ProjectReference Include="..\easyvlans-swopm-snmp\easyvlans-swopm-snmp.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 using easyvlans.Logger;
 using easyvlans.Model;
 using easyvlans.Model.Remote.Snmp;
+using easyvlans.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace easyvlans
 {
     static class Program
     {
+
         [STAThread]
         static void Main()
         {
@@ -19,6 +21,7 @@ namespace easyvlans
             Application.SetCompatibleTextRenderingDefault(false);
             _ = new FileLogger();
             LogDispatcher.I("Program started.");
+            initModules();
             Config config = null;
             string parsingError = null;
             try
@@ -43,5 +46,17 @@ namespace easyvlans
             LogDispatcher.I("Starting GUI...");
             Application.Run(new GUI.MainForm(config, parsingError));
         }
+
+        private static void initModules()
+        {
+            foreach (IModule module in ModulesToInit)
+                module.Init();
+        }
+
+        private static IModule[] ModulesToInit = new IModule[]
+        {
+            new SwopmSnmpModule()
+        };
+
     }
 }

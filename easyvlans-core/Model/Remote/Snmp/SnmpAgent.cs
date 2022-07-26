@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model.Remote.Snmp
 {
-    internal class SnmpAgent
+    public class SnmpAgent
     {
 
         private MyObjectStore _objectStore;

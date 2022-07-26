@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    class ConfigParsingException : Exception
+    public class ConfigParsingException : Exception
     {
         public ConfigParsingException() { }
         public ConfigParsingException(string message) : base(message) { }

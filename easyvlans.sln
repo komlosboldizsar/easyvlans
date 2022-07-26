@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31424.327
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyvlans", "easyvlans\easyvlans.csproj", "{348CC430-D00C-46ED-8546-9E1B9FC58528}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans", "easyvlans\easyvlans.csproj", "{348CC430-D00C-46ED-8546-9E1B9FC58528}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyvlans-swopm-snmp", "easyvlans-swopm-snmp\easyvlans-swopm-snmp.csproj", "{A9B1ACB9-7489-46FC-86D5-52BAFED48CAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyvlans-core", "easyvlans-core\easyvlans-core.csproj", "{CC989B12-3CC7-4A83-8D33-CE19BF269189}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{348CC430-D00C-46ED-8546-9E1B9FC58528}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{348CC430-D00C-46ED-8546-9E1B9FC58528}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{348CC430-D00C-46ED-8546-9E1B9FC58528}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9B1ACB9-7489-46FC-86D5-52BAFED48CAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9B1ACB9-7489-46FC-86D5-52BAFED48CAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9B1ACB9-7489-46FC-86D5-52BAFED48CAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9B1ACB9-7489-46FC-86D5-52BAFED48CAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC989B12-3CC7-4A83-8D33-CE19BF269189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC989B12-3CC7-4A83-8D33-CE19BF269189}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC989B12-3CC7-4A83-8D33-CE19BF269189}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC989B12-3CC7-4A83-8D33-CE19BF269189}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,7 +8,6 @@ namespace easyvlans.Model.SwitchOperationMethods
 {
     internal interface ISnmpMethod : IMethod
     {
-        string Code { get; }
         public new interface IFactory<TMethodInterface> : IMethod.IFactory<TMethodInterface>
             where TMethodInterface : ISnmpMethod
         {
