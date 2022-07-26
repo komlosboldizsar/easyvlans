@@ -55,7 +55,11 @@ namespace easyvlans
 
         private static IModule[] ModulesToInit = new IModule[]
         {
-            new SwopmSnmpModule()
+            new SwopmSnmpModule(),
+            new SwopmSnmpQbridgemibModule(),
+            new SwopmSnmpCiscoconfigcopyModule(),
+            new SwopmSnmpOldciscosysModule(),
+            new SwopmSnmpDlinkdgs1210Module()
         };
 
     }

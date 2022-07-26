@@ -29,6 +29,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
+    <ProjectReference Include="..\easyvlans-swopm-snmp-ciscoconfigcopy\easyvlans-swopm-snmp-ciscoconfigcopy.csproj" />
+    <ProjectReference Include="..\easyvlans-swopm-snmp-dlinkdgs1210\easyvlans-swopm-snmp-dlinkdgs1210.csproj" />
+    <ProjectReference Include="..\easyvlans-swopm-snmp-oldciscosys\easyvlans-swopm-snmp-oldciscosys.csproj" />
+    <ProjectReference Include="..\easyvlans-swopm-snmp-qbridgemib\easyvlans-swopm-snmp-qbridgemib.csproj" />
     <ProjectReference Include="..\easyvlans-swopm-snmp\easyvlans-swopm-snmp.csproj" />
   </ItemGroup>
 

@@ -1,24 +1,22 @@
 ﻿using Lextm.SharpSnmpLib;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
 
-    internal sealed class SnmpPersistChangesWritememMethod : ISnmpPersistChangesMethod
+    internal sealed class SnmpPersistChangesOldCiscoSysMethod : ISnmpPersistChangesMethod
     {
 
-        public const string CODE = "writemem";
+        public const string CODE = "oldciscosys";
 
         public class Factory : ISnmpPersistChangesMethod.IFactory
         {
             public string Code => CODE;
             public ISnmpPersistChangesMethod GetInstance(ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpPersistChangesWritememMethod(parent);
+                => new SnmpPersistChangesOldCiscoSysMethod(parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
-        public SnmpPersistChangesWritememMethod(ISnmpSwitchOperationMethodCollection parent) => _parent = parent;
+        public SnmpPersistChangesOldCiscoSysMethod(ISnmpSwitchOperationMethodCollection parent) => _parent = parent;
         public string Code => CODE;
         public string DetailedCode => $"{_parent.Code}[{CODE}]";
 

@@ -1,7 +1,4 @@
 ﻿using Lextm.SharpSnmpLib;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
@@ -15,7 +12,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             public string Code => CODE;
             public ISnmpPersistChangesMethod GetInstance(ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpPersistChangesCiscoCopyMethod(@parent);
+                => new SnmpPersistChangesDlinkDgs121024axMethod(parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace easyvlans.Model.SwitchOperationMethods
+﻿namespace easyvlans.Model.SwitchOperationMethods
 {
-    internal interface ISnmpMethod : IMethod
+    public interface ISnmpMethod : IMethod
     {
         public new interface IFactory<TMethodInterface> : IMethod.IFactory<TMethodInterface>
             where TMethodInterface : ISnmpMethod
