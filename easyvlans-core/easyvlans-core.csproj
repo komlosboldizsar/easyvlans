@@ -1,13 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>easyvlans</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="CopyToOutput.csproj" />
+    <None Include="Modules\ModuleCsproj.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Lextm.SharpSnmpLib" Version="12.4.0" />
     <PackageReference Include="SharpSnmpLib.Engine" Version="12.0.0" />
   </ItemGroup>
-
+  <Import Project="CopyToOutput.csproj"/>
 </Project>

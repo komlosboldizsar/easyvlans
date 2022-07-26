@@ -1,0 +1,7 @@
+﻿<Project>
+  <Import Project="${MSBuildThisFile}\..\CopyToOutput.csproj"/>
+  <ItemGroup>
+    <ProjectReference Include="..\opensc-core-model\opensc-core-model.csproj"/>
+    <ProjectReference Include="..\opensc-core-model-sourcegenerators\opensc-core-model-sourcegenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+  </ItemGroup>
+</Project>

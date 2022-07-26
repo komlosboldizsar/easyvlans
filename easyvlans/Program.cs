@@ -21,7 +21,7 @@ namespace easyvlans
             Application.SetCompatibleTextRenderingDefault(false);
             _ = new FileLogger();
             LogDispatcher.I("Program started.");
-            initModules();
+            ModuleLoader.LoadAndInitModules();
             Config config = null;
             string parsingError = null;
             try
@@ -46,21 +46,6 @@ namespace easyvlans
             LogDispatcher.I("Starting GUI...");
             Application.Run(new GUI.MainForm(config, parsingError));
         }
-
-        private static void initModules()
-        {
-            foreach (IModule module in ModulesToInit)
-                module.Init();
-        }
-
-        private static IModule[] ModulesToInit = new IModule[]
-        {
-            new SwopmSnmpModule(),
-            new SwopmSnmpQbridgemibModule(),
-            new SwopmSnmpCiscoconfigcopyModule(),
-            new SwopmSnmpOldciscosysModule(),
-            new SwopmSnmpDlinkdgs1210Module()
-        };
 
     }
 }

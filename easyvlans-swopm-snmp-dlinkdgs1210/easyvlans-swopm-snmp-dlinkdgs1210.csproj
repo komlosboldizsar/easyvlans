@@ -12,4 +12,5 @@
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
     <ProjectReference Include="..\easyvlans-swopm-snmp\easyvlans-swopm-snmp.csproj" />
   </ItemGroup>
+  <Import Project="..\easyvlans-core\CopyToOutput.csproj"/>
 </Project>

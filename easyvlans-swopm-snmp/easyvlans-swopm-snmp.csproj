@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>easyvlans</RootNamespace>
@@ -12,5 +11,5 @@
   <ItemGroup>
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
   </ItemGroup>
-
+  <Import Project="..\easyvlans-core\CopyToOutput.csproj"/>
 </Project>

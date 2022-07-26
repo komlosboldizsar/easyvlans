@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -14,26 +13,18 @@
     <PackageId>EasyVLANs</PackageId>
     <AssemblyName>EasyVLANs</AssemblyName>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Lextm.SharpSnmpLib" Version="12.4.0" />
     <PackageReference Include="SharpSnmpLib.Engine" Version="12.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="..\icon\icon2.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
-    <ProjectReference Include="..\easyvlans-swopm-snmp-ciscoconfigcopy\easyvlans-swopm-snmp-ciscoconfigcopy.csproj" />
-    <ProjectReference Include="..\easyvlans-swopm-snmp-dlinkdgs1210\easyvlans-swopm-snmp-dlinkdgs1210.csproj" />
-    <ProjectReference Include="..\easyvlans-swopm-snmp-oldciscosys\easyvlans-swopm-snmp-oldciscosys.csproj" />
-    <ProjectReference Include="..\easyvlans-swopm-snmp-qbridgemib\easyvlans-swopm-snmp-qbridgemib.csproj" />
-    <ProjectReference Include="..\easyvlans-swopm-snmp\easyvlans-swopm-snmp.csproj" />
   </ItemGroup>
-
+  <Import Project="..\easyvlans-core\CopyToOutput.csproj"/>
 </Project>

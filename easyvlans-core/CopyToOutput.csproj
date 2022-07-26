@@ -1,0 +1,5 @@
+﻿<Project>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /c /y &#34;$(TargetDir)\*&#34; &#34;$(SolutionDir)\_OUTPUT\&#34;"/>
+  </Target>
+</Project>
