@@ -22,6 +22,7 @@ namespace easyvlans
             _ = new FileLogger();
             LogDispatcher.I("Program started.");
             ModuleLoader.LoadAndInitModules();
+            LogDispatcher.I($"Loaded and initialized {ModuleLoader.InitializedModuleCount} modules.");
             Config config = null;
             string parsingError = null;
             try

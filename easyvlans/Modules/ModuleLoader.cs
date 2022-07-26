@@ -36,7 +36,7 @@ namespace easyvlans.Modules
                             continue;
                         moduleInstance.Init();
                         initializedModules.Add(moduleInstance);
-                        LogDispatcher.I($"Found and initialized module [{fileInfo.FullName}].");
+                        LogDispatcher.V($"Found and initialized module [{fileInfo.FullName}].");
                     }
                 }
                 catch
@@ -45,6 +45,8 @@ namespace easyvlans.Modules
                 }
             }
         }
+
+        public static int InitializedModuleCount => initializedModules.Count;
 
     }
 }
