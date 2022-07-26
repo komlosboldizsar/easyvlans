@@ -6,7 +6,7 @@
     <ApplicationIcon>icon2.ico</ApplicationIcon>
     <Authors>Komlós Boldizsár &lt;komlos.boldizsar@gmail.com&gt;</Authors>
     <Product>EsayVLANs</Product>
-    <Description>A simple utility to set VLAN membership of Cisco switch ports fast and easily.</Description>
+    <Description>A simple application to set VLAN membership of (access) switch ports fast and easily. </Description>
     <PackageProjectUrl>https://github.com/komlosboldizsar/easyvlans</PackageProjectUrl>
     <PackageIcon>icon2.png</PackageIcon>
     <PackageIconUrl />
@@ -26,5 +26,5 @@
   <ItemGroup>
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
   </ItemGroup>
-  <Import Project="..\easyvlans-core\CopyToOutput.csproj"/>
+  <Import Project="..\easyvlans-core\CopyToOutput.csproj" />
 </Project>
