@@ -9,7 +9,7 @@ namespace easyvlans.Model.SwitchOperationMethods
 {
     public interface ISnmpConnection
     {
-        Task<List<Variable>> BulkWalkAsync(string objectIdentifierStr);
+        Task<List<Variable>> WalkAsync(string objectIdentifierStr);
         Task SetAsync(List<Variable> variables);
     }
 }

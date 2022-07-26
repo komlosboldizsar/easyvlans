@@ -38,7 +38,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         public async Task<Dictionary<int, SnmpVlan>> readSnmpVlansAsync()
         {
             Dictionary<int, SnmpVlan> snmpVlans = new();
-            foreach (Variable portVlanStaticTableRow in await _parent.SnmpConnection.BulkWalkAsync(OID_DOT1Q_VLAN_STATIC_TABLE))
+            foreach (Variable portVlanStaticTableRow in await _parent.SnmpConnection.WalkAsync(OID_DOT1Q_VLAN_STATIC_TABLE))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanStaticTableRow.GetIdParts();
                 SnmpVlan snmpVlan = snmpVlans.GetAnyway(idParts.RowId, id => new SnmpVlan(id));
@@ -69,7 +69,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         public async Task<Dictionary<int, SnmpPort>> readSnmpPortsAsync()
         {
             Dictionary<int, SnmpPort> snmpPorts = new();
-            foreach (Variable portVlanTableRow in await _parent.SnmpConnection.BulkWalkAsync(OID_DOT1Q_PORT_VLAN_TABLE))
+            foreach (Variable portVlanTableRow in await _parent.SnmpConnection.WalkAsync(OID_DOT1Q_PORT_VLAN_TABLE))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
                 SnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId, id => new SnmpPort(id));
@@ -141,7 +141,7 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         private async Task getVlansBitfieldsForPort(string tableObjectIdentifier, int targetVlanId, int portByteIndex, int portBitIndex, List<Variable> variablesFirst, List<Variable> variablesLast)
         {
-            foreach (Variable oldRow in await _parent.SnmpConnection.BulkWalkAsync(tableObjectIdentifier))
+            foreach (Variable oldRow in await _parent.SnmpConnection.WalkAsync(tableObjectIdentifier))
             {
                 SnmpVariableHelpers.IdParts idParts = oldRow.GetIdParts();
                 bool valueToSet = idParts.RowId == targetVlanId;

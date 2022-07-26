@@ -9,6 +9,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         public ISwitchOperationMethodCollection GetMethodInstance(XmlNode configNode, Switch @switch) => getFactory(configNode.LocalName)?.GetInstance(configNode, @switch);
         protected override ISwitchOperationMethodCollection.IFactory[] KnownFactories { get; } = new ISwitchOperationMethodCollection.IFactory[]
         {
+            new SnmpV1SwitchOperationMethodCollection.Factory(),
             new SnmpV2SwitchOperationMethodCollection.Factory()
         };
     }
