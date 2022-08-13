@@ -68,7 +68,7 @@ namespace easyvlans.Model.Deserializers
         private static void handleElse(string key, bool exclude, List<Vlan> filteredVlans, IDictionary<int, Vlan> vlans)
         {
             if (!int.TryParse(key, out int vlanIdInt) || (vlanIdInt < 1) || (vlanIdInt > 4095))
-                throw new AttributeValueInvalidException("Keys for VLANS in the filter string must be integers between 1 and 4095.");
+                throw new AttributeValueInvalidException("Keys for VLANs in the filter string must be integers between 1 and 4095.");
             if (!vlans.TryGetValue(vlanIdInt, out Vlan vlan))
                 throw new RelatedObjectNotFoundException(key, typeof(Vlan));
             if (exclude)
