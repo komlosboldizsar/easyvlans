@@ -3,7 +3,7 @@
 namespace easyvlans.Model
 {
 
-    public class Port : IRemoteable
+    public class Port : IRemoteable, ISetProperty
     {
 
         public string Label { get; init; }

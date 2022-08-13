@@ -5,7 +5,7 @@ using easyvlans.Model.SwitchOperationMethods;
 namespace easyvlans.Model
 {
 
-    public class Switch : IRemoteable
+    public class Switch : IRemoteable, ISetProperty
     {
 
         public string ID { get; init; }
