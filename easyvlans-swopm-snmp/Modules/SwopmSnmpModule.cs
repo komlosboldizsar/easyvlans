@@ -1,4 +1,5 @@
-﻿using easyvlans.Model.SwitchOperationMethods;
+﻿using easyvlans.Model.Deserializers;
+using easyvlans.Model.SwitchOperationMethods;
 
 namespace easyvlans.Modules
 {
@@ -6,8 +7,8 @@ namespace easyvlans.Modules
     {
         public void Init()
         {
-            SwitchOperationMethodCollectionRegister.Instance.RegisterFactory(new SnmpV1SwitchOperationMethodCollection.Factory());
-            SwitchOperationMethodCollectionRegister.Instance.RegisterFactory(new SnmpV2SwitchOperationMethodCollection.Factory());
+            SwitchOperationMethodsDeserializer.Instance.Register(new SnmpV1SwitchOperationMethodCollection.Deserializer());
+            SwitchOperationMethodsDeserializer.Instance.Register(new SnmpV2SwitchOperationMethodCollection.Deserializer());
         }
     }
 }

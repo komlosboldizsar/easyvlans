@@ -1,5 +1,7 @@
+using B.XmlDeserializer.Exceptions;
 using easyvlans.Logger;
 using easyvlans.Model;
+using easyvlans.Model.Deserializers;
 using easyvlans.Model.Remote.Snmp;
 using easyvlans.Modules;
 using System;
@@ -28,7 +30,7 @@ namespace easyvlans
             try
             {
                 LogDispatcher.I("Loading configuration...");
-                config = (new ConfigParser()).LoadConfig();
+                config = (new ConfigDeserializer()).LoadConfig();
                 if (config.Settings.Snmp?.Enabled == true)
                 {
                     SnmpAgent snmpAgent = new();
@@ -37,7 +39,7 @@ namespace easyvlans
                     snmpAgent.StartListening();
                 }
             }
-            catch (ConfigParsingException e)
+            catch (DeserializationException e)
             {
                 parsingError = e.Message;
                 LogDispatcher.E("XML configuration parsing error: " + e.Message);

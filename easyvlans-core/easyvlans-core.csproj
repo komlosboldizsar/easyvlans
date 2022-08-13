@@ -11,6 +11,10 @@
   <ItemGroup>
     <PackageReference Include="Lextm.SharpSnmpLib" Version="12.4.0" />
     <PackageReference Include="SharpSnmpLib.Engine" Version="12.0.0" />
+    <PackageReference Include="System.Runtime.Experimental" Version="6.0.0-preview.7.21377.19" />
   </ItemGroup>
-  <Import Project="CopyToOutput.csproj"/>
+  <ItemGroup>
+    <ProjectReference Include="..\b-xmldeserializer\b-xmldeserializer.csproj" />
+  </ItemGroup>
+  <Import Project="CopyToOutput.csproj" />
 </Project>

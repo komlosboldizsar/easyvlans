@@ -29,20 +29,10 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         private static void logMethodFoundOrNot(Switch @switch, string methodPurpose, string methodName, ISnmpMethod method)
         {
-            if (methodName == null)
-            {
-                if (method == null)
-                    LogDispatcher.W($"No default method found for {methodPurpose} of switch [{@switch.Label}].");
-                else
-                    LogDispatcher.V($"Using default method for {methodPurpose} of switch [{@switch.Label}].");
-            }
+            if (method == null)
+                LogDispatcher.W($"No SNMP method found with name [{methodName}] for {methodPurpose} of switch [{@switch.Label}].");
             else
-            {
-                if (method == null)
-                    LogDispatcher.W($"No method found with name [{methodName}] for {methodPurpose} of switch [{@switch.Label}].");
-                else
-                    LogDispatcher.V($"Found method with name [{methodName}] for {methodPurpose} of switch [{@switch.Label}].");
-            }
+                LogDispatcher.V($"Found SNMP method with name [{methodName}] for {methodPurpose} of switch [{@switch.Label}].");
         }
 
     }

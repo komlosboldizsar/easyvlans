@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using B.XmlDeserializer;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
@@ -14,10 +9,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         ISetPortToVlanMethod SetPortToVlanMethod { get; }
         IPersistChangesMethod PersistChangesMethod { get; }
 
-        public interface IFactory : IFactory<ISwitchOperationMethodCollection>
-        {
-            ISwitchOperationMethodCollection GetInstance(XmlNode configNode, Switch @switch);
-        }
+        public interface IDeserializer : IDeserializer<ISwitchOperationMethodCollection, Config> { }
 
     }
 }

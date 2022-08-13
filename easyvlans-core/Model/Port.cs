@@ -11,12 +11,13 @@ namespace easyvlans.Model
     public class Port : IRemoteable
     {
 
-        public readonly string Label;
-        public readonly Switch Switch;
-        public readonly int Index;
-        public readonly List<Vlan> Vlans = new();
-        public readonly PortPage Page;
+        public string Label { get; init; }
+        public int Index { get; init; }
         public int? RemoteIndex { get; init; }
+
+        public Switch Switch;
+        public List<Vlan> Vlans;
+        public PortPage Page;
 
         public event PropertyChangedDelegate<Port, Vlan> CurrentVlanChanged;
         private Vlan _currentVlan;
@@ -72,17 +73,6 @@ namespace easyvlans.Model
         {
             get => _pendingChanges;
             internal set => this.setProperty(ref _pendingChanges, value, PendingChangesChanged);
-        }
-
-        public Port(string label, Switch @switch, int index, IEnumerable<Vlan> vlans, PortPage page, int? remoteIndex)
-        {
-            Label = label;
-            Switch = @switch;
-            @switch.AssociatePort(this);
-            Index = index;
-            Vlans.AddRange(vlans);
-            Page = page;
-            RemoteIndex = remoteIndex;
         }
 
         public async Task<bool> SetVlanTo(Vlan vlan)

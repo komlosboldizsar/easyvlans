@@ -5,7 +5,7 @@
 
         private const string CODE = "snmpv2";
 
-        public class Factory : FactoryBase
+        public class Deserializer : FactoryBase
         {
             public override string Code => CODE;
             protected override ISwitchOperationMethodCollection createInstance(Switch @switch, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, string persistChangesMethodName)

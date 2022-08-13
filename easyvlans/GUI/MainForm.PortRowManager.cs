@@ -66,7 +66,7 @@ namespace easyvlans.GUI
                 Item.CurrentVlanChanged += currentVlanChangedHandler;
                 //
                 _portLabel.Text = Item.Label;
-                _switchLabel.Text = Item.Switch.Label;
+                _switchLabel.Text = Item.Switch?.Label ?? string.Empty;
                 _portIndexLabel.Text = Item.Index.ToString();
                 displayVlanMembership();
                 _setButton.Enabled = false;

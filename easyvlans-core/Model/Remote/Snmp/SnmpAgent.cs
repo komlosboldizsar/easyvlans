@@ -19,7 +19,6 @@ namespace easyvlans.Model.Remote.Snmp
         private int _port;
         private SnmpEngine _engine;
 
-        private const int PORT_DEFAULT = 161;
         private const string COMMUNITY_READ_DEFAULT = "public";
         private const string COMMUNITY_WRITE_DEFAULT = "public";
 
@@ -37,7 +36,7 @@ namespace easyvlans.Model.Remote.Snmp
                 new HandlerMapping("v1", "SET", new SetV1MessageHandler())
             });
             var pipelineFactory = new SnmpApplicationFactory(new MyLogger(), _objectStore, membershipProvider, handlerFactory);
-            _port = config.Port ?? PORT_DEFAULT;
+            _port = config.Port;
             _engine = new SnmpEngine(pipelineFactory, new Listener(), new EngineGroup());
         }
 

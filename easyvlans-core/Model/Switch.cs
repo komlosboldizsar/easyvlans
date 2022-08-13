@@ -17,8 +17,8 @@ namespace easyvlans.Model
     public class Switch : IRemoteable
     {
 
-        public readonly string ID;
-        public readonly string Label;
+        public string ID { get; init; }
+        public string Label { get; init; }
         public int? RemoteIndex { get; init; }
 
         public ISwitchOperationMethodCollection OperationMethodCollection { get; set; }
@@ -76,13 +76,6 @@ namespace easyvlans.Model
             private set => this.setProperty(ref _persistVlanConfigStatusUpdateTime, value, PersistVlanConfigStatusUpdateTimeChanged);
         }
 
-        public Switch(string id, string label, int? remoteIndex)
-        {
-            ID = id;
-            Label = label;
-            RemoteIndex = remoteIndex;
-        }
-
         internal void AssociatePort(Port port)
         {
             if ((port.Switch == this) && !Ports.Contains(port))
@@ -91,7 +84,7 @@ namespace easyvlans.Model
 
         public async Task ReadConfigAsync()
         {
-            if (OperationMethodCollection.ReadConfigMethod == null)
+            if (OperationMethodCollection?.ReadConfigMethod == null)
             {
                 LogDispatcher.E($"Couldn't read configuration of switch [{Label}], because no method is associated.");
                 return;
@@ -116,7 +109,7 @@ namespace easyvlans.Model
         {
             if ((port.Switch != this) || !Ports.Contains(port))
                 return false;
-            if (OperationMethodCollection.SetPortToVlanMethod == null)
+            if (OperationMethodCollection?.SetPortToVlanMethod == null)
             {
                 LogDispatcher.E($"Couldn't set VLAN membership of port [{port.Label}] @ switch [{Label}], because no method is associated.");
                 return false;
@@ -147,7 +140,7 @@ namespace easyvlans.Model
 
         public async Task<bool> PersistChangesAsync()
         {
-            if (OperationMethodCollection.PersistChangesMethod == null)
+            if (OperationMethodCollection?.PersistChangesMethod == null)
             {
                 LogDispatcher.E($"Couldn't persist changes of switch [{Label}], because no method is associated.");
                 return false;

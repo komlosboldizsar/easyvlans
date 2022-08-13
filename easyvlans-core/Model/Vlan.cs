@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model
 {
-    public record Vlan(int ID, string Name)
+    public class Vlan
     {
+        public int ID { get; init; }
+        public string Name { get; init; }
         public string Label => $"{ID} - {Name}";
     }
 }
