@@ -1,17 +1,10 @@
-﻿using easyvlans.GUI;
-using easyvlans.GUI.Helpers;
+﻿using easyvlans.GUI.Helpers;
 using easyvlans.GUI.Helpers.DropDowns;
 using easyvlans.Helpers;
-using easyvlans.Logger;
 using easyvlans.Model;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace easyvlans.GUI
@@ -107,7 +100,8 @@ namespace easyvlans.GUI
             private void hasComplexMembershipChangedHandler(Port port, bool newValue) => Table.InvokeIfRequired(displayVlanMembership);
 
             private void currentVlanChangedHandler(Port port, Vlan newValue)
-                => Table.InvokeIfRequired(() => {
+                => Table.InvokeIfRequired(() =>
+                {
                     if (port == Item)
                         _setVlanToComboBox.SelectedIndex = 0;
                     displayVlanMembership();

@@ -5,7 +5,7 @@ using System.Xml;
 
 namespace easyvlans.Model.Deserializers
 {
-    internal class PortPageDeserializer : 
+    internal class PortPageDeserializer :
         SimpleCollectionDeserializerBase<PortPage, Port, Config>
     {
 

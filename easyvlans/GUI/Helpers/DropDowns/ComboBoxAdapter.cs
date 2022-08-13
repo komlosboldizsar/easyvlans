@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace easyvlans.GUI.Helpers.DropDowns
 {
@@ -25,7 +21,7 @@ namespace easyvlans.GUI.Helpers.DropDowns
 
         public ComboBoxAdapter(IEnumerable<T> elements, Func<T, string> toStringFunction, bool containsNull = false, string nullLabel = "")
         {
-            this.boundCollection = elements; 
+            this.boundCollection = elements;
             this.toStringFunction = toStringFunction ?? (o => o.ToString());
             this.ContainsNull = containsNull;
             this.nullLabel = nullLabel;

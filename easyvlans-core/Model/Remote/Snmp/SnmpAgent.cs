@@ -1,14 +1,8 @@
 ﻿using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
-using Lextm.SharpSnmpLib.Objects;
 using Lextm.SharpSnmpLib.Pipeline;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace easyvlans.Model.Remote.Snmp
 {

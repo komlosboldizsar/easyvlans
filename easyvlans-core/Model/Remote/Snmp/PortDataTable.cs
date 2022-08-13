@@ -1,10 +1,4 @@
 ﻿using Lextm.SharpSnmpLib;
-using Lextm.SharpSnmpLib.Pipeline;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace easyvlans.Model.Remote.Snmp
 {

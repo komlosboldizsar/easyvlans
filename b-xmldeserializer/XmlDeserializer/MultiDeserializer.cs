@@ -1,5 +1,5 @@
-﻿using B.XmlDeserializer.Exceptions;
-using B.XmlDeserializer.Context;
+﻿using B.XmlDeserializer.Context;
+using B.XmlDeserializer.Exceptions;
 using B.XmlDeserializer.Relations;
 using System.Xml;
 

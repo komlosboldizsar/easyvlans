@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace easyvlans.GUI.Helpers.DropDowns
@@ -12,7 +9,7 @@ namespace easyvlans.GUI.Helpers.DropDowns
 
         public static void SelectByValue(this ComboBox comboBox, object value)
         {
-            if((value == null) && (comboBox.DataSource is IComboBoxAdapter adapter) && adapter.ContainsNull)
+            if ((value == null) && (comboBox.DataSource is IComboBoxAdapter adapter) && adapter.ContainsNull)
             {
                 comboBox.SelectedIndex = 0;
                 return;
