@@ -6,22 +6,35 @@ using System.Net.Sockets;
 
 namespace easyvlans.Model.Remote.Snmp
 {
-    public class SnmpAgent
+    public class SnmpAgent : IRemoteMethod
     {
 
+        public string Code => "snmp";
+
+        private readonly int _port;
+        private readonly string _communityRead;
+        private readonly string _communityWrite;
+
         private MyObjectStore _objectStore;
-        private int _port;
         private SnmpEngine _engine;
 
         private const string COMMUNITY_READ_DEFAULT = "public";
         private const string COMMUNITY_WRITE_DEFAULT = "public";
 
-        public void CreateEngine(Config.SnmpSettings config)
+        public SnmpAgent(int port, string communityRead, string communityWrite)
+        {
+            _port = port;
+            _communityRead = communityRead;
+            _communityWrite = communityWrite;
+            createEngine();
+        }
+
+        private void createEngine()
         {
             _objectStore = new();
             IMembershipProvider v1MembershipProvider = new Version1MembershipProvider(
-                new OctetString(config.CommunityRead ?? COMMUNITY_READ_DEFAULT),
-                new OctetString(config.CommunityWrite ?? COMMUNITY_WRITE_DEFAULT));
+                new OctetString(_communityRead ?? COMMUNITY_READ_DEFAULT),
+                new OctetString(_communityWrite ?? COMMUNITY_WRITE_DEFAULT));
             IMembershipProvider membershipProvider = new ComposedMembershipProvider(new IMembershipProvider[] { v1MembershipProvider });
             var handlerFactory = new MessageHandlerFactory(new[]
             {
@@ -30,17 +43,16 @@ namespace easyvlans.Model.Remote.Snmp
                 new HandlerMapping("v1", "SET", new SetV1MessageHandler())
             });
             var pipelineFactory = new SnmpApplicationFactory(new MyLogger(), _objectStore, membershipProvider, handlerFactory);
-            _port = config.Port;
             _engine = new SnmpEngine(pipelineFactory, new Listener(), new EngineGroup());
         }
 
-        public void AddDataFromConfig(Config config)
+        public void MeetConfig(Config config)
         {
             _objectStore.AddRange(config.Switches.Values.Where(s => s.RemoteIndex != null).Select(s => new SwitchDataTable(s)));
             _objectStore.AddRange(config.Ports.Where(p => p.RemoteIndex != null).Select(p => new PortDataTable(p)));
         }
 
-        public void StartListening()
+        public void Start()
         {
             LogDispatcher.I($"Starting SNMP service at UDP port {_port}...");
             _engine.Listener.ClearBindings();

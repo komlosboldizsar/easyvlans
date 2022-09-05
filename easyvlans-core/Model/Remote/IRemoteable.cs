@@ -1,4 +1,4 @@
-﻿namespace easyvlans.Model.Remote.Snmp
+﻿namespace easyvlans.Model.Remote
 {
     public interface IRemoteable
     {

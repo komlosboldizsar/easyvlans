@@ -2,7 +2,7 @@ using B.XmlDeserializer.Exceptions;
 using easyvlans.Logger;
 using easyvlans.Model;
 using easyvlans.Model.Deserializers;
-using easyvlans.Model.Remote.Snmp;
+using easyvlans.Model.Remote;
 using easyvlans.Modules;
 using System;
 using System.Windows.Forms;
@@ -28,12 +28,12 @@ namespace easyvlans
             {
                 LogDispatcher.I("Loading configuration...");
                 config = (new ConfigDeserializer()).LoadConfig();
-                if (config.Settings.Snmp?.Enabled == true)
+                if (config.Remotes != null)
                 {
-                    SnmpAgent snmpAgent = new();
-                    snmpAgent.CreateEngine(config.Settings.Snmp);
-                    snmpAgent.AddDataFromConfig(config);
-                    snmpAgent.StartListening();
+                    foreach (IRemoteMethod remoteMethod in config.Remotes)
+                        remoteMethod.MeetConfig(config);
+                    foreach (IRemoteMethod remoteMethod in config.Remotes)
+                        remoteMethod.Start();
                 }
             }
             catch (DeserializationException e)

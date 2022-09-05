@@ -5,12 +5,7 @@
 
         public const string ROOT = "easyvlans";
 
-        public const string SETTINGS = "settings";
-        public const string SETTINGS_SNMP = "snmp";
-        public const string ATTRIBUTE_SETTINGS_SNMP_ENABLED = "enabled";
-        public const string ATTRIBUTE_SETTINGS_SNMP_PORT = "port";
-        public const string ATTRIBUTE_SETTINGS_SNMP_COMMUNITY_READ = "community_read";
-        public const string ATTRIBUTE_SETTINGS_SNMP_COMMUNITY_WRITE = "community_write";
+        public const string REMOTES = "remotes";
 
         public const string SWITCHES = "switches";
         public const string SWITCH = "switch";

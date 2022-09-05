@@ -1,8 +1,7 @@
-﻿using easyvlans.Model.Remote.Snmp;
+﻿using easyvlans.Model.Remote;
 
 namespace easyvlans.Model
 {
-
     public class Port : IRemoteable, ISetProperty
     {
 
@@ -87,5 +86,4 @@ namespace easyvlans.Model
         internal void ChangesPersisted() => PendingChanges = false;
 
     }
-
 }

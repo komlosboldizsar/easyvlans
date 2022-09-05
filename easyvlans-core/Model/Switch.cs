@@ -1,5 +1,5 @@
 ﻿using easyvlans.Logger;
-using easyvlans.Model.Remote.Snmp;
+using easyvlans.Model.Remote;
 using easyvlans.Model.SwitchOperationMethods;
 
 namespace easyvlans.Model

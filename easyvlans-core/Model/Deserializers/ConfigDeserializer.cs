@@ -3,6 +3,7 @@ using B.XmlDeserializer.Context;
 using B.XmlDeserializer.Exceptions;
 using B.XmlDeserializer.Helpers;
 using easyvlans.Logger;
+using easyvlans.Model.Remote;
 
 namespace easyvlans.Model.Deserializers
 {
@@ -59,9 +60,7 @@ namespace easyvlans.Model.Deserializers
 
             TypedCompositeDeserializer<Config, Config> configDeserializer = new(ConfigTagNames.ROOT, () => new Config());
 
-            TypedCompositeDeserializer<Config.SettingsGroups, Config> settingsDeserializer = new(ConfigTagNames.SETTINGS, () => new Config.SettingsGroups());
-            settingsDeserializer.Register(new SnmpSettingsDeserializer(), (settingsGroups, snmpSettings) => settingsGroups.Snmp = snmpSettings);
-            configDeserializer.Register(settingsDeserializer, (config, settings) => config.Settings = settings);
+            configDeserializer.Register(RemoteMethodsDeserializer.Instance, (config, remotes) => config.Remotes = remotes);
 
             SimpleDictionaryDeserializer<string, Switch, Config> switchesDeserializer = new(ConfigTagNames.SWITCHES, new SwitchDeserializer(), @switch => @switch.ID);
             configDeserializer.Register(switchesDeserializer, (config, switches) => config.Switches = switches);
