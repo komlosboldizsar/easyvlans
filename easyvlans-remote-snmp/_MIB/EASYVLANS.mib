@@ -1,0 +1,222 @@
+EASYVLANS DEFINITIONS ::= BEGIN
+
+IMPORTS
+	OBJECT-TYPE, Gauge32
+		FROM SNMPv2-SMI
+	DisplayString, TruthValue, TimeStamp
+		FROM SNMPv2-TC;
+
+komlosboldizsar   OBJECT IDENTIFIER ::= { enterprises 59150 }
+easyvlans         OBJECT IDENTIFIER ::= { komlosboldizsar 1 }
+   
+RemoteIndex ::= TEXTUAL-CONVENTION
+	DISPLAY-HINT   "d"
+	STATUS         current
+	DESCRIPTION    ""
+	SYNTAX         Integer32 (1..2147483647)
+	
+VlanId ::= TEXTUAL-CONVENTION
+	DISPLAY-HINT   "d"
+	STATUS         current
+	DESCRIPTION    ""
+	SYNTAX         Integer32 (1..4094)
+ 
+Status ::= TEXTUAL-CONVENTION
+	DISPLAY-HINT   "d"
+	STATUS         current
+	DESCRIPTION    ""
+	SYNTAX         INTEGER {
+		empty(0),
+		unknown(1),
+		querying(2),
+		successful(3),
+		unsuccessful(4)
+	}
+	
+---------------------
+
+switchTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF SwitchEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION
+		""
+	::= { easyvlans 1 }
+	
+switchEntry OBJECT-TYPE
+	SYNTAX SwitchEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION
+		""
+	INDEX { switchRemoteIndex }
+	::= { switchTable 1 }
+	
+SwitchEntry ::= SEQUENCE {
+	switchRemoteIndex
+		RemoteIndex,
+	switchId
+		INTEGER,
+	switchLabel
+		DisplayString,
+	switchPortsWithPendingChangeCount
+		INTEGER,
+	switchReadVlanConfigStatus
+		Status,
+	switchPersistConfigStatus
+		Status,
+	switchDoPersistChanges
+		TruthValue
+}
+	   
+switchRemoteIndex OBJECT-TYPE
+	SYNTAX RemoteIndex
+	MAX-ACCESS not-accessible
+	STATUS current
+	::= { switchEntry 0 }
+	
+switchId OBJECT-TYPE
+	SYNTAX INTEGER
+	MAX-ACCESS read-only
+	STATUS current
+	::= { switchEntry 1 }
+
+switchLabel OBJECT-TYPE
+	SYNTAX DisplayString
+	MAX-ACCESS read-only
+	STATUS current
+	::= { switchEntry 2 }
+
+switchPortsWithPendingChangeCount OBJECT-TYPE
+	SYNTAX Gauge32
+	MAX-ACCESS read-only
+	STATUS current
+	::= { switchEntry 3 }
+
+switchReadVlanConfigStatus OBJECT-TYPE
+	SYNTAX Status
+	MAX-ACCESS read-only
+	STATUS current
+	::= { switchEntry 4 }
+	
+switchPersistConfigStatus OBJECT-TYPE
+	SYNTAX Status
+	MAX-ACCESS read-only
+	STATUS current
+	::= { switchEntry 5 }
+	
+switchDoPersistChanges OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-write
+	STATUS current
+	::= { switchEntry 6 }
+
+---------------------
+
+portTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF PortEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION
+		""
+	::= { easyvlans 2 }
+	
+portEntry OBJECT-TYPE
+	SYNTAX PortEntry
+	MAX-ACCESS	not-accessible
+	STATUS		current
+	DESCRIPTION
+		""
+	INDEX { portRemoteIndex }
+	::= { portTable 1 }
+	
+PortEntry ::= SEQUENCE {
+	portRemoteIndex
+		RemoteIndex,
+	portId
+		INTEGER,
+	portLabel
+		DisplayString,
+	portSwitchRemoteIndex
+		INTEGER,
+	portSwitchLabel
+		DisplayString,
+	portCurrentVlanId
+		VlanId,
+	portCurrentVlanName
+		DisplayString,
+	portHasComplexMemership
+		TruthValue,
+	portSetVlanMembershipStatus
+		Status,
+	portPendingChanges
+		TruthValue
+}
+
+portRemoteIndex OBJECT-TYPE
+	SYNTAX RemoteIndex
+	MAX-ACCESS not-accessible
+	STATUS current
+	::= { portEntry 0 }
+	
+portId OBJECT-TYPE
+	SYNTAX INTEGER
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 1 }
+	   
+portLabel OBJECT-TYPE
+	SYNTAX DisplayString
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 2 }
+
+portSwitchRemoteIndex OBJECT-TYPE
+	SYNTAX RemoteIndex
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 3 }
+
+portSwitchLabel OBJECT-TYPE
+	SYNTAX DisplayString
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 4 }
+	
+portCurrentVlanId OBJECT-TYPE
+	SYNTAX VlanId
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 5 }
+
+portCurrentVlanName OBJECT-TYPE
+	SYNTAX DisplayString
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 6 }
+	
+portHasComplexMemership OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 7 }
+	
+portHasNotAllowedMemership OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 8 }
+
+portSetVlanMembershipStatus OBJECT-TYPE
+	SYNTAX Status
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 9 }
+
+portPendingChanges OBJECT-TYPE
+	SYNTAX TruthValue
+	MAX-ACCESS read-only
+	STATUS current
+	::= { portEntry 10 }
+	
+END
