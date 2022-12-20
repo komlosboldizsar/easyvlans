@@ -30,6 +30,23 @@ namespace easyvlans.Model.Deserializers
             return @switch;
         }
 
+        protected override ISlaveRelationBuilder<Switch, Config> createSlaveRelationBuilder() => new RelationBuilder();
+
+        internal class RelationBuilder : ISlaveRelationBuilder<Switch, Config>
+        {
+
+            public void BuildRelations(XmlNode switchNode, Switch @switch, Config config, DeserializationContext context)
+            {
+                RelationBuilderHelpers.HandleExceptions(assignConfig, switchNode, @switch, config, context);
+            }
+
+            private void assignConfig(XmlNode switchNode, Switch @switch, Config config, DeserializationContext context)
+            {
+                @switch.Config = config;
+            }
+
+        }
+
         private const string ATTR_ID = "id";
         private const string ATTR_LABEL = "label";
         private const string ATTR_REMOTE_INDEX = "remote_index";
