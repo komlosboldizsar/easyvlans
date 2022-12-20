@@ -9,6 +9,7 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
 
         public const string CODE = "qbridgemib";
+        public const string PARAM_NO_PVID = "nopvid";
 
         public class Factory : ISnmpAccessVlanMembershipMethod.IFactory
         {
@@ -18,12 +19,13 @@ namespace easyvlans.Model.SwitchOperationMethods
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
-        private string _params;
+        private bool _paramNoPvid = false;
 
         public SnmpAccessVlanMembershipQBridgeMibMethod(string @params, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
-            _params = @params;
+            string[] paramsPieces = @params.Split(',');
+            _paramNoPvid = paramsPieces.Contains(PARAM_NO_PVID);                
         }
 
         public string Code => CODE;
@@ -111,7 +113,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                         lastOwnerSnmpVlan = snmpVlan;
                     }
                 }
-                if (ownerVlans == 1 && lastOwnerSnmpVlan?.ID == snmpPort.PVID)
+                if (ownerVlans == 1 && ((lastOwnerSnmpVlan?.ID == snmpPort.PVID) || _paramNoPvid))
                 {
                     userPort.CurrentVlan = lastOwnerSnmpVlan.UserVlan;
                     userPort.HasComplexMembership = false;
@@ -119,7 +121,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 else
                 {
                     userPort.CurrentVlan = null;
-                    if (ownerVlans > 1 || lastOwnerSnmpVlan?.ID != snmpPort.PVID)
+                    if (ownerVlans > 1 || ((lastOwnerSnmpVlan?.ID != snmpPort.PVID) && !_paramNoPvid))
                         userPort.HasComplexMembership = true;
                 }
             }
@@ -129,9 +131,9 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         async Task<bool> ISetPortToVlanMethod.DoAsync(Port port, Vlan vlan)
         {
-            List<Variable> variablesLast = new(), variablesFirst = new() {
-                new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID))
-            };
+            List<Variable> variablesLast = new(), variablesFirst = new();
+            if (!_paramNoPvid)
+                variablesFirst.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));
             (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index);
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
