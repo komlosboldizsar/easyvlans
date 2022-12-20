@@ -9,7 +9,8 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
 
         private ISnmpSwitchOperationMethodCollection _parent;
-        public SnmpAccessVlanMembershipDlinkDgs1210MethodBase(ISnmpSwitchOperationMethodCollection parent)
+
+        public SnmpAccessVlanMembershipDlinkDgs1210MethodBase(string @params, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
             Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN, OID_TEMPLATE_DOT1Q_VLAN, this);

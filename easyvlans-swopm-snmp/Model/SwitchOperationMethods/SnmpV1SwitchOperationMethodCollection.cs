@@ -8,15 +8,13 @@
         public class Deserializer : FactoryBase
         {
             public override string Code => CODE;
-            protected override ISwitchOperationMethodCollection createInstance(Switch @switch, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, string persistChangesMethodName)
-                => new SnmpV1SwitchOperationMethodCollection(@switch, ip, port, communityStrings, accessVlanMembershipMethodName, persistChangesMethodName);
+            protected override ISwitchOperationMethodCollection createInstance(Switch @switch, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, string accessVlanMembershipMethodParams, string persistChangesMethodName, string persistChangesMethodParams)
+                => new SnmpV1SwitchOperationMethodCollection(@switch, ip, port, communityStrings, accessVlanMembershipMethodName, accessVlanMembershipMethodParams, persistChangesMethodName, persistChangesMethodParams);
         }
 
-        public SnmpV1SwitchOperationMethodCollection(Switch @switch, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, string persistChangesMethodName)
-            : base(@switch, accessVlanMembershipMethodName, persistChangesMethodName)
-        {
-            SnmpConnection = new SnmpV1Connection(ip, port, communityStrings);
-        }
+        public SnmpV1SwitchOperationMethodCollection(Switch @switch, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, string accessVlanMembershipMethodParams, string persistChangesMethodName, string persistChangesMethodParams)
+            : base(@switch, accessVlanMembershipMethodName, accessVlanMembershipMethodParams, persistChangesMethodName, persistChangesMethodParams)
+            => SnmpConnection = new SnmpV1Connection(ip, port, communityStrings);
 
         public override string Code => CODE;
 

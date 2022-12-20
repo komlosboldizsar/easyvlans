@@ -13,12 +13,19 @@ namespace easyvlans.Model.SwitchOperationMethods
         public class Factory : ISnmpAccessVlanMembershipMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpAccessVlanMembershipMethod GetInstance(ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpAccessVlanMembershipQBridgeMibMethod(parent);
+            public ISnmpAccessVlanMembershipMethod GetInstance(string @params, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpAccessVlanMembershipQBridgeMibMethod(@params, parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
-        public SnmpAccessVlanMembershipQBridgeMibMethod(ISnmpSwitchOperationMethodCollection parent) => _parent = parent;
+        private string _params;
+
+        public SnmpAccessVlanMembershipQBridgeMibMethod(string @params, ISnmpSwitchOperationMethodCollection parent)
+        {
+            _parent = parent;
+            _params = @params;
+        }
+
         public string Code => CODE;
         public string DetailedCode => $"{_parent.Code}[{CODE}]";
 

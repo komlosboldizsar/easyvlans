@@ -11,12 +11,15 @@ namespace easyvlans.Model.SwitchOperationMethods
         public class Factory : ISnmpPersistChangesMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpPersistChangesMethod GetInstance(ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpPersistChangesCiscoConfigCopyMethod(parent);
+            public ISnmpPersistChangesMethod GetInstance(string @params, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpPersistChangesCiscoConfigCopyMethod(@params, parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
-        public SnmpPersistChangesCiscoConfigCopyMethod(ISnmpSwitchOperationMethodCollection parent) => _parent = parent;
+
+        public SnmpPersistChangesCiscoConfigCopyMethod(string @params, ISnmpSwitchOperationMethodCollection parent)
+            => _parent = parent;
+
         public string Code => CODE;
         public string DetailedCode => $"{_parent.Code}[{CODE}]";
 

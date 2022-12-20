@@ -15,13 +15,13 @@ namespace easyvlans.Model.SwitchOperationMethods
         public ISnmpConnection SnmpConnection { get; protected init; }
         public Switch Switch { get; private set; }
 
-        public SnmpSwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, string persistChangesMethodName)
+        public SnmpSwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, string accessVlanMembershipMethodParams, string persistChangesMethodName, string persistChangesMethodParams)
         {
             Switch = @switch;
-            ISnmpAccessVlanMembershipMethod accessVlanMembershipMethod = SnmpAccessVlanMembershipMethodRegister.Instance.GetMethodInstance(accessVlanMembershipMethodName, this);
+            ISnmpAccessVlanMembershipMethod accessVlanMembershipMethod = SnmpAccessVlanMembershipMethodRegister.Instance.GetMethodInstance(accessVlanMembershipMethodName, accessVlanMembershipMethodParams, this);
             logMethodFoundOrNot(@switch, "accessing and setting VLAN memberships", accessVlanMembershipMethodName, accessVlanMembershipMethod);
             ReadConfigMethod = accessVlanMembershipMethod;
-            ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, this);
+            ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, persistChangesMethodParams, this);
             logMethodFoundOrNot(@switch, "persisting changes", persistChangesMethodName, persistChangesMethod);
             SetPortToVlanMethod = accessVlanMembershipMethod;
             PersistChangesMethod = persistChangesMethod;

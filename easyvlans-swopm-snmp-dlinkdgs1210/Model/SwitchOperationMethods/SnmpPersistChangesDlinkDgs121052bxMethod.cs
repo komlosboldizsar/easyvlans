@@ -9,12 +9,12 @@
         public class Factory : ISnmpPersistChangesMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpPersistChangesMethod GetInstance(ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpPersistChangesDlinkDgs121052bxMethod(parent);
+            public ISnmpPersistChangesMethod GetInstance(string @params, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpPersistChangesDlinkDgs121052bxMethod(@params, parent);
         }
 
-        public SnmpPersistChangesDlinkDgs121052bxMethod(ISnmpSwitchOperationMethodCollection parent)
-            : base(parent) { }
+        public SnmpPersistChangesDlinkDgs121052bxMethod(string @params, ISnmpSwitchOperationMethodCollection parent)
+            : base(@params, parent) { }
 
         public override string Code => CODE;
         public override int MibSubtreeIndex => 17;

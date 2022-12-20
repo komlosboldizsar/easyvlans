@@ -5,7 +5,7 @@
         public new interface IFactory<TMethodInterface> : IMethod.IFactory<TMethodInterface>
             where TMethodInterface : ISnmpMethod
         {
-            TMethodInterface GetInstance(ISnmpSwitchOperationMethodCollection parent);
+            TMethodInterface GetInstance(string @params, ISnmpSwitchOperationMethodCollection parent);
         }
     }
 }

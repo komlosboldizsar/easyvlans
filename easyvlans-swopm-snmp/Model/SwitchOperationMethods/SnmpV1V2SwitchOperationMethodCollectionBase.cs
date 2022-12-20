@@ -24,12 +24,21 @@ namespace easyvlans.Model.SwitchOperationMethods
                     throw new AttributeValueInvalidException($"Invalid IP address.", ipAddressAttribute.Attribute);
                 int port = (int)xmlNode.AttributeAsInt(ATTR_PORT, context).Default(161).Min(1).Max(65535).Get().Value;
                 string communityString = xmlNode.AttributeAsString(ATTR_COMMUNITY_STRING, context).Mandatory().Get().Value;
-                string accessVlanMembershipMethod = xmlNode.AttributeAsString(ATTR_METHOD_ACCESS_VLAN_MEMBERSHIP, context).Mandatory().Get().Value;
-                string persistChangesMethod = xmlNode.AttributeAsString(ATTR_METHOD_PERSIST_CHANGES, context).Mandatory().Get().Value;
-                return createInstance(parent as Switch, ip, port, communityString, accessVlanMembershipMethod, persistChangesMethod);
+                (string accessVlanMembershipMethodName, string accessVlanMembershipMethodParams) = getMethodNameAndParams(xmlNode, context, ATTR_METHOD_ACCESS_VLAN_MEMBERSHIP);
+                (string persistChangesMethodName, string persistChangesMethodParams) = getMethodNameAndParams(xmlNode, context, ATTR_METHOD_PERSIST_CHANGES);
+                return createInstance(parent as Switch, ip, port, communityString, accessVlanMembershipMethodName, accessVlanMembershipMethodParams, persistChangesMethodName, persistChangesMethodParams);
             }
 
-            protected abstract ISwitchOperationMethodCollection createInstance(Switch @switch, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, string persistChangesMethodName);
+            private (string, string) getMethodNameAndParams(XmlNode xmlNode, DeserializationContext context, string attributeName)
+            {
+                string methodString = xmlNode.AttributeAsString(attributeName, context).Mandatory().Get().Value;
+                string[] methodStringPieces = methodString.Split("/");
+                string methodName = methodStringPieces[0];
+                string methodParams = (methodStringPieces.Length >= 2) ? methodStringPieces[1] : string.Empty;
+                return (methodName, methodParams);
+            }
+
+            protected abstract ISwitchOperationMethodCollection createInstance(Switch @switch, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, string accessVlanMembershipMethodParams, string persistChangesMethodName, string persistChangesMethodParams);
 
             private const string ATTR_IP = "ip";
             private const string ATTR_PORT = "port";
@@ -41,8 +50,8 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         }
 
-        public SnmpV1V2SwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, string persistChangesMethodName)
-            : base(@switch, accessVlanMembershipMethodName, persistChangesMethodName) { }
+        public SnmpV1V2SwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, string accessVlanMembershipMethodParams, string persistChangesMethodName, string persistChangesMethodParams)
+            : base(@switch, accessVlanMembershipMethodName, accessVlanMembershipMethodParams, persistChangesMethodName, persistChangesMethodParams) { }
 
     }
 }

@@ -9,12 +9,12 @@
         public class Factory : ISnmpAccessVlanMembershipMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpAccessVlanMembershipMethod GetInstance(ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpAccessVlanMembershipDlinkDgs121024axMethod(parent);
+            public ISnmpAccessVlanMembershipMethod GetInstance(string @params, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpAccessVlanMembershipDlinkDgs121024axMethod(@params, parent);
         }
 
-        public SnmpAccessVlanMembershipDlinkDgs121024axMethod(ISnmpSwitchOperationMethodCollection parent)
-            : base(parent) { }
+        public SnmpAccessVlanMembershipDlinkDgs121024axMethod(string @params, ISnmpSwitchOperationMethodCollection parent)
+            : base(@params, parent) { }
 
         public override string Code => CODE;
         public override int MibSubtreeIndex => 10;

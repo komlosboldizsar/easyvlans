@@ -7,7 +7,8 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
 
         private ISnmpSwitchOperationMethodCollection _parent;
-        public SnmpPersistChangesDlinkDgs1210MethodBase(ISnmpSwitchOperationMethodCollection parent)
+
+        public SnmpPersistChangesDlinkDgs1210MethodBase(string @params, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
             Dgs1210Helpers.GenerateOid(ref OID_COMPANYSYSTEM_SYSSAVE, OID_TEMPLATE_COMPANYSYSTEM_SYSSAVE, this);
