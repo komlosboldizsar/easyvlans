@@ -25,9 +25,9 @@ public abstract class XmlAttributeParserBuilder<TBuilder, TValue, TData>
     public XmlAttributeData<TValue> Get()
         => Build().Get();
 
-    public TBuilder Mandatory()
+    public TBuilder Mandatory(bool isMandatory = true)
     {
-        data.mandatory = true;
+        data.mandatory = isMandatory;
         return (TBuilder)this;
     }
 
