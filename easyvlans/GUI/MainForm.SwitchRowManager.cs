@@ -50,6 +50,11 @@ namespace easyvlans.GUI
                 //
                 _switchNameLabel.Text = Item.Label;
                 displayPortsWithPendingChangeCount();
+                if (Item.OperationMethodCollection?.PersistChangesMethod == null)
+                {
+                    _persistChangesButton.Enabled = false;
+                    _persistChangesButton.Text = "";
+                }
                 displayReadVlanConfigStatus();
                 displayPersistConfigStatus();
             }
@@ -65,14 +70,14 @@ namespace easyvlans.GUI
                 {
                     _pendingChangesLabel.Text = newText;
                     _pendingChangesLabel.ForeColor = COLOR_NO_PENDING_CHANGES;
-                    _persistChangesButton.Enabled = false;
+                    _persistChangesButton.ForeColor = COLOR_PERSIST_BUTTON_INACTIVE;
                 }
                 else
                 {
                     newText = (portsWithPendingChangeCount > 1) ? $"{portsWithPendingChangeCount} ports changed" : "1 port changed";
                     _pendingChangesLabel.Text = newText;
                     _pendingChangesLabel.ForeColor = COLOR_HAS_PENDING_CHANGES;
-                    _persistChangesButton.Enabled = (Item.OperationMethodCollection?.PersistChangesMethod != null);
+                    _persistChangesButton.ForeColor = COLOR_PERSIST_BUTTON_ACTIVE;
                 }
             }
 
@@ -86,6 +91,9 @@ namespace easyvlans.GUI
 
             private static readonly Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlDark;
             private static readonly Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
+
+            private static readonly Color COLOR_PERSIST_BUTTON_INACTIVE = SystemColors.ControlDark;
+            private static readonly Color COLOR_PERSIST_BUTTON_ACTIVE = SystemColors.ControlText;
 
         }
     }
