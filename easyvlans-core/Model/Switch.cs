@@ -138,7 +138,7 @@ namespace easyvlans.Model
             }
             PersistVlanConfigStatus = Status.Querying;
             LogDispatcher.I($"Persisting changes of switch [{Label}]...");
-            LogDispatcher.V($"Method for persisting changes of switch [{Label}]: [{OperationMethodCollection.PersistChangesMethod.DetailedCode}].");
+            LogDispatcher.V($"Method for persisting changes of switch [{Label}]: [{OperationMethodCollection?.PersistChangesMethod.DetailedCode ?? "-"}].");
             try
             {
                 await OperationMethodCollection.PersistChangesMethod.DoAsync();
@@ -150,7 +150,7 @@ namespace easyvlans.Model
             catch (Exception ex)
             {
                 PersistVlanConfigStatus = Status.Unsuccessful;
-                LogDispatcher.E($"Didn't succeeded to persist changes of switch [{Label}] with method [{OperationMethodCollection.PersistChangesMethod.DetailedCode}]. Error message: [{ex.Message}]");
+                LogDispatcher.E($"Didn't succeeded to persist changes of switch [{Label}] with method [{OperationMethodCollection?.PersistChangesMethod.DetailedCode ?? "-"}]. Error message: [{ex.Message}]");
             }
             return false;
         }

@@ -19,12 +19,20 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             Switch = @switch;
             ISnmpAccessVlanMembershipMethod accessVlanMembershipMethod = SnmpAccessVlanMembershipMethodRegister.Instance.GetMethodInstance(accessVlanMembershipMethodName, accessVlanMembershipMethodParams, this);
-            logMethodFoundOrNot(@switch, "accessing and setting VLAN memberships", accessVlanMembershipMethodName, accessVlanMembershipMethod);
+            logMethodFoundOrNot(@switch, METHOD_PURPOSE_ACCESS_VLAN_MEMBERSHIP, accessVlanMembershipMethodName, accessVlanMembershipMethod);
             ReadConfigMethod = accessVlanMembershipMethod;
-            ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, persistChangesMethodParams, this);
-            logMethodFoundOrNot(@switch, "persisting changes", persistChangesMethodName, persistChangesMethod);
             SetPortToVlanMethod = accessVlanMembershipMethod;
-            PersistChangesMethod = persistChangesMethod;
+            if (persistChangesMethodName != null)
+            {
+                ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, persistChangesMethodParams, this);
+                logMethodFoundOrNot(@switch, METHOD_PURPOSE_PERSIST_CHANGES, persistChangesMethodName, persistChangesMethod);
+                PersistChangesMethod = persistChangesMethod;
+            }
+            else
+            {
+                LogDispatcher.V($"No SNMP method defined for {METHOD_PURPOSE_PERSIST_CHANGES} of switch [{@switch.Label}].");
+                PersistChangesMethod = null;
+            }
         }
 
         private static void logMethodFoundOrNot(Switch @switch, string methodPurpose, string methodName, ISnmpMethod method)
@@ -34,6 +42,9 @@ namespace easyvlans.Model.SwitchOperationMethods
             else
                 LogDispatcher.V($"Found SNMP method with name [{methodName}] for {methodPurpose} of switch [{@switch.Label}].");
         }
+
+        private const string METHOD_PURPOSE_ACCESS_VLAN_MEMBERSHIP = "accessing and setting VLAN memberships";
+        private const string METHOD_PURPOSE_PERSIST_CHANGES = "persisting changes";
 
     }
 }

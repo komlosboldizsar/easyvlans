@@ -72,7 +72,7 @@ namespace easyvlans.GUI
                     newText = (portsWithPendingChangeCount > 1) ? $"{portsWithPendingChangeCount} ports changed" : "1 port changed";
                     _pendingChangesLabel.Text = newText;
                     _pendingChangesLabel.ForeColor = COLOR_HAS_PENDING_CHANGES;
-                    _persistChangesButton.Enabled = true;
+                    _persistChangesButton.Enabled = (Item.OperationMethodCollection?.PersistChangesMethod != null);
                 }
             }
 
