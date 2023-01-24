@@ -65,7 +65,7 @@ namespace easyvlans.GUI
             { LogMessageSeverity.Error, Color.Red },
             { LogMessageSeverity.Warning, Color.Orange },
             { LogMessageSeverity.Info, Color.Black },
-            { LogMessageSeverity.Verbose, Color.LightBlue }
+            { LogMessageSeverity.Verbose, Color.BlueViolet }
         };
 
         private async void loadAsync(object sender, EventArgs e)
