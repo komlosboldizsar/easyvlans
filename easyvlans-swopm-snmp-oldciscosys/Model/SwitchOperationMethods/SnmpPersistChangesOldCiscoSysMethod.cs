@@ -25,10 +25,11 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         async Task IPersistChangesMethod.DoAsync()
             => await _parent.SnmpConnection.SetAsync(new List<Variable>() {
-                new Variable(new ObjectIdentifier(OID_WRITEMEM), new Integer32(1))
+                new Variable(new ObjectIdentifier(OID_WRITEMEM), new Integer32(TXCONV_WRITEMEM_WRITE))
             });
 
         private const string OID_WRITEMEM = "1.3.6.1.4.1.9.2.1.54";
+        private const int TXCONV_WRITEMEM_WRITE = 1;
 
     }
 

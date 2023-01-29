@@ -20,11 +20,12 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         async Task IPersistChangesMethod.DoAsync()
             => await _parent.SnmpConnection.SetAsync(new List<Variable>() {
-                new Variable(new ObjectIdentifier(OID_COMPANYSYSTEM_SYSSAVE), new Integer32(1))
+                new Variable(new ObjectIdentifier(OID_COMPANYSYSTEM_SYSSAVE), new Integer32(TXCONV_TRUTHVALUE_TRUE))
             });
 
         private const string OID_TEMPLATE_COMPANYSYSTEM_SYSSAVE = "1.3.6.1.4.1.171.10.76.{0}.1.10.0";
         private readonly string OID_COMPANYSYSTEM_SYSSAVE;
+        private const int TXCONV_TRUTHVALUE_TRUE = 1;
 
     }
 

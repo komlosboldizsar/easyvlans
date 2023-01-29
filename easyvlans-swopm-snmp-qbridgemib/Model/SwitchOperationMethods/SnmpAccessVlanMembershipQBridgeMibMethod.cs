@@ -60,8 +60,8 @@ namespace easyvlans.Model.SwitchOperationMethods
         }
 
         private const string OID_DOT1Q_VLAN_STATIC_TABLE = "1.3.6.1.2.1.17.7.1.4.3";
-        private const string OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS = "1.3.6.1.2.1.17.7.1.4.3.1.2";
-        private const string OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS = "1.3.6.1.2.1.17.7.1.4.3.1.4";
+        private const string OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS = $"{OID_DOT1Q_VLAN_STATIC_TABLE}.1.2";
+        private const string OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS = $"{OID_DOT1Q_VLAN_STATIC_TABLE}.1.4";
 
         public void bindUserToSnmpVlans(Dictionary<int, SnmpVlan> snmpVlans)
         {
@@ -89,7 +89,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         }
 
         private const string OID_DOT1Q_PORT_VLAN_TABLE = "1.3.6.1.2.1.17.7.1.4.5";
-        private const string OID_DOT1Q_PVID = "1.3.6.1.2.1.17.7.1.4.5.1.1";
+        private const string OID_DOT1Q_PVID = $"{OID_DOT1Q_PORT_VLAN_TABLE}.1.1";
 
         public void calculateSnmpPortVlanMemberships(Dictionary<int, SnmpVlan> snmpVlans, Dictionary<int, SnmpPort> snmpPorts)
         {

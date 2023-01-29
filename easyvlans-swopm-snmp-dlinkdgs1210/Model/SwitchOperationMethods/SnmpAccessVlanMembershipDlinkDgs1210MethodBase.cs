@@ -13,15 +13,17 @@ namespace easyvlans.Model.SwitchOperationMethods
         public SnmpAccessVlanMembershipDlinkDgs1210MethodBase(string @params, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
-            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN, OID_TEMPLATE_DOT1Q_VLAN, this);
-            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_ALL_MEMBERSHIP, OID_TEMPLATE_DOT1Q_VLAN_ALL_MEMBERSHIP, this);
-            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_UNTAGGED_MEMBERSHIP, OID_TEMPLATE_DOT1Q_VLAN_UNTAGGED_MEMBERSHIP, this);
-            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_PVID, OID_TEMPLATE_DOT1Q_PVID, this);
+            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN, OID_TEMPLATE_DOT1Q_VLAN_ENTRY, this);
+            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_EGRESS_PORTS, OID_TEMPLATE_DOT1Q_VLAN_EGRESS_PORTS, this);
+            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_UNTAGGED_PORTS, OID_TEMPLATE_DOT1Q_VLAN_UNTAGGED_PORTS, this);
+            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_PORT_PVID, OID_TEMPLATE_DOT1Q_PORT_PVID, this);
         }
 
         public abstract string Code { get; }
         public string DetailedCode => $"{_parent.Code}[{Code}]";
         public abstract int MibSubtreeIndex { get; }
+
+        private const string OID_COMPANY_DOT1Q_VLAN_GROUP = "1.3.6.1.4.1.171.10.76.{0}.7";
 
         async Task IReadConfigMethod.DoAsync()
         {
@@ -38,11 +40,11 @@ namespace easyvlans.Model.SwitchOperationMethods
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanStaticTableRow.GetIdParts();
                 SnmpVlan snmpVlan = snmpVlans.GetAnyway(idParts.RowId, id => new SnmpVlan(id));
-                if (idParts.NodeId == OID_DOT1Q_VLAN_ALL_MEMBERSHIP)
+                if (idParts.NodeId == OID_DOT1Q_VLAN_EGRESS_PORTS)
                 {
                     snmpVlan.EgressPorts = (portVlanStaticTableRow.Data as OctetString).GetRaw();
                 }
-                else if (idParts.NodeId == OID_DOT1Q_VLAN_UNTAGGED_MEMBERSHIP)
+                else if (idParts.NodeId == OID_DOT1Q_VLAN_UNTAGGED_PORTS)
                 {
                     snmpVlan.UntaggedPorts = (portVlanStaticTableRow.Data as OctetString).GetRaw();
                 }
@@ -50,13 +52,13 @@ namespace easyvlans.Model.SwitchOperationMethods
             return snmpVlans;
         }
 
-        private const string OID_TEMPLATE_DOT1Q_VLAN = "1.3.6.1.4.1.171.10.76.{0}.7.6.1";
-        private const string OID_TEMPLATE_DOT1Q_VLAN_ALL_MEMBERSHIP = "1.3.6.1.4.1.171.10.76.{0}.7.6.1.2";
-        private const string OID_TEMPLATE_DOT1Q_VLAN_UNTAGGED_MEMBERSHIP = "1.3.6.1.4.1.171.10.76.{0}.7.6.1.4";
+        private const string OID_TEMPLATE_DOT1Q_VLAN_ENTRY = $"{OID_COMPANY_DOT1Q_VLAN_GROUP}.6.1";
+        private const string OID_TEMPLATE_DOT1Q_VLAN_EGRESS_PORTS = $"{OID_TEMPLATE_DOT1Q_VLAN_ENTRY}.2";
+        private const string OID_TEMPLATE_DOT1Q_VLAN_UNTAGGED_PORTS = $"{OID_TEMPLATE_DOT1Q_VLAN_ENTRY}.4";
 
         private readonly string OID_DOT1Q_VLAN;
-        private readonly string OID_DOT1Q_VLAN_ALL_MEMBERSHIP;
-        private readonly string OID_DOT1Q_VLAN_UNTAGGED_MEMBERSHIP;
+        private readonly string OID_DOT1Q_VLAN_EGRESS_PORTS;
+        private readonly string OID_DOT1Q_VLAN_UNTAGGED_PORTS;
 
         private void bindUserToSnmpVlans(Dictionary<int, SnmpVlan> snmpVlans)
         {
@@ -68,11 +70,11 @@ namespace easyvlans.Model.SwitchOperationMethods
         private async Task<Dictionary<int, SnmpPort>> readSnmpPortsAsync()
         {
             Dictionary<int, SnmpPort> snmpPorts = new();
-            foreach (Variable portVlanTableRow in await _parent.SnmpConnection.WalkAsync(OID_DOT1Q_PVID))
+            foreach (Variable portVlanTableRow in await _parent.SnmpConnection.WalkAsync(OID_DOT1Q_PORT_PVID))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
                 SnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId, id => new SnmpPort(id));
-                if (idParts.NodeId == OID_DOT1Q_PVID)
+                if (idParts.NodeId == OID_DOT1Q_PORT_PVID)
                 {
                     if (int.TryParse(portVlanTableRow.Data.ToString(), out int pvid))
                         snmpPort.PVID = pvid;
@@ -81,8 +83,9 @@ namespace easyvlans.Model.SwitchOperationMethods
             return snmpPorts;
         }
 
-        private const string OID_TEMPLATE_DOT1Q_PVID = "1.3.6.1.4.1.171.10.76.{0}.7.7.1.1";
-        private readonly string OID_DOT1Q_PVID;
+        private const string OID_DOT1Q_PORT_ENTRY = $"{OID_COMPANY_DOT1Q_VLAN_GROUP}.7.1";
+        private const string OID_TEMPLATE_DOT1Q_PORT_PVID = $"{OID_DOT1Q_PORT_ENTRY}.1";
+        private readonly string OID_DOT1Q_PORT_PVID;
 
         private void calculateSnmpPortVlanMemberships(Dictionary<int, SnmpVlan> snmpVlans, Dictionary<int, SnmpPort> snmpPorts)
         {
@@ -126,11 +129,11 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             List<Variable> egressSet = new(), egressClear = new(), untaggedSet = new(), untaggedClear = new(), pvidValue = new()
             {
-                new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID))
+                new Variable(new ObjectIdentifier($"{OID_DOT1Q_PORT_PVID}.{port.Index}"), new Gauge32(vlan.ID))
             };
             (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index);
-            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_ALL_MEMBERSHIP, vlan.ID, portByteIndex, portBitIndex, egressClear, egressSet);
-            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_UNTAGGED_MEMBERSHIP, vlan.ID, portByteIndex, portBitIndex, untaggedClear, untaggedSet);
+            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, egressClear, egressSet);
+            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, untaggedClear, untaggedSet);
             await _parent.SnmpConnection.SetAsync(pvidValue);
             await _parent.SnmpConnection.SetAsync(untaggedClear);
             await _parent.SnmpConnection.SetAsync(egressClear);
