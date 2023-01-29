@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "b-xmldeserializer", "b-xmld
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-remote-snmp", "easyvlans-remote-snmp\easyvlans-remote-snmp.csproj", "{CEB973C4-EE5D-4904-AEAB-264B6AA2473B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyvlans-swopm-snmp-hpbasicconfig", "easyvlans-swopm-snmp-hpbasicconfig\easyvlans-swopm-snmp-hpbasicconfig.csproj", "{1F0A83FA-A7D8-409D-B104-F266E1A65EBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-swopm-snmp-hpbasicconfig", "easyvlans-swopm-snmp-hpbasicconfig\easyvlans-swopm-snmp-hpbasicconfig.csproj", "{1F0A83FA-A7D8-409D-B104-F266E1A65EBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyvlans-swopm-snmp-ciscosbcopy", "easyvlans-swopm-snmp-ciscosbcopy\easyvlans-swopm-snmp-ciscosbcopy.csproj", "{5AF7C2C2-6FD6-4A31-AA06-7F737F27F03D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{1F0A83FA-A7D8-409D-B104-F266E1A65EBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F0A83FA-A7D8-409D-B104-F266E1A65EBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F0A83FA-A7D8-409D-B104-F266E1A65EBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AF7C2C2-6FD6-4A31-AA06-7F737F27F03D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AF7C2C2-6FD6-4A31-AA06-7F737F27F03D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AF7C2C2-6FD6-4A31-AA06-7F737F27F03D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AF7C2C2-6FD6-4A31-AA06-7F737F27F03D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
