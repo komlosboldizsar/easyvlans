@@ -131,19 +131,26 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         async Task<bool> ISetPortToVlanMethod.DoAsync(Port port, Vlan vlan)
         {
-            List<Variable> variablesLast = new(), variablesFirst = new();
+            List<Variable> variablesAll = new(),
+                egressToUnset = new(),
+                egressToSet = new(),
+                untaggedToUnset = new(),
+                untaggedToSet = new();
             if (!_paramNoPvid)
-                variablesFirst.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));
+                variablesAll.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));
             (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index);
-            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
-            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, variablesFirst, variablesLast);
-            variablesFirst.AddRange(variablesLast);
-            await _parent.SnmpConnection.SetAsync(variablesFirst);
+            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, egressToSet, egressToUnset);
+            await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, untaggedToSet, untaggedToUnset);
+            variablesAll.AddRange(untaggedToUnset);
+            variablesAll.AddRange(egressToSet);
+            variablesAll.AddRange(egressToUnset);
+            variablesAll.AddRange(untaggedToSet);
+            await _parent.SnmpConnection.SetAsync(variablesAll);
             LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{_parent.Switch.Label}] to VLAN [{vlan.Label}] ready.");
             return true;
         }
 
-        private async Task getVlansBitfieldsForPort(string tableObjectIdentifier, int targetVlanId, int portByteIndex, int portBitIndex, List<Variable> variablesFirst, List<Variable> variablesLast)
+        private async Task getVlansBitfieldsForPort(string tableObjectIdentifier, int targetVlanId, int portByteIndex, int portBitIndex, List<Variable> variablesToSet, List<Variable> variablesToUnset)
         {
             foreach (Variable oldRow in await _parent.SnmpConnection.WalkAsync(tableObjectIdentifier))
             {
@@ -152,7 +159,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 byte[] snmpDataBytes = (oldRow.Data as OctetString).GetRaw();
                 snmpDataBytes.SetBit(portByteIndex, portBitIndex, valueToSet);
                 Variable newRow = new(oldRow.Id, new OctetString(snmpDataBytes));
-                (valueToSet ? variablesLast : variablesFirst).Add(newRow);
+                (valueToSet ? variablesToSet : variablesToUnset).Add(newRow);
             }
         }
 
