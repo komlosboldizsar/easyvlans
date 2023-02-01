@@ -1,4 +1,6 @@
-﻿using Lextm.SharpSnmpLib;
+﻿using easyvlans.Helpers;
+using easyvlans.Logger;
+using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 
 namespace easyvlans.Model.SwitchOperationMethods
@@ -9,7 +11,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         public SnmpV2Connection(string ip, int port, string communityStrings)
             : base(ip, port, communityStrings) { }
 
-        public override async Task<List<Variable>> WalkAsync(string objectIdentifierStr)
+        protected override async Task<List<Variable>> DoWalkAsync(string objectIdentifierStr)
         {
             List<Variable> result = new();
             await Messenger.BulkWalkAsync(VersionCode.V2, _ipEndPoint, _readCommunityString, OctetString.Empty,
@@ -17,8 +19,10 @@ namespace easyvlans.Model.SwitchOperationMethods
             return result;
         }
 
-        public override async Task SetAsync(List<Variable> variables)
+        protected override async Task DoSetAsync(List<Variable> variables)
             => await Messenger.SetAsync(VersionCode.V2, _ipEndPoint, _writeCommunityString, variables);
+
+        protected override string VersionString => "SNMPv2";
 
     }
 }
