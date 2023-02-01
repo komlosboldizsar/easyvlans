@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-core", "easyvlans
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-swopm-snmp-dlinkdgs1210", "easyvlans-swopm-snmp-dlinkdgs1210\easyvlans-swopm-snmp-dlinkdgs1210.csproj", "{094AEA01-9B14-4963-8B7A-81C394479DF5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-swopm-snmp-qbridgemib", "easyvlans-swopm-snmp-qbridgemib\easyvlans-swopm-snmp-qbridgemib.csproj", "{87BA1113-4B96-4307-983A-1F1C506AC4EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-swopm-snmp-qbridge", "easyvlans-swopm-snmp-qbridge\easyvlans-swopm-snmp-qbridge.csproj", "{87BA1113-4B96-4307-983A-1F1C506AC4EF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-swopm-snmp-ciscoconfigcopy", "easyvlans-swopm-snmp-ciscoconfigcopy\easyvlans-swopm-snmp-ciscoconfigcopy.csproj", "{B4DEF83C-3FB9-490D-B615-467140C2EFF7}"
 EndProject

@@ -5,23 +5,23 @@ using Lextm.SharpSnmpLib;
 namespace easyvlans.Model.SwitchOperationMethods
 {
 
-    internal sealed class SnmpAccessVlanMembershipQBridgeMibMethod : ISnmpAccessVlanMembershipMethod
+    internal sealed class SnmpAccessVlanMembershipQBridgeMethod : ISnmpAccessVlanMembershipMethod
     {
 
-        public const string CODE = "qbridgemib";
+        public const string CODE = "qbridge";
         public const string PARAM_NO_PVID = "nopvid";
 
         public class Factory : ISnmpAccessVlanMembershipMethod.IFactory
         {
             public string Code => CODE;
             public ISnmpAccessVlanMembershipMethod GetInstance(string @params, ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpAccessVlanMembershipQBridgeMibMethod(@params, parent);
+                => new SnmpAccessVlanMembershipQBridgeMethod(@params, parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
         private bool _paramNoPvid = false;
 
-        public SnmpAccessVlanMembershipQBridgeMibMethod(string @params, ISnmpSwitchOperationMethodCollection parent)
+        public SnmpAccessVlanMembershipQBridgeMethod(string @params, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
             string[] paramsPieces = @params.Split(',');
