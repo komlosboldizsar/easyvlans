@@ -28,10 +28,11 @@
         private static string convertTypeToString(LogMessageSeverity severity)
             => severity switch
             {
-                LogMessageSeverity.Verbose => "VERBOSE",
-                LogMessageSeverity.Info => "INFO",
-                LogMessageSeverity.Warning => "WARN",
                 LogMessageSeverity.Error => "ERROR",
+                LogMessageSeverity.Warning => "WARN",
+                LogMessageSeverity.Info => "INFO",
+                LogMessageSeverity.Verbose => "VERBOSE",
+                LogMessageSeverity.VerbosePlus => "VERBOSE+",
                 _ => "?",
             };
 

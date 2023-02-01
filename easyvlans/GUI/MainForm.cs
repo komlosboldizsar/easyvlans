@@ -33,7 +33,7 @@ namespace easyvlans.GUI
 
         private void addLogMessage(DateTime timestamp, LogMessageSeverity severity, string message)
         {
-            if (!showVerboseLog.Checked && (severity == LogMessageSeverity.Verbose))
+            if (!showVerboseLog.Checked && (severity >= LogMessageSeverity.Verbose))
                 return;
             string textToAdd = $"[{timestamp:HH:mm:ss}] {message}\r\n";
             logTextBox.AppendText(textToAdd);
@@ -65,7 +65,8 @@ namespace easyvlans.GUI
             { LogMessageSeverity.Error, Color.Red },
             { LogMessageSeverity.Warning, Color.Orange },
             { LogMessageSeverity.Info, Color.Black },
-            { LogMessageSeverity.Verbose, Color.BlueViolet }
+            { LogMessageSeverity.Verbose, Color.Blue },
+            { LogMessageSeverity.VerbosePlus, Color.BlueViolet }
         };
 
         private async void loadAsync(object sender, EventArgs e)

@@ -1,6 +1,8 @@
 ﻿using easyvlans.Logger;
 using easyvlans.Model.Remote;
 using easyvlans.Model.SwitchOperationMethods;
+using Lextm.SharpSnmpLib;
+using Lextm.SharpSnmpLib.Messaging;
 
 namespace easyvlans.Model
 {

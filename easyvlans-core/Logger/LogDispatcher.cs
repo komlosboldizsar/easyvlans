@@ -19,6 +19,7 @@
         public static void W(string message) => Log(LogMessageSeverity.Warning, message);
         public static void I(string message) => Log(LogMessageSeverity.Info, message);
         public static void V(string message) => Log(LogMessageSeverity.Verbose, message);
+        public static void VV(string message) => Log(LogMessageSeverity.VerbosePlus, message);
 
     }
 }
