@@ -5,5 +5,6 @@
         public static SnmpAccessVlanMembershipMethodRegister Instance { get; } = new();
         private SnmpAccessVlanMembershipMethodRegister() { }
         public ISnmpAccessVlanMembershipMethod GetMethodInstance(string code, string @params, ISnmpSwitchOperationMethodCollection parent) => getFactory(code)?.GetInstance(@params, parent);
+        protected override string RegisterName => "SNMP access vlan membership";
     }
 }

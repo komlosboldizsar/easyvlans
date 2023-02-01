@@ -9,7 +9,10 @@ namespace easyvlans.Model.SwitchOperationMethods
         ISetPortToVlanMethod SetPortToVlanMethod { get; }
         IPersistChangesMethod PersistChangesMethod { get; }
 
-        public interface IDeserializer : IDeserializer<ISwitchOperationMethodCollection, Config> { }
+        public interface IDeserializer : IDeserializer<ISwitchOperationMethodCollection, Config>
+        {
+            string Code { get; }
+        }
 
     }
 }

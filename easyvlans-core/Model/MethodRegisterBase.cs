@@ -1,4 +1,6 @@
-﻿namespace easyvlans.Model
+﻿using easyvlans.Logger;
+
+namespace easyvlans.Model
 {
     public abstract class MethodRegisterBase<TMethodInterface, TFactoryInterface>
         where TMethodInterface : class, IMethod
@@ -13,7 +15,13 @@
             return methodFactory;
         }
 
-        public void RegisterFactory(TFactoryInterface factory) => registeredFactories.Add(factory.Code, factory);
+        public void RegisterFactory(TFactoryInterface factory)
+        {
+            LogDispatcher.VV($"Added method [{factory.Code}] to register [{RegisterName}].");
+            registeredFactories.Add(factory.Code, factory);
+        }
+
+        protected abstract string RegisterName { get; }
 
     }
 }

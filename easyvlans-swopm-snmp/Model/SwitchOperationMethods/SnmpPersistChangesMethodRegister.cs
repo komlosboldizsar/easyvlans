@@ -5,5 +5,6 @@
         public static SnmpPersistChangesMethodRegister Instance { get; } = new();
         private SnmpPersistChangesMethodRegister() { }
         public ISnmpPersistChangesMethod GetMethodInstance(string code, string @params, ISnmpSwitchOperationMethodCollection parent) => getFactory(code)?.GetInstance(@params, parent);
+        protected override string RegisterName => "SNMP persist changes";
     }
 }

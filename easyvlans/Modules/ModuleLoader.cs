@@ -29,6 +29,7 @@ namespace easyvlans.Modules
                     IEnumerable<TypeInfo> moduleTypeInfos = assembly.DefinedTypes.Where(ti => ti.ImplementedInterfaces.Contains(MODULE_DESCRIPTOR_TYPE));
                     foreach (TypeInfo moduleTypeInfo in moduleTypeInfos)
                     {
+                        LogDispatcher.V($"Found module [{fileInfo.FullName}], initializing...");
                         ConstructorInfo constuctorInfo = moduleTypeInfo.GetConstructor(EMPTY_TYPE_ARRAY);
                         if (constuctorInfo == null)
                             continue;
@@ -36,7 +37,7 @@ namespace easyvlans.Modules
                             continue;
                         moduleInstance.Init();
                         initializedModules.Add(moduleInstance);
-                        LogDispatcher.V($"Found and initialized module [{fileInfo.FullName}].");
+                        LogDispatcher.V($"Initialized module [{fileInfo.FullName}].");
                     }
                 }
                 catch
