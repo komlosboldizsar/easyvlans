@@ -146,7 +146,6 @@ namespace easyvlans.Model.SwitchOperationMethods
             variablesAll.AddRange(egressToUnset);
             variablesAll.AddRange(untaggedToSet);
             await _parent.SnmpConnection.SetAsync(variablesAll);
-            LogDispatcher.I($"Setting membership of port [{port.Label}] @ switch [{_parent.Switch.Label}] to VLAN [{vlan.Label}] ready.");
             return true;
         }
 
