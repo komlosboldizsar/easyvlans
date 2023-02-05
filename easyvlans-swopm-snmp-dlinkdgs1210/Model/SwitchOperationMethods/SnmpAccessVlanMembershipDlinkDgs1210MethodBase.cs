@@ -28,19 +28,19 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         async Task IReadConfigMethod.DoAsync()
         {
-            Dictionary<int, SnmpVlan> snmpVlans = await readSnmpVlansAsync();
-            Dictionary<int, SnmpPort> snmpPorts = await readSnmpPortsAsync();
+            Dictionary<int, Dgs1210SnmpVlan> snmpVlans = await readSnmpVlansAsync();
+            Dictionary<int, Dgs1210SnmpPort> snmpPorts = await readSnmpPortsAsync();
             bindUserToSnmpVlans(snmpVlans);
             calculateSnmpPortVlanMemberships(snmpVlans, snmpPorts);
         }
 
-        private async Task<Dictionary<int, SnmpVlan>> readSnmpVlansAsync()
+        private async Task<Dictionary<int, Dgs1210SnmpVlan>> readSnmpVlansAsync()
         {
-            Dictionary<int, SnmpVlan> snmpVlans = new();
+            Dictionary<int, Dgs1210SnmpVlan> snmpVlans = new();
             foreach (Variable portVlanStaticTableRow in await _parent.SnmpConnection.WalkAsync(OID_DOT1Q_VLAN))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanStaticTableRow.GetIdParts();
-                SnmpVlan snmpVlan = snmpVlans.GetAnyway(idParts.RowId, id => new SnmpVlan(id));
+                Dgs1210SnmpVlan snmpVlan = snmpVlans.GetAnyway(idParts.RowId, id => new Dgs1210SnmpVlan(id));
                 if (idParts.NodeId == OID_DOT1Q_VLAN_EGRESS_PORTS)
                 {
                     snmpVlan.EgressPorts = (portVlanStaticTableRow.Data as OctetString).GetRaw();
@@ -61,20 +61,20 @@ namespace easyvlans.Model.SwitchOperationMethods
         private readonly string OID_DOT1Q_VLAN_EGRESS_PORTS;
         private readonly string OID_DOT1Q_VLAN_UNTAGGED_PORTS;
 
-        private void bindUserToSnmpVlans(Dictionary<int, SnmpVlan> snmpVlans)
+        private void bindUserToSnmpVlans(Dictionary<int, Dgs1210SnmpVlan> snmpVlans)
         {
             foreach (Vlan userVlan in _parent.Switch.Config.Vlans.Values)
-                if (snmpVlans.TryGetValue(userVlan.ID, out SnmpVlan snmpVlan))
+                if (snmpVlans.TryGetValue(userVlan.ID, out Dgs1210SnmpVlan snmpVlan))
                     snmpVlan.UserVlan = userVlan;
         }
 
-        private async Task<Dictionary<int, SnmpPort>> readSnmpPortsAsync()
+        private async Task<Dictionary<int, Dgs1210SnmpPort>> readSnmpPortsAsync()
         {
-            Dictionary<int, SnmpPort> snmpPorts = new();
+            Dictionary<int, Dgs1210SnmpPort> snmpPorts = new();
             foreach (Variable portVlanTableRow in await _parent.SnmpConnection.WalkAsync(OID_DOT1Q_PORT_PVID))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
-                SnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId, id => new SnmpPort(id));
+                Dgs1210SnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId, id => new Dgs1210SnmpPort(id));
                 if (idParts.NodeId == OID_DOT1Q_PORT_PVID)
                 {
                     if (int.TryParse(portVlanTableRow.Data.ToString(), out int pvid))
@@ -88,19 +88,19 @@ namespace easyvlans.Model.SwitchOperationMethods
         private const string OID_TEMPLATE_DOT1Q_PORT_PVID = $"{OID_DOT1Q_PORT_ENTRY}.1";
         private readonly string OID_DOT1Q_PORT_PVID;
 
-        private void calculateSnmpPortVlanMemberships(Dictionary<int, SnmpVlan> snmpVlans, Dictionary<int, SnmpPort> snmpPorts)
+        private void calculateSnmpPortVlanMemberships(Dictionary<int, Dgs1210SnmpVlan> snmpVlans, Dictionary<int, Dgs1210SnmpPort> snmpPorts)
         {
             foreach (Port userPort in _parent.Switch.Ports)
             {
-                if (!snmpPorts.TryGetValue(userPort.Index, out SnmpPort snmpPort))
+                if (!snmpPorts.TryGetValue(userPort.Index, out Dgs1210SnmpPort snmpPort))
                 {
                     userPort.CurrentVlan = null;
                     continue;
                 }
                 (int portByteIndex, int portBitIndex) = getByteBitIndex(userPort.Index);
                 int ownerVlans = 0;
-                SnmpVlan lastOwnerSnmpVlan = null;
-                foreach (SnmpVlan snmpVlan in snmpVlans.Values)
+                Dgs1210SnmpVlan lastOwnerSnmpVlan = null;
+                foreach (Dgs1210SnmpVlan snmpVlan in snmpVlans.Values)
                 {
                     bool isUntagged = snmpVlan.UntaggedPorts.GetBit(portByteIndex, portBitIndex);
                     bool isEgress = snmpVlan.EgressPorts.GetBit(portByteIndex, portBitIndex);

@@ -33,19 +33,19 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         async Task IReadConfigMethod.DoAsync()
         {
-            Dictionary<int, SnmpVlan> snmpVlans = await readSnmpVlansAsync();
-            Dictionary<int, SnmpPort> snmpPorts = await readSnmpPortsAsync();
+            Dictionary<int, QBridgeSnmpVlan> snmpVlans = await readSnmpVlansAsync();
+            Dictionary<int, QBridgeSnmpPort> snmpPorts = await readSnmpPortsAsync();
             bindUserToSnmpVlans(snmpVlans);
             calculateSnmpPortVlanMemberships(snmpVlans, snmpPorts);
         }
 
-        public async Task<Dictionary<int, SnmpVlan>> readSnmpVlansAsync()
+        public async Task<Dictionary<int, QBridgeSnmpVlan>> readSnmpVlansAsync()
         {
-            Dictionary<int, SnmpVlan> snmpVlans = new();
+            Dictionary<int, QBridgeSnmpVlan> snmpVlans = new();
             foreach (Variable portVlanStaticTableRow in await _parent.SnmpConnection.WalkAsync(OID_DOT1Q_VLAN_STATIC_TABLE))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanStaticTableRow.GetIdParts();
-                SnmpVlan snmpVlan = snmpVlans.GetAnyway(idParts.RowId, id => new SnmpVlan(id));
+                QBridgeSnmpVlan snmpVlan = snmpVlans.GetAnyway(idParts.RowId, id => new QBridgeSnmpVlan(id));
                 switch (idParts.NodeId)
                 {
                     case OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS:
@@ -63,20 +63,20 @@ namespace easyvlans.Model.SwitchOperationMethods
         private const string OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS = $"{OID_DOT1Q_VLAN_STATIC_TABLE}.1.2";
         private const string OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS = $"{OID_DOT1Q_VLAN_STATIC_TABLE}.1.4";
 
-        public void bindUserToSnmpVlans(Dictionary<int, SnmpVlan> snmpVlans)
+        public void bindUserToSnmpVlans(Dictionary<int, QBridgeSnmpVlan> snmpVlans)
         {
             foreach (Vlan userVlan in _parent.Switch.Config.Vlans.Values)
-                if (snmpVlans.TryGetValue(userVlan.ID, out SnmpVlan snmpVlan))
+                if (snmpVlans.TryGetValue(userVlan.ID, out QBridgeSnmpVlan snmpVlan))
                     snmpVlan.UserVlan = userVlan;
         }
 
-        public async Task<Dictionary<int, SnmpPort>> readSnmpPortsAsync()
+        public async Task<Dictionary<int, QBridgeSnmpPort>> readSnmpPortsAsync()
         {
-            Dictionary<int, SnmpPort> snmpPorts = new();
+            Dictionary<int, QBridgeSnmpPort> snmpPorts = new();
             foreach (Variable portVlanTableRow in await _parent.SnmpConnection.WalkAsync(OID_DOT1Q_PORT_VLAN_TABLE))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
-                SnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId, id => new SnmpPort(id));
+                QBridgeSnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId, id => new QBridgeSnmpPort(id));
                 switch (idParts.NodeId)
                 {
                     case OID_DOT1Q_PVID:
@@ -91,19 +91,19 @@ namespace easyvlans.Model.SwitchOperationMethods
         private const string OID_DOT1Q_PORT_VLAN_TABLE = "1.3.6.1.2.1.17.7.1.4.5";
         private const string OID_DOT1Q_PVID = $"{OID_DOT1Q_PORT_VLAN_TABLE}.1.1";
 
-        public void calculateSnmpPortVlanMemberships(Dictionary<int, SnmpVlan> snmpVlans, Dictionary<int, SnmpPort> snmpPorts)
+        public void calculateSnmpPortVlanMemberships(Dictionary<int, QBridgeSnmpVlan> snmpVlans, Dictionary<int, QBridgeSnmpPort> snmpPorts)
         {
             foreach (Port userPort in _parent.Switch.Ports)
             {
-                if (!snmpPorts.TryGetValue(userPort.Index, out SnmpPort snmpPort))
+                if (!snmpPorts.TryGetValue(userPort.Index, out QBridgeSnmpPort snmpPort))
                 {
                     userPort.CurrentVlan = null;
                     continue;
                 }
                 (int portByteIndex, int portBitIndex) = getByteBitIndex(userPort.Index);
                 int ownerVlans = 0;
-                SnmpVlan lastOwnerSnmpVlan = null;
-                foreach (SnmpVlan snmpVlan in snmpVlans.Values)
+                QBridgeSnmpVlan lastOwnerSnmpVlan = null;
+                foreach (QBridgeSnmpVlan snmpVlan in snmpVlans.Values)
                 {
                     bool isUntagged = snmpVlan.UntaggedPorts.GetBit(portByteIndex, portBitIndex);
                     bool isEgress = snmpVlan.EgressPorts.GetBit(portByteIndex, portBitIndex);
