@@ -6,23 +6,32 @@ using System.Xml;
 namespace easyvlans.Model.SwitchOperationMethods
 {
 
-    internal abstract class SnmpAccessVlanMembershipDlinkDgs1210MethodBase : ISnmpAccessVlanMembershipMethod, IDgs1210Method
+    internal class SnmpAccessVlanMembershipDlinkDgs1210Method : ISnmpAccessVlanMembershipMethod
     {
+
+        public const string CODE = "dlinkdgs1210";
+
+        public class Factory : ISnmpAccessVlanMembershipMethod.IFactory
+        {
+            public string Code => CODE;
+            public ISnmpAccessVlanMembershipMethod GetInstance(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpAccessVlanMembershipDlinkDgs1210Method(data, parent);
+        }
 
         private ISnmpSwitchOperationMethodCollection _parent;
 
-        public SnmpAccessVlanMembershipDlinkDgs1210MethodBase(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
+        public SnmpAccessVlanMembershipDlinkDgs1210Method(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
-            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN, OID_TEMPLATE_DOT1Q_VLAN_ENTRY, this);
-            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_EGRESS_PORTS, OID_TEMPLATE_DOT1Q_VLAN_EGRESS_PORTS, this);
-            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_UNTAGGED_PORTS, OID_TEMPLATE_DOT1Q_VLAN_UNTAGGED_PORTS, this);
-            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_PORT_PVID, OID_TEMPLATE_DOT1Q_PORT_PVID, this);
+            Dgs1210Model model = Dgs1210Helpers.GetModel(data);
+            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN, OID_TEMPLATE_DOT1Q_VLAN_ENTRY, model);
+            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_EGRESS_PORTS, OID_TEMPLATE_DOT1Q_VLAN_EGRESS_PORTS, model);
+            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_UNTAGGED_PORTS, OID_TEMPLATE_DOT1Q_VLAN_UNTAGGED_PORTS, model);
+            Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_PORT_PVID, OID_TEMPLATE_DOT1Q_PORT_PVID, model);
         }
 
-        public abstract string Code { get; }
+        public string Code => CODE;
         public string DetailedCode => $"{_parent.Code}[{Code}]";
-        public abstract int MibSubtreeIndex { get; }
 
         private const string OID_COMPANY_DOT1Q_VLAN_GROUP = "1.3.6.1.4.1.171.10.76.{0}.7";
 
