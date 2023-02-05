@@ -1,6 +1,7 @@
 ﻿using easyvlans.Helpers;
 using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
+using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
@@ -10,7 +11,7 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         private ISnmpSwitchOperationMethodCollection _parent;
 
-        public SnmpAccessVlanMembershipDlinkDgs1210MethodBase(string @params, ISnmpSwitchOperationMethodCollection parent)
+        public SnmpAccessVlanMembershipDlinkDgs1210MethodBase(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
             Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN, OID_TEMPLATE_DOT1Q_VLAN_ENTRY, this);

@@ -1,4 +1,6 @@
-﻿namespace easyvlans.Model.SwitchOperationMethods
+﻿using System.Xml;
+
+namespace easyvlans.Model.SwitchOperationMethods
 {
 
     internal sealed class SnmpPersistChangesDlinkDgs121052bxMethod : SnmpPersistChangesDlinkDgs1210MethodBase
@@ -9,12 +11,12 @@
         public class Factory : ISnmpPersistChangesMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpPersistChangesMethod GetInstance(string @params, ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpPersistChangesDlinkDgs121052bxMethod(@params, parent);
+            public ISnmpPersistChangesMethod GetInstance(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpPersistChangesDlinkDgs121052bxMethod(data, parent);
         }
 
-        public SnmpPersistChangesDlinkDgs121052bxMethod(string @params, ISnmpSwitchOperationMethodCollection parent)
-            : base(@params, parent) { }
+        public SnmpPersistChangesDlinkDgs121052bxMethod(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
+            : base(data, parent) { }
 
         public override string Code => CODE;
         public override int MibSubtreeIndex => 17;

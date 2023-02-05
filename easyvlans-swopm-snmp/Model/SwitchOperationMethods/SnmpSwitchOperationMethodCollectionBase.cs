@@ -1,4 +1,5 @@
 ﻿using easyvlans.Logger;
+using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
@@ -15,16 +16,16 @@ namespace easyvlans.Model.SwitchOperationMethods
         public ISnmpConnection SnmpConnection { get; protected init; }
         public Switch Switch { get; private set; }
 
-        public SnmpSwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, string accessVlanMembershipMethodParams, string persistChangesMethodName, string persistChangesMethodParams)
+        public SnmpSwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData, string persistChangesMethodName, XmlNode persistChangesMethodData)
         {
             Switch = @switch;
-            ISnmpAccessVlanMembershipMethod accessVlanMembershipMethod = SnmpAccessVlanMembershipMethodRegister.Instance.GetMethodInstance(accessVlanMembershipMethodName, accessVlanMembershipMethodParams, this);
+            ISnmpAccessVlanMembershipMethod accessVlanMembershipMethod = SnmpAccessVlanMembershipMethodRegister.Instance.GetMethodInstance(accessVlanMembershipMethodName, accessVlanMembershipMethodData, this);
             logMethodFoundOrNot(@switch, METHOD_PURPOSE_ACCESS_VLAN_MEMBERSHIP, accessVlanMembershipMethodName, accessVlanMembershipMethod);
             ReadConfigMethod = accessVlanMembershipMethod;
             SetPortToVlanMethod = accessVlanMembershipMethod;
             if (persistChangesMethodName != null)
             {
-                ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, persistChangesMethodParams, this);
+                ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, persistChangesMethodData, this);
                 logMethodFoundOrNot(@switch, METHOD_PURPOSE_PERSIST_CHANGES, persistChangesMethodName, persistChangesMethod);
                 PersistChangesMethod = persistChangesMethod;
             }

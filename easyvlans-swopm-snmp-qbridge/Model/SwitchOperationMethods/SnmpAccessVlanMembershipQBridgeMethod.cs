@@ -1,6 +1,7 @@
 ﻿using easyvlans.Helpers;
 using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
+using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
@@ -9,23 +10,22 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
 
         public const string CODE = "qbridge";
-        public const string PARAM_NO_PVID = "nopvid";
+        public const string DATA_TAG_NO_PVID = "nopvid";
 
         public class Factory : ISnmpAccessVlanMembershipMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpAccessVlanMembershipMethod GetInstance(string @params, ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpAccessVlanMembershipQBridgeMethod(@params, parent);
+            public ISnmpAccessVlanMembershipMethod GetInstance(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpAccessVlanMembershipQBridgeMethod(data, parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
-        private bool _paramNoPvid = false;
+        private bool _dataNoPvid = false;
 
-        public SnmpAccessVlanMembershipQBridgeMethod(string @params, ISnmpSwitchOperationMethodCollection parent)
+        public SnmpAccessVlanMembershipQBridgeMethod(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
-            string[] paramsPieces = @params.Split(',');
-            _paramNoPvid = paramsPieces.Contains(PARAM_NO_PVID);                
+            _dataNoPvid = (data.SelectNodes(DATA_TAG_NO_PVID).Count > 0);
         }
 
         public string Code => CODE;
@@ -113,7 +113,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                         lastOwnerSnmpVlan = snmpVlan;
                     }
                 }
-                if (ownerVlans == 1 && ((lastOwnerSnmpVlan?.ID == snmpPort.PVID) || _paramNoPvid))
+                if (ownerVlans == 1 && ((lastOwnerSnmpVlan?.ID == snmpPort.PVID) || _dataNoPvid))
                 {
                     userPort.CurrentVlan = lastOwnerSnmpVlan.UserVlan;
                     userPort.HasComplexMembership = false;
@@ -121,7 +121,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 else
                 {
                     userPort.CurrentVlan = null;
-                    if (ownerVlans > 1 || ((lastOwnerSnmpVlan?.ID != snmpPort.PVID) && !_paramNoPvid))
+                    if (ownerVlans > 1 || ((lastOwnerSnmpVlan?.ID != snmpPort.PVID) && !_dataNoPvid))
                         userPort.HasComplexMembership = true;
                 }
             }
@@ -131,21 +131,21 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         async Task<bool> ISetPortToVlanMethod.DoAsync(Port port, Vlan vlan)
         {
-            List<Variable> variablesAll = new(),
+            List<Variable> pvidVariables = new(),
                 egressToUnset = new(),
                 egressToSet = new(),
                 untaggedToUnset = new(),
                 untaggedToSet = new();
-            if (!_paramNoPvid)
-                variablesAll.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));
+            if (!_dataNoPvid)
+                pvidVariables.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));
             (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index);
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, egressToSet, egressToUnset);
             await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, untaggedToSet, untaggedToUnset);
-            variablesAll.AddRange(untaggedToUnset);
-            variablesAll.AddRange(egressToSet);
-            variablesAll.AddRange(egressToUnset);
-            variablesAll.AddRange(untaggedToSet);
-            await _parent.SnmpConnection.SetAsync(variablesAll);
+            await _parent.SnmpConnection.SetAsync(pvidVariables);
+            await _parent.SnmpConnection.SetAsync(untaggedToUnset);
+            await _parent.SnmpConnection.SetAsync(egressToSet);
+            await _parent.SnmpConnection.SetAsync(egressToUnset);
+            await _parent.SnmpConnection.SetAsync(untaggedToSet);
             return true;
         }
 
