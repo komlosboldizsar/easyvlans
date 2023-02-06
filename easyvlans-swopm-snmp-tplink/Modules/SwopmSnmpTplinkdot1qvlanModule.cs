@@ -7,6 +7,7 @@ namespace easyvlans.Modules
         public void Init()
         {
             SnmpAccessVlanMembershipMethodRegister.Instance.RegisterFactory(new SnmpAccessVlanMembershipTPLinkDot1qVlanMethod.Factory());
+            SnmpPersistChangesMethodRegister.Instance.RegisterFactory(new SnmpPersistChangesTPLinkSysToolMethod.Factory());
         }
     }
 }
