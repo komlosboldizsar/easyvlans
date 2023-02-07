@@ -24,7 +24,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         public SnmpAccessVlanMembershipDlinkDgs1210Method(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
-            Dgs1210Model model = Dgs1210Helpers.GetModel(data);
+            Dgs1210Model model = Dgs1210Helpers.GetModel(data, deserializationContext);
             Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN, OID_TEMPLATE_DOT1Q_VLAN_ENTRY, model);
             Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_EGRESS_PORTS, OID_TEMPLATE_DOT1Q_VLAN_EGRESS_PORTS, model);
             Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_UNTAGGED_PORTS, OID_TEMPLATE_DOT1Q_VLAN_UNTAGGED_PORTS, model);

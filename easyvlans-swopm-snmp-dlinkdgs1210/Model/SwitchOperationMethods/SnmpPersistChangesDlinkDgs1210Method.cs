@@ -22,7 +22,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         public SnmpPersistChangesDlinkDgs1210Method(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
-            Dgs1210Model model = Dgs1210Helpers.GetModel(data);
+            Dgs1210Model model = Dgs1210Helpers.GetModel(data, deserializationContext);
             Dgs1210Helpers.GenerateOid(ref OID_COMPANYSYSTEM_SYSSAVE, OID_TEMPLATE_COMPANYSYSTEM_SYSSAVE, model);
         }
 
