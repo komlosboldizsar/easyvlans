@@ -1,4 +1,5 @@
-﻿using easyvlans.Logger;
+﻿using B.XmlDeserializer.Context;
+using easyvlans.Logger;
 using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
@@ -16,16 +17,16 @@ namespace easyvlans.Model.SwitchOperationMethods
         public ISnmpConnection SnmpConnection { get; protected init; }
         public Switch Switch { get; private set; }
 
-        public SnmpSwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData, string persistChangesMethodName, XmlNode persistChangesMethodData)
+        public SnmpSwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData, string persistChangesMethodName, XmlNode persistChangesMethodData, DeserializationContext deserializationContext)
         {
             Switch = @switch;
-            ISnmpAccessVlanMembershipMethod accessVlanMembershipMethod = SnmpAccessVlanMembershipMethodRegister.Instance.GetMethodInstance(accessVlanMembershipMethodName, accessVlanMembershipMethodData, this);
+            ISnmpAccessVlanMembershipMethod accessVlanMembershipMethod = SnmpAccessVlanMembershipMethodRegister.Instance.GetMethodInstance(accessVlanMembershipMethodName, accessVlanMembershipMethodData, deserializationContext, this);
             logMethodFoundOrNot(@switch, METHOD_PURPOSE_ACCESS_VLAN_MEMBERSHIP, accessVlanMembershipMethodName, accessVlanMembershipMethod);
             ReadConfigMethod = accessVlanMembershipMethod;
             SetPortToVlanMethod = accessVlanMembershipMethod;
             if (persistChangesMethodName != null)
             {
-                ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, persistChangesMethodData, this);
+                ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, persistChangesMethodData, deserializationContext, this);
                 logMethodFoundOrNot(@switch, METHOD_PURPOSE_PERSIST_CHANGES, persistChangesMethodName, persistChangesMethod);
                 PersistChangesMethod = persistChangesMethod;
             }

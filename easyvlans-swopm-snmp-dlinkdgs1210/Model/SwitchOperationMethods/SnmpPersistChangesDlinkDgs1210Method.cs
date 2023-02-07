@@ -1,4 +1,5 @@
-﻿using Lextm.SharpSnmpLib;
+﻿using B.XmlDeserializer.Context;
+using Lextm.SharpSnmpLib;
 using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
@@ -12,13 +13,13 @@ namespace easyvlans.Model.SwitchOperationMethods
         public class Factory : ISnmpPersistChangesMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpPersistChangesMethod GetInstance(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpPersistChangesDlinkDgs1210Method(data, parent);
+            public ISnmpPersistChangesMethod GetInstance(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpPersistChangesDlinkDgs1210Method(data, deserializationContext, parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
 
-        public SnmpPersistChangesDlinkDgs1210Method(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
+        public SnmpPersistChangesDlinkDgs1210Method(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
             Dgs1210Model model = Dgs1210Helpers.GetModel(data);

@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using B.XmlDeserializer.Context;
+using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
@@ -6,7 +7,7 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
         public static SnmpPersistChangesMethodRegister Instance { get; } = new();
         private SnmpPersistChangesMethodRegister() { }
-        public ISnmpPersistChangesMethod GetMethodInstance(string code, XmlNode data, ISnmpSwitchOperationMethodCollection parent) => getFactory(code)?.GetInstance(data, parent);
+        public ISnmpPersistChangesMethod GetMethodInstance(string code, XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent) => getFactory(code)?.GetInstance(data, deserializationContext, parent);
         protected override string RegisterName => "SNMP persist changes";
     }
 }

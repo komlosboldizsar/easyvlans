@@ -1,4 +1,5 @@
-﻿using easyvlans.Helpers;
+﻿using B.XmlDeserializer.Context;
+using easyvlans.Helpers;
 using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
 using System.Xml;
@@ -14,13 +15,13 @@ namespace easyvlans.Model.SwitchOperationMethods
         public class Factory : ISnmpAccessVlanMembershipMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpAccessVlanMembershipMethod GetInstance(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpAccessVlanMembershipTPLinkDot1qVlanMethod(data, parent);
+            public ISnmpAccessVlanMembershipMethod GetInstance(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpAccessVlanMembershipTPLinkDot1qVlanMethod(data, deserializationContext, parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
 
-        public SnmpAccessVlanMembershipTPLinkDot1qVlanMethod(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
+        public SnmpAccessVlanMembershipTPLinkDot1qVlanMethod(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
         }

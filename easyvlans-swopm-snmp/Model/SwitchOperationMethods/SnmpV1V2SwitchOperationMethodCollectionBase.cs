@@ -26,7 +26,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 string communityString = xmlNode.AttributeAsString(ATTR_COMMUNITY_STRING, context).Mandatory().Get().Value;
                 (string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData) = getMethodNameAndData(xmlNode, context, TAG_METHOD_ACCESS_VLAN_MEMBERSHIP);
                 (string persistChangesMethodName, XmlNode persistChangesMethodData) = getMethodNameAndData(xmlNode, context, TAG_METHOD_PERSIST_CHANGES);
-                return createInstance(parent as Switch, ip, port, communityString, accessVlanMembershipMethodName, accessVlanMembershipMethodData, persistChangesMethodName, persistChangesMethodData);
+                return createInstance(parent as Switch, ip, port, communityString, accessVlanMembershipMethodName, accessVlanMembershipMethodData, persistChangesMethodName, persistChangesMethodData, context);
             }
 
             private (string, XmlNode) getMethodNameAndData(XmlNode parentNode, DeserializationContext context, string methodName)
@@ -44,7 +44,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 return (mibName, nodes[0]);
             }
 
-            protected abstract ISwitchOperationMethodCollection createInstance(Switch @switch, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData, string persistChangesMethodName, XmlNode persistChangesMethodData);
+            protected abstract ISwitchOperationMethodCollection createInstance(Switch @switch, string ip, int port, string communityStrings, string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData, string persistChangesMethodName, XmlNode persistChangesMethodData, DeserializationContext deserializationContext);
 
             private const string ATTR_IP = "ip";
             private const string ATTR_PORT = "port";
@@ -58,8 +58,8 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         }
 
-        public SnmpV1V2SwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData, string persistChangesMethodName, XmlNode persistChangesMethodData)
-            : base(@switch, accessVlanMembershipMethodName, accessVlanMembershipMethodData, persistChangesMethodName, persistChangesMethodData) { }
+        public SnmpV1V2SwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData, string persistChangesMethodName, XmlNode persistChangesMethodData, DeserializationContext deserializationContext)
+            : base(@switch, accessVlanMembershipMethodName, accessVlanMembershipMethodData, persistChangesMethodName, persistChangesMethodData, deserializationContext) { }
 
     }
 }

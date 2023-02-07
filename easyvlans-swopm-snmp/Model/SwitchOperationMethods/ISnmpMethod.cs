@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using B.XmlDeserializer.Context;
+using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
@@ -7,7 +8,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         public new interface IFactory<TMethodInterface> : IMethod.IFactory<TMethodInterface>
             where TMethodInterface : ISnmpMethod
         {
-            TMethodInterface GetInstance(XmlNode data, ISnmpSwitchOperationMethodCollection parent);
+            TMethodInterface GetInstance(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent);
         }
     }
 }

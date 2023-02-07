@@ -1,4 +1,5 @@
-﻿using Lextm.SharpSnmpLib;
+﻿using B.XmlDeserializer.Context;
+using Lextm.SharpSnmpLib;
 using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
@@ -12,13 +13,13 @@ namespace easyvlans.Model.SwitchOperationMethods
         public class Factory : ISnmpPersistChangesMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpPersistChangesMethod GetInstance(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpPersistChangesCiscoSbCopyMethod(data, parent);
+            public ISnmpPersistChangesMethod GetInstance(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpPersistChangesCiscoSbCopyMethod(data, deserializationContext, parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
 
-        public SnmpPersistChangesCiscoSbCopyMethod(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
+        public SnmpPersistChangesCiscoSbCopyMethod(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
             => _parent = parent;
 
         public string Code => CODE;

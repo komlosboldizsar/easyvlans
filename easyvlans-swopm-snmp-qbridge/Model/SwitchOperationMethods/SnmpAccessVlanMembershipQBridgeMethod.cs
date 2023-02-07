@@ -1,4 +1,5 @@
-﻿using easyvlans.Helpers;
+﻿using B.XmlDeserializer.Context;
+using easyvlans.Helpers;
 using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
 using System.Xml;
@@ -15,14 +16,14 @@ namespace easyvlans.Model.SwitchOperationMethods
         public class Factory : ISnmpAccessVlanMembershipMethod.IFactory
         {
             public string Code => CODE;
-            public ISnmpAccessVlanMembershipMethod GetInstance(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
-                => new SnmpAccessVlanMembershipQBridgeMethod(data, parent);
+            public ISnmpAccessVlanMembershipMethod GetInstance(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
+                => new SnmpAccessVlanMembershipQBridgeMethod(data, deserializationContext, parent);
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
         private bool _dataNoPvid = false;
 
-        public SnmpAccessVlanMembershipQBridgeMethod(XmlNode data, ISnmpSwitchOperationMethodCollection parent)
+        public SnmpAccessVlanMembershipQBridgeMethod(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
             _dataNoPvid = (data.SelectNodes(DATA_TAG_NO_PVID).Count > 0);
