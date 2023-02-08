@@ -1,4 +1,6 @@
-﻿using B.XmlDeserializer.Context;
+﻿using B.XmlDeserializer;
+using B.XmlDeserializer.Context;
+using B.XmlDeserializer.Relations;
 using easyvlans.Helpers;
 using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
@@ -7,7 +9,7 @@ using System.Xml;
 namespace easyvlans.Model.SwitchOperationMethods
 {
 
-    internal sealed class SnmpAccessVlanMembershipTPLinkDot1qVlanMethod : ISnmpAccessVlanMembershipMethod
+    internal sealed partial class SnmpAccessVlanMembershipTPLinkDot1qVlanMethod : ISnmpAccessVlanMembershipMethod
     {
 
         public const string CODE = "tplinkdot1qvlan";
@@ -20,10 +22,21 @@ namespace easyvlans.Model.SwitchOperationMethods
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
+        private readonly TPLinkDot1qPortMappingCollection _portMappings;
 
         public SnmpAccessVlanMembershipTPLinkDot1qVlanMethod(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
+            TypedCompositeDeserializer<Parameters, Parameters> parametersDeserializer = new(SnmpV1V2SwitchOperationMethodCollectionBase.TAG_METHOD_ACCESS_VLAN_MEMBERSHIP, () => new Parameters());
+            SimpleListDeserializer<PortMapping, Parameters> portMappingDeserializer = new(TPLinkDot1qPortMappingDeserializer.TAG_PORT_MAPPINGS, new TPLinkDot1qPortMappingDeserializer());
+            parametersDeserializer.Register(portMappingDeserializer, (config, portMappings) => config.PortMappings.AddRange(portMappings));
+            Parameters parameters = parametersDeserializer.Parse(data, deserializationContext, out IRelationBuilder<Parameters> relationBuilder, this);
+            _portMappings = new(parameters.PortMappings);
+        }
+
+        internal class Parameters
+        {
+            public readonly List<PortMapping> PortMappings = new();
         }
 
         public string Code => CODE;
@@ -75,17 +88,21 @@ namespace easyvlans.Model.SwitchOperationMethods
             foreach (Variable portVlanTableRow in await _parent.SnmpConnection.WalkAsync(OID_VLAN_PORT_CONFIG_TABLE))
             {
                 SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
-                TPLinkDot1qSnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId - OID_INTERFACE_INDEX_OFFSET, id => new TPLinkDot1qSnmpPort(id));
-                switch (idParts.NodeId)
+                int? localIndex = _portMappings.LookupBySnmpIndex(idParts.RowId)?.SnmpIndexToLocalIndex(idParts.RowId);
+                if (localIndex != null)
                 {
-                    case OID_VLAN_PORT_TYPE:
-                        if (int.TryParse(portVlanTableRow.Data.ToString(), out int type))
-                            snmpPort.Type = (TPLinkDot1qSnmpPort.PortType)type;
-                        break;
-                    case OID_VLAN_PORT_PVID:
-                        if (int.TryParse(portVlanTableRow.Data.ToString(), out int pvid))
-                            snmpPort.PVID = pvid;
-                        break;
+                    TPLinkDot1qSnmpPort snmpPort = snmpPorts.GetAnyway((int)localIndex, id => new TPLinkDot1qSnmpPort(id));
+                    switch (idParts.NodeId)
+                    {
+                        case OID_VLAN_PORT_TYPE:
+                            if (int.TryParse(portVlanTableRow.Data.ToString(), out int type))
+                                snmpPort.Type = (TPLinkDot1qSnmpPort.PortType)type;
+                            break;
+                        case OID_VLAN_PORT_PVID:
+                            if (int.TryParse(portVlanTableRow.Data.ToString(), out int pvid))
+                                snmpPort.PVID = pvid;
+                            break;
+                    }
                 }
             }
             return snmpPorts;
@@ -95,13 +112,17 @@ namespace easyvlans.Model.SwitchOperationMethods
         private const string OID_VLAN_PORT_TYPE = $"{OID_VLAN_PORT_CONFIG_TABLE}.1.2";
         private const string OID_VLAN_PORT_PVID = $"{OID_VLAN_PORT_CONFIG_TABLE}.1.3";
 
-        private const int OID_INTERFACE_INDEX_OFFSET = 49152;
-
         public void calculateSnmpPortVlanMemberships(Dictionary<int, TPLinkDot1qSnmpVlan> snmpVlans, Dictionary<int, TPLinkDot1qSnmpPort> snmpPorts)
         {
             foreach (Port userPort in _parent.Switch.Ports)
             {
                 if (!snmpPorts.TryGetValue(userPort.Index, out TPLinkDot1qSnmpPort snmpPort))
+                {
+                    userPort.CurrentVlan = null;
+                    continue;
+                }
+                PortMapping mapping = _portMappings.LookupByLocalIndex(userPort.Index);
+                if (mapping == null)
                 {
                     userPort.CurrentVlan = null;
                     continue;
@@ -114,11 +135,12 @@ namespace easyvlans.Model.SwitchOperationMethods
                 }
                 int ownerTaggedVlans = 0, ownerUntaggedVlans = 0;
                 TPLinkDot1qSnmpVlan lastOwnerUntaggedSnmpVlan = null;
+                TPLinkDot1qThreePartPortId threePart = mapping.LocalIndexToThreePartId(userPort.Index);
                 foreach (TPLinkDot1qSnmpVlan snmpVlan in snmpVlans.Values)
                 {
-                    if (snmpVlan.ContainsTag(snmpPort))
+                    if (snmpVlan.ContainsTag(threePart))
                         ownerTaggedVlans++;
-                    if (snmpVlan.ContainsUntag(snmpPort))
+                    if (snmpVlan.ContainsUntag(threePart))
                     {
                         ownerUntaggedVlans++;
                         lastOwnerUntaggedSnmpVlan = snmpVlan;
@@ -140,13 +162,16 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         async Task<bool> ISetPortToVlanMethod.DoAsync(Port port, Vlan vlan)
         {
-            int interfaceIndex = port.Index + OID_INTERFACE_INDEX_OFFSET;
+            PortMapping mapping = _portMappings.LookupByLocalIndex(port.Index);
+            if (mapping == null)
+                return false;
+            int snmpIndex = mapping.LocalIndexToSnmpIndex(port.Index);
             await _parent.SnmpConnection.SetAsync(new List<Variable>()
             {
-                new Variable(new ObjectIdentifier($"{OID_VLAN_PORT_TYPE}.{interfaceIndex}"), new Gauge32((int)TPLinkDot1qSnmpPort.PortType.General)),
-                new Variable(new ObjectIdentifier($"{OID_VLAN_PORT_PVID}.{interfaceIndex}"), new Gauge32(vlan.ID))
+                new Variable(new ObjectIdentifier($"{OID_VLAN_PORT_TYPE}.{snmpIndex}"), new Gauge32((int)TPLinkDot1qSnmpPort.PortType.General)),
+                new Variable(new ObjectIdentifier($"{OID_VLAN_PORT_PVID}.{snmpIndex}"), new Gauge32(vlan.ID))
             });
-            OctetString portIdOctetString = new(port.Index.ToString());
+            OctetString portIdOctetString = new(mapping.LocalIndexToSimpleId(port.Index).ToString());
             await _parent.SnmpConnection.SetAsync($"{OID_VLAN_PORT_MEMBER_REMOVE}.{vlan.ID}", portIdOctetString);
             await _parent.SnmpConnection.SetAsync($"{OID_VLAN_TAG_PORT_MEMBER_ADD}.{vlan.ID}", portIdOctetString);
             return true;

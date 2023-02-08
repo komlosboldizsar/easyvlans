@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
-    internal abstract class SnmpV1V2SwitchOperationMethodCollectionBase : SnmpSwitchOperationMethodCollectionBase
+    public abstract class SnmpV1V2SwitchOperationMethodCollectionBase : SnmpSwitchOperationMethodCollectionBase
     {
 
         public abstract class FactoryBase : ISwitchOperationMethodCollection.IDeserializer
@@ -29,9 +29,8 @@ namespace easyvlans.Model.SwitchOperationMethods
                 return createInstance(parent as Switch, ip, port, communityString, accessVlanMembershipMethodName, accessVlanMembershipMethodData, persistChangesMethodName, persistChangesMethodData, context);
             }
 
-            private (string, XmlNode) getMethodNameAndData(XmlNode parentNode, DeserializationContext context, string methodName)
+            private (string, XmlNode) getMethodNameAndData(XmlNode parentNode, DeserializationContext context, string tag)
             {
-                string tag = TAG_PREFIX_METHOD + methodName;
                 XmlNodeList nodes = parentNode.SelectNodes(tag);
                 if (nodes.Count == 0)
                     return (null, null);
@@ -50,9 +49,6 @@ namespace easyvlans.Model.SwitchOperationMethods
             private const string ATTR_PORT = "port";
             private const string ATTR_COMMUNITY_STRING = "community_string";
             private const string ATTR_METHOD_MIB = "mib";
-            private const string TAG_PREFIX_METHOD = "method_";
-            private const string TAG_METHOD_ACCESS_VLAN_MEMBERSHIP = "access_vlan_membership";
-            private const string TAG_METHOD_PERSIST_CHANGES = "persist_changes";
 
             private readonly Regex REGEXP_IP_ADDRESS = new(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
@@ -60,6 +56,10 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         public SnmpV1V2SwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData, string persistChangesMethodName, XmlNode persistChangesMethodData, DeserializationContext deserializationContext)
             : base(@switch, accessVlanMembershipMethodName, accessVlanMembershipMethodData, persistChangesMethodName, persistChangesMethodData, deserializationContext) { }
+
+        private const string TAG_PREFIX_METHOD = "method_";
+        public const string TAG_METHOD_ACCESS_VLAN_MEMBERSHIP = $"{TAG_PREFIX_METHOD}access_vlan_membership";
+        public const string TAG_METHOD_PERSIST_CHANGES = $"{TAG_PREFIX_METHOD}persist_changes";
 
     }
 }

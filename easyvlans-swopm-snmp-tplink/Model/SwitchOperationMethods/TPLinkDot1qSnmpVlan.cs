@@ -22,8 +22,8 @@
             set => _untagPorts = new(value);
         }
 
-        public bool ContainsTag(TPLinkDot1qSnmpPort snmpPort) => _tagPorts.Contains(snmpPort);
-        public bool ContainsUntag(TPLinkDot1qSnmpPort snmpPort) => _untagPorts.Contains(snmpPort);
+        public bool ContainsTag(TPLinkDot1qThreePartPortId portId) => _tagPorts.Contains(portId);
+        public bool ContainsUntag(TPLinkDot1qThreePartPortId portId) => _untagPorts.Contains(portId);
 
         public class PortList
         {
@@ -53,26 +53,13 @@
                 }
             }
 
-            public bool Contains(string threePartId)
-            {
-                string[] idParts = threePartId.Split("/");
-                if (idParts.Length != 3)
-                    return false;
-                string prefix = $"{idParts[0]}/{idParts[1]}";
-                if (!int.TryParse(idParts[2], out int portNumber))
-                    return false;
-                foreach (Entry entry in _entries)
-                    if (entry.Contains(prefix, portNumber))
-                        return true;
-                return false;
-            }
-
-            public bool Contains(TPLinkDot1qSnmpPort snmpPort) => Contains($"1/0/{snmpPort.ID}");
+            public bool Contains(TPLinkDot1qThreePartPortId portId)
+                => _entries.Any(e => e.Contains(portId));
 
             private record Entry(string Prefix, int StartPortNumber, int EndPortNumber)
             {
-                public bool Contains(string prefix, int portNumber)
-                    => ((Prefix == prefix) && (portNumber >= StartPortNumber) && (portNumber <= EndPortNumber));
+                public bool Contains(TPLinkDot1qThreePartPortId portId)
+                    => ((Prefix == portId.Prefix) && (portId.Counter >= StartPortNumber) && (portId.Counter <= EndPortNumber));
             }
 
         }

@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
-    internal abstract class SnmpSwitchOperationMethodCollectionBase : ISnmpSwitchOperationMethodCollection
+    public abstract class SnmpSwitchOperationMethodCollectionBase : ISnmpSwitchOperationMethodCollection
     {
 
         public abstract string Code { get; }
