@@ -13,12 +13,12 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             XmlNodeList xmlTagModel = data.SelectNodes(DATA_TAG_MODEL);
             if (xmlTagModel.Count == 0)
-                throw new Exception(); // TODO: error: not instantiable
+                throw new MethodNotInstantiableException("DGS-1210 model not defined.");
             if (xmlTagModel.Count > 1)
                 deserializationContext.Report(DeserializationReportSeverity.Info, data, "Multiple model definitions found for DGS-1210 method, using the first one.");
             Dgs1210Model model = Dgs1210ModelRegister.GetByCode(xmlTagModel[0].InnerText);
             if (model == null)
-                throw new Exception(); // TODO: error: not instantiable
+                throw new MethodNotInstantiableException("Unknown DGS-1210 model defined.");
             return model;
         }
 
