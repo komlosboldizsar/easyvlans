@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace B.XmlDeserializer;
 
-internal class SimpleListDeserializer<TElement, TEnvironment> :
+public class SimpleListDeserializer<TElement, TEnvironment> :
     SimpleCollectionDeserializerBase<List<TElement>, TElement, TEnvironment>
 {
 
