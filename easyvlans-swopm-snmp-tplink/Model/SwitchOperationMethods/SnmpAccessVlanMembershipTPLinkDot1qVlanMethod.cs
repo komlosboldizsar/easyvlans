@@ -164,7 +164,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             PortMapping mapping = _portMappings.LookupByLocalIndex(port.Index);
             if (mapping == null)
-                return false;
+                throw new NoMappingForPortException(port.Index);
             int snmpIndex = mapping.LocalIndexToSnmpIndex(port.Index);
             await _parent.SnmpConnection.SetAsync(new List<Variable>()
             {
