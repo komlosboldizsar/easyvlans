@@ -18,16 +18,18 @@ namespace easyvlans.Model.SwitchOperationMethods
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
+        private readonly string _modelCode = "?";
 
         public SnmpPersistChangesDlinkDgs1210Method(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
             Dgs1210Model model = Dgs1210Helpers.GetModel(data, deserializationContext);
+            _modelCode = model.Code;
             Dgs1210Helpers.GenerateOid(ref OID_COMPANYSYSTEM_SYSSAVE, OID_TEMPLATE_COMPANYSYSTEM_SYSSAVE, model);
         }
 
         public string Code => CODE;
-        public string DetailedCode => $"{_parent.Code}[{Code}]";
+        public string DetailedCode => $"{_parent.Code}[{Code}:{_modelCode}]";
 
         async Task IPersistChangesMethod.DoAsync()
             => await _parent.SnmpConnection.SetAsync(new List<Variable>() {

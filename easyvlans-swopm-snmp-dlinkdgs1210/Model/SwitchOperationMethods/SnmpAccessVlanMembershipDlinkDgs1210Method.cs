@@ -20,11 +20,13 @@ namespace easyvlans.Model.SwitchOperationMethods
         }
 
         private ISnmpSwitchOperationMethodCollection _parent;
+        private readonly string _modelCode = "?";
 
         public SnmpAccessVlanMembershipDlinkDgs1210Method(XmlNode data, DeserializationContext deserializationContext, ISnmpSwitchOperationMethodCollection parent)
         {
             _parent = parent;
             Dgs1210Model model = Dgs1210Helpers.GetModel(data, deserializationContext);
+            _modelCode = model.Code;
             Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN, OID_TEMPLATE_DOT1Q_VLAN_ENTRY, model);
             Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_EGRESS_PORTS, OID_TEMPLATE_DOT1Q_VLAN_EGRESS_PORTS, model);
             Dgs1210Helpers.GenerateOid(ref OID_DOT1Q_VLAN_UNTAGGED_PORTS, OID_TEMPLATE_DOT1Q_VLAN_UNTAGGED_PORTS, model);
@@ -32,7 +34,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         }
 
         public string Code => CODE;
-        public string DetailedCode => $"{_parent.Code}[{Code}]";
+        public string DetailedCode => $"{_parent.Code}[{Code}:{_modelCode}]";
 
         private const string OID_COMPANY_DOT1Q_VLAN_GROUP = "1.3.6.1.4.1.171.10.76.{0}.7";
 
