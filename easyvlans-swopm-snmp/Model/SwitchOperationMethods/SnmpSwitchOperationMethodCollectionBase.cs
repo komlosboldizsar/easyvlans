@@ -20,15 +20,29 @@ namespace easyvlans.Model.SwitchOperationMethods
         public SnmpSwitchOperationMethodCollectionBase(Switch @switch, string accessVlanMembershipMethodName, XmlNode accessVlanMembershipMethodData, string persistChangesMethodName, XmlNode persistChangesMethodData, DeserializationContext deserializationContext)
         {
             Switch = @switch;
-            ISnmpAccessVlanMembershipMethod accessVlanMembershipMethod = SnmpAccessVlanMembershipMethodRegister.Instance.GetMethodInstance(accessVlanMembershipMethodName, accessVlanMembershipMethodData, deserializationContext, this);
-            logMethodFoundOrNot(@switch, METHOD_PURPOSE_ACCESS_VLAN_MEMBERSHIP, accessVlanMembershipMethodName, accessVlanMembershipMethod);
-            ReadConfigMethod = accessVlanMembershipMethod;
-            SetPortToVlanMethod = accessVlanMembershipMethod;
+            try
+            {
+                ISnmpAccessVlanMembershipMethod accessVlanMembershipMethod = SnmpAccessVlanMembershipMethodRegister.Instance.GetMethodInstance(accessVlanMembershipMethodName, accessVlanMembershipMethodData, deserializationContext, this);
+                logMethodFoundOrNot(@switch, METHOD_PURPOSE_ACCESS_VLAN_MEMBERSHIP, accessVlanMembershipMethodName, accessVlanMembershipMethod);
+                ReadConfigMethod = accessVlanMembershipMethod;
+                SetPortToVlanMethod = accessVlanMembershipMethod;
+            }
+            catch (MethodNotInstantiableException ex)
+            {
+                logMethodNotInstantiable(@switch, METHOD_PURPOSE_ACCESS_VLAN_MEMBERSHIP, accessVlanMembershipMethodName, ex);
+            }
             if (persistChangesMethodName != null)
             {
-                ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, persistChangesMethodData, deserializationContext, this);
-                logMethodFoundOrNot(@switch, METHOD_PURPOSE_PERSIST_CHANGES, persistChangesMethodName, persistChangesMethod);
-                PersistChangesMethod = persistChangesMethod;
+                try
+                {
+                    ISnmpPersistChangesMethod persistChangesMethod = SnmpPersistChangesMethodRegister.Instance.GetMethodInstance(persistChangesMethodName, persistChangesMethodData, deserializationContext, this);
+                    logMethodFoundOrNot(@switch, METHOD_PURPOSE_PERSIST_CHANGES, persistChangesMethodName, persistChangesMethod);
+                    PersistChangesMethod = persistChangesMethod;
+                }
+                catch (MethodNotInstantiableException ex)
+                {
+                    logMethodNotInstantiable(@switch, METHOD_PURPOSE_PERSIST_CHANGES, persistChangesMethodName, ex);
+                }
             }
             else
             {
@@ -44,6 +58,9 @@ namespace easyvlans.Model.SwitchOperationMethods
             else
                 LogDispatcher.V($"Found SNMP method with name [{methodName}] for {methodPurpose} of switch [{@switch.Label}].");
         }
+
+        private static void logMethodNotInstantiable(Switch @switch, string methodPurpose, string methodName, MethodNotInstantiableException exception)
+            => LogDispatcher.E($"Found SNMP method with name [{methodName}] for {methodPurpose} of switch [{@switch.Label}], but failed to use. Reason: [{exception.Message}]");
 
         private const string METHOD_PURPOSE_ACCESS_VLAN_MEMBERSHIP = "accessing and setting VLAN memberships";
         private const string METHOD_PURPOSE_PERSIST_CHANGES = "persisting changes";
