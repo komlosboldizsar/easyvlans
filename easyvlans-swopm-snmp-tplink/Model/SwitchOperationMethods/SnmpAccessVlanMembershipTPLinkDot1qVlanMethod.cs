@@ -169,7 +169,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             await _parent.SnmpConnection.SetAsync(new List<Variable>()
             {
                 new Variable(new ObjectIdentifier($"{OID_VLAN_PORT_TYPE}.{snmpIndex}"), new Gauge32((int)TPLinkDot1qSnmpPort.PortType.General)),
-                new Variable(new ObjectIdentifier($"{OID_VLAN_PORT_PVID}.{snmpIndex}"), new Gauge32(vlan.ID))
+                new Variable(new ObjectIdentifier($"{OID_VLAN_PORT_PVID}.{snmpIndex}"), new Integer32(vlan.ID))
             });
             OctetString portIdOctetString = new(mapping.LocalIndexToSimpleId(port.Index).ToString());
             await _parent.SnmpConnection.SetAsync($"{OID_VLAN_PORT_MEMBER_REMOVE}.{vlan.ID}", portIdOctetString);

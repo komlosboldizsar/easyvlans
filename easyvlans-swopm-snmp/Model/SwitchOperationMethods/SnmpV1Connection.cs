@@ -7,7 +7,10 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
 
         public SnmpV1Connection(string ip, int port, string communityStrings)
-            : base(ip, port, communityStrings) { }
+            : base(ip, port, communityStrings)
+        {
+            Messenger.UseFullRange = false;
+        }
 
         protected override async Task<List<Variable>> DoWalkAsync(string objectIdentifierStr)
         {
