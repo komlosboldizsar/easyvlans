@@ -1,4 +1,5 @@
 ﻿using B.XmlDeserializer;
+using B.XmlDeserializer.Attributes;
 using B.XmlDeserializer.Context;
 using B.XmlDeserializer.Relations;
 using System;
@@ -17,14 +18,22 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             if (parent is not ISnmpConnection snmpConnection)
                 return null;
+            string methodFilterString = xmlNode.AttributeAsString(ATTR_METHOD_FILTER, context).Get().Value;
+            bool noMethodFilter = (methodFilterString == null);
+            string[] methodFilters = noMethodFilter ? null : methodFilterString.Split(",");
             object commonData = createCommonData(xmlNode, context);
             return new MixedSwitchOperationMethodCollection()
             {
-                ReadConfigMethod = createReadConfigMethod(snmpConnection, commonData),
-                SetPortToVlanMethod = createSetPortToVlanMethod(snmpConnection, commonData),
-                PersistChangesMethod = createPersistChangesMethod(snmpConnection, commonData)
+                ReadConfigMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__READ_CONFIG)) ? createReadConfigMethod(snmpConnection, commonData) : null,
+                SetPortToVlanMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__SET_PORT_TO_VLAN)) ? createSetPortToVlanMethod(snmpConnection, commonData) : null,
+                PersistChangesMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__PERSIST_CHANGES)) ? createPersistChangesMethod(snmpConnection, commonData) : null
             };
         }
+
+        private const string ATTR_METHOD_FILTER = "method_filter";
+        private const string METHOD_FILTER__READ_CONFIG = "read_config";
+        private const string METHOD_FILTER__SET_PORT_TO_VLAN = "set_port_to_vlan";
+        private const string METHOD_FILTER__PERSIST_CHANGES = "persist_changes";
 
         protected virtual object createCommonData(XmlNode xmlNode, DeserializationContext context)
             => null;
