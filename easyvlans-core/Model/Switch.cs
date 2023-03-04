@@ -86,7 +86,7 @@ namespace easyvlans.Model
             }
             ReadVlanConfigStatus = Status.Querying;
             LogDispatcher.I($"Reading configuration of switch [{Label}]...");
-            LogDispatcher.V($"Method for reading configuration of switch [{Label}]: [{OperationMethodCollection.SetPortToVlanMethod.DetailedCode}].");
+            LogDispatcher.V($"Method for reading configuration of switch [{Label}]: [{OperationMethodCollection.ReadConfigMethod.DetailedCode}].");
             try
             {
                 await OperationMethodCollection.ReadConfigMethod.DoAsync();
