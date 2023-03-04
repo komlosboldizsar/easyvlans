@@ -9,6 +9,8 @@ namespace easyvlans.Model.Deserializers
         public static List<Vlan> FilterVlans(string filterString, IDictionary<int, Vlan> vlans, IDictionary<string, Vlanset> vlansets, Action<DeserializationException> invalidRelationHandler)
         {
             List<Vlan> filteredVlans = new();
+            if (filterString == null)
+                return new List<Vlan>(vlans.Values);
             foreach (string key in filterString.Split(','))
             {
                 try
