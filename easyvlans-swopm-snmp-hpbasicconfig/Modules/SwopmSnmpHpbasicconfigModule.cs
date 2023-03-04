@@ -5,8 +5,6 @@ namespace easyvlans.Modules
     public class SwopmSnmpHpbasicconfigModule : IModule
     {
         public void Init()
-        {
-            SnmpPersistChangesMethodRegister.Instance.RegisterFactory(new SnmpPersistChangesHpBasicConfigMethod.Factory());
-        }
+            => SnmpSwitchOperationMethodCollectionDeserializerBase.RegisterMibDeserializer(new SnmpMibHpBasicConfig.Deserializer());
     }
 }

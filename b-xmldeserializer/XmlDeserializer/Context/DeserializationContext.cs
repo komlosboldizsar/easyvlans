@@ -36,5 +36,7 @@ public class DeserializationContext
     public void RegisterTypeName<T>(string name)
         => _typenameTranslator.RegisterTypeName<T>(name);
 
+    public void RegisterTypeName(Type type, string name)
+        => _typenameTranslator.RegisterTypeName(type, name);
 
 }

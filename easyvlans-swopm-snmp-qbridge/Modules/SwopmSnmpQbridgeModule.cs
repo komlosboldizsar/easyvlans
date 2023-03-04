@@ -5,8 +5,6 @@ namespace easyvlans.Modules
     public class SwopmSnmpQbridgeModule : IModule
     {
         public void Init()
-        {
-            SnmpAccessVlanMembershipMethodRegister.Instance.RegisterFactory(new SnmpAccessVlanMembershipQBridgeMethod.Factory());
-        }
+            => SnmpSwitchOperationMethodCollectionDeserializerBase.RegisterMibDeserializer(new SnmpMibQBridge.Deserializer());
     }
 }

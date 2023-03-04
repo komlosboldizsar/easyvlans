@@ -6,8 +6,10 @@ namespace easyvlans.Model.SwitchOperationMethods
     internal class SnmpV1Connection : SnmpV1V2Connection
     {
 
-        public SnmpV1Connection(string ip, int port, string communityStrings)
-            : base(ip, port, communityStrings)
+        public override string Version => "v1";
+
+        public SnmpV1Connection(Switch @switch, string ip, int port, string communityStrings)
+            : base(@switch, ip, port, communityStrings)
         {
             Messenger.UseFullRange = false;
         }
@@ -22,8 +24,6 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         protected override async Task DoSetAsync(List<Variable> variables)
             => await Messenger.SetAsync(VersionCode.V1, _ipEndPoint, _writeCommunityString, variables);
-
-        protected override string VersionString => "SNMPv1";
 
     }
 }

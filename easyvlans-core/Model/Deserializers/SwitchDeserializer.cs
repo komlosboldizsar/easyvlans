@@ -2,13 +2,14 @@
 using B.XmlDeserializer.Attributes;
 using B.XmlDeserializer.Context;
 using B.XmlDeserializer.Relations;
+using easyvlans.Logger;
 using easyvlans.Model.SwitchOperationMethods;
 using System.Xml;
 
 namespace easyvlans.Model.Deserializers
 {
 
-    internal class SwitchDeserializer : ElementDeserializer<Switch, Config>
+    public class SwitchDeserializer : ElementDeserializer<Switch, Config>
     {
 
         public override string ElementName => ConfigTagNames.SWITCH;
@@ -21,13 +22,20 @@ namespace easyvlans.Model.Deserializers
                 Label = elementNode.AttributeAsString(ATTR_LABEL, context).Mandatory().NotEmpty().Get().Value,
                 RemoteIndex = elementNode.AttributeAsInt(ATTR_REMOTE_INDEX, context).Min(1).Get().Value
             };
-            List<ISwitchOperationMethodCollection> operationMethods = SwitchOperationMethodsDeserializer.Instance.ParseWithGivenParent(elementNode, context, out IRelationBuilder<Config> _, @switch);
-            if (operationMethods.Count > 1)
-                context.Report(DeserializationReportSeverity.Info, elementNode, "Multiple operation methods found for switch, using the first one.");
-            @switch.OperationMethodCollection = operationMethods.FirstOrDefault();
-            if (@switch.OperationMethodCollection == null)
-                context.Report(DeserializationReportSeverity.Warning, elementNode, "No operation methods found for switch.");
+            List<ISwitchOperationMethodCollection> operationMethods = operationMethodsDeserializer.ParseWithGivenParent(elementNode, context, out IRelationBuilder<Config> _, @switch);
+            @switch.OperationMethodCollection = MixedSwitchOperationMethodCollection.Create(operationMethods, out MixedSwitchOperationMethodCollection.MethodCounts methodCounts);
+            reportMethodCount(elementNode, context, methodCounts.ReadConfigMethodCount, "read configuraion");
+            reportMethodCount(elementNode, context, methodCounts.SetPortToVlanMethodCount, "set VLAN membership");
+            reportMethodCount(elementNode, context, methodCounts.PersistChangesMethodCount, "persist changes", true);
             return @switch;
+        }
+
+        private static void reportMethodCount(XmlNode elementNode, DeserializationContext context, int methodCount, string methodPurpose, bool suppressWarning = false)
+        {
+            if ((methodCount == 0) && !suppressWarning)
+                context.Report(DeserializationReportSeverity.Warning, elementNode, $"No method to {methodPurpose} found for switch.");
+            if (methodCount > 1)
+                context.Report(DeserializationReportSeverity.Info, elementNode, $"Multiple methods to {methodPurpose} found for switch, using the first one.");
         }
 
         protected override ISlaveRelationBuilder<Switch, Config> createSlaveRelationBuilder() => new RelationBuilder();
@@ -50,6 +58,14 @@ namespace easyvlans.Model.Deserializers
         private const string ATTR_ID = "id";
         private const string ATTR_LABEL = "label";
         private const string ATTR_REMOTE_INDEX = "remote_index";
+
+        private static readonly HeterogenousListDeserializer<ISwitchOperationMethodCollection, Config> operationMethodsDeserializer = new(ConfigTagNames.SWITCH);
+
+        public static void RegisterOperationMethodsDeserializer(IDeserializer<ISwitchOperationMethodCollection, Config> deserializer)
+        {
+            operationMethodsDeserializer.Register(deserializer);
+            LogDispatcher.VV($"Registered XML deserializer for switch operation methods: [{deserializer.ElementName}]");
+        }
 
     }
 

@@ -2,7 +2,6 @@
 {
     public interface IMethod
     {
-        string Code { get; }
         string DetailedCode { get; }
         public interface IFactory<TMethodInterface>
         {

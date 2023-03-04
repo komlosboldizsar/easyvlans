@@ -4,6 +4,7 @@ using B.XmlDeserializer.Exceptions;
 using B.XmlDeserializer.Helpers;
 using easyvlans.Logger;
 using easyvlans.Model.Remote;
+using easyvlans.Model.SwitchOperationMethods;
 
 namespace easyvlans.Model.Deserializers
 {
@@ -105,12 +106,20 @@ namespace easyvlans.Model.Deserializers
 
         private static void rootDeserializerContextInitializer(DeserializationContext context)
         {
+            foreach (KeyValuePair<Type, string> registeredTypeName in registeredTypeNames)
+                context.RegisterTypeName(registeredTypeName.Key, registeredTypeName.Value);
             context.RegisterTypeName<Switch>("switch");
             context.RegisterTypeName<Port>("port");
             context.RegisterTypeName<PortPage>("page");
             context.RegisterTypeName<Vlan>("vlan");
             context.RegisterTypeName<Vlanset>("vlanset");
+            context.RegisterTypeName<ISwitchOperationMethodCollection>("Switch operation method collection");
         }
+
+        private static Dictionary<Type, string> registeredTypeNames = new();
+
+        public static void RegisterTypeName<T>(string typeName)
+            => registeredTypeNames.Add(typeof(T), typeName);
 
     }
 }

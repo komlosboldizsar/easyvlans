@@ -9,12 +9,14 @@ namespace easyvlans.Model.SwitchOperationMethods
     internal abstract class SnmpV1V2Connection : ISnmpConnection
     {
 
+        public Switch Switch { get; }
         protected readonly IPEndPoint _ipEndPoint;
         protected readonly OctetString _readCommunityString;
         protected readonly OctetString _writeCommunityString;
 
-        public SnmpV1V2Connection(string ip, int port, string communityStrings)
+        public SnmpV1V2Connection(Switch @switch, string ip, int port, string communityStrings)
         {
+            Switch = @switch;
             _ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
             string[] communityStringParts = communityStrings.Split(':');
             if (communityStringParts.Length > 1)
@@ -33,19 +35,19 @@ namespace easyvlans.Model.SwitchOperationMethods
             try
             {
                 string transactionId = GenerateTransactionId();
-                LogDispatcher.V($"[{transactionId}] Walking from {objectIdentifierStr} using {VersionString}...");
+                LogDispatcher.V($"[{transactionId}] Walking from {objectIdentifierStr} using SNMP{Version}...");
                 List<Variable> variables = await DoWalkAsync(objectIdentifierStr);
                 int i = 0;
                 foreach (Variable variable in variables)
                     LogDispatcher.VV($"[{transactionId}:{i++}] OID: [{variable.Id}], value: [{variable.Data.ToPrettyString()}]");
-                LogDispatcher.V($"[{transactionId}] Walking from {objectIdentifierStr} using {VersionString} ready, got {variables.Count} variables.");
+                LogDispatcher.V($"[{transactionId}] Walking from {objectIdentifierStr} using SNMP{Version} ready, got {variables.Count} variables.");
                 return variables;
             }
             catch (ErrorException ex)
             {
                 ISnmpPdu pdu = ex.Body?.Pdu();
                 if (pdu != null)
-                    LogDispatcher.E($"{VersionString} error when walking, status: [{pdu.ErrorStatus}], index: [{pdu.ErrorIndex}]");
+                    LogDispatcher.E($"SNMP{Version} error when walking, status: [{pdu.ErrorStatus}], index: [{pdu.ErrorIndex}]");
                 throw ex;
             }
         }
@@ -57,25 +59,25 @@ namespace easyvlans.Model.SwitchOperationMethods
             try
             {
                 string transactionId = GenerateTransactionId();
-                LogDispatcher.V($"[{transactionId}] Setting {variables.Count} variables using {VersionString}...");
+                LogDispatcher.V($"[{transactionId}] Setting {variables.Count} variables using SNMP{Version}...");
                 int i = 0;
                 foreach (Variable variable in variables)
                     LogDispatcher.VV($"[{transactionId}:{i++}] OID: [{variable.Id}], value: [{variable.Data.ToPrettyString()}]");
                 await DoSetAsync(variables);
-                LogDispatcher.V($"[{transactionId}] Setting {variables.Count} variables using {VersionString} ready.");
+                LogDispatcher.V($"[{transactionId}] Setting {variables.Count} variables using SNMP{Version} ready.");
             }
             catch (ErrorException ex)
             {
                 ISnmpPdu pdu = ex.Body?.Pdu();
                 if (pdu != null)
-                    LogDispatcher.E($"{VersionString} error when setting, status: [{pdu.ErrorStatus}], index: [{pdu.ErrorIndex}]");
+                    LogDispatcher.E($"SNMP{Version} error when setting, status: [{pdu.ErrorStatus}], index: [{pdu.ErrorIndex}]");
                 throw ex;
             }
         }
 
         protected abstract Task DoSetAsync(List<Variable> variables);
 
-        protected abstract string VersionString { get; }
+        public abstract string Version { get; }
 
         private const int TRANSACTION_ID_LENGTH = 4;
         private string GenerateTransactionId() => RandomStringGenerator.RandomString(TRANSACTION_ID_LENGTH);

@@ -7,8 +7,8 @@ namespace easyvlans.Modules
     {
         public void Init()
         {
-            SwitchOperationMethodsDeserializer.Instance.Register(new SnmpV1SwitchOperationMethodCollection.Deserializer());
-            SwitchOperationMethodsDeserializer.Instance.Register(new SnmpV2SwitchOperationMethodCollection.Deserializer());
+            SwitchDeserializer.RegisterOperationMethodsDeserializer(new SnmpV1SwitchOperationMethodCollectionDeserializer());
+            SwitchDeserializer.RegisterOperationMethodsDeserializer(new SnmpV2SwitchOperationMethodCollectionDeserializer());
         }
     }
 }
