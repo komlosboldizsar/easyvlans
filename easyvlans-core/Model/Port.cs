@@ -10,8 +10,20 @@ namespace easyvlans.Model
         public int? RemoteIndex { get; init; }
 
         public Switch Switch;
-        public List<Vlan> Vlans;
         public PortPage Page;
+
+        private readonly List<Vlan> _vlans = new();
+        public List<Vlan> Vlans
+        {
+            get => _vlans;
+            set
+            {
+                _vlans.Clear();
+                if (Switch == null)
+                    return;
+                _vlans.AddRange(value.Intersect(Switch.Vlans));
+            }
+        }
 
         public event PropertyChangedDelegate<Port, Vlan> CurrentVlanChanged;
         private Vlan _currentVlan;

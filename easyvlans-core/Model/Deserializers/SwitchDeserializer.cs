@@ -1,6 +1,7 @@
 ﻿using B.XmlDeserializer;
 using B.XmlDeserializer.Attributes;
 using B.XmlDeserializer.Context;
+using B.XmlDeserializer.Exceptions;
 using B.XmlDeserializer.Relations;
 using easyvlans.Logger;
 using easyvlans.Model.SwitchOperationMethods;
@@ -46,6 +47,7 @@ namespace easyvlans.Model.Deserializers
             public void BuildRelations(XmlNode switchNode, Switch @switch, Config config, DeserializationContext context)
             {
                 RelationBuilderHelpers.HandleExceptions(assignConfig, switchNode, @switch, config, context);
+                RelationBuilderHelpers.HandleExceptions(findVlans, switchNode, @switch, config, context);
             }
 
             private void assignConfig(XmlNode switchNode, Switch @switch, Config config, DeserializationContext context)
@@ -53,11 +55,19 @@ namespace easyvlans.Model.Deserializers
                 @switch.Config = config;
             }
 
+            private void findVlans(XmlNode portNode, Switch @switch, Config config, DeserializationContext context)
+            {
+                XmlAttributeData<string> filterStringData = portNode.AttributeAsString(ATTR_VLANS, context).Get();
+                Action<DeserializationException> invalidRelationHandler = (ex) => context.ReportInvalidRelation(ex, filterStringData.Attribute, @switch);
+                @switch.Vlans = VlansetFilter.FilterVlans(filterStringData.Value, config.Vlans, config.Vlansets, invalidRelationHandler);
+            }
+
         }
 
         private const string ATTR_ID = "id";
         private const string ATTR_LABEL = "label";
         private const string ATTR_REMOTE_INDEX = "remote_index";
+        private const string ATTR_VLANS = "vlans";
 
         private static readonly HeterogenousListDeserializer<ISwitchOperationMethodCollection, Config> operationMethodsDeserializer = new(ConfigTagNames.SWITCH);
 

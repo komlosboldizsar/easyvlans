@@ -14,6 +14,8 @@ namespace easyvlans.Model
         public string Label { get; init; }
         public int? RemoteIndex { get; init; }
 
+        public List<Vlan> Vlans;
+
         public ISwitchOperationMethodCollection OperationMethodCollection { get; set; }
 
         public readonly List<Port> Ports = new();
