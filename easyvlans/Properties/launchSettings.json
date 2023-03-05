@@ -2,7 +2,7 @@
   "profiles": {
     "easyvlans": {
       "commandName": "Project",
-      "workingDirectory": "..\\_OUTPUT"
+      "workingDirectory": "..\\_OUTPUT_$(Configuration)"
     }
   }
 }
