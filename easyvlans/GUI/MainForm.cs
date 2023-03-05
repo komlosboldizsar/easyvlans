@@ -149,7 +149,7 @@ namespace easyvlans.GUI
         private void trayIcon_DoubleClick(object sender, EventArgs e)
             => Show();
 
-        bool closingFromTrayMenu = true;
+        bool closingFromTrayMenu = false;
 
         private void trayMenuExit_Click(object sender, EventArgs e)
         {
