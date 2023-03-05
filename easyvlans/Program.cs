@@ -39,12 +39,8 @@ namespace easyvlans
                 ConfigDeserializer.Deserializer.Register(new OneInstanceDataDeserializer(), (config, oneInstanceData) => oneInstanceDataHandler(oneInstanceData));
                 config = (new ConfigDeserializer()).LoadConfig(parsedArguments.ConfigFile ?? DEFAULT_CONFIG_FILE);
                 if (config.Remotes != null)
-                {
-                    foreach (IRemoteMethod remoteMethod in config.Remotes)
-                        remoteMethod.MeetConfig(config);
                     foreach (IRemoteMethod remoteMethod in config.Remotes)
                         remoteMethod.Start();
-                }
             }
             catch (DeserializationException e)
             {

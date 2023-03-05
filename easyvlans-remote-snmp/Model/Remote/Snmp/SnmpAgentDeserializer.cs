@@ -12,11 +12,25 @@ namespace easyvlans.Model.Remote.Snmp
 
         public IRemoteMethod Parse(XmlNode xmlNode, DeserializationContext context, out IRelationBuilder<Config> relationBuilder, object parent = null)
         {
-            relationBuilder = null;
             int port = (int)xmlNode.AttributeAsInt(ATTR_PORT, context).Default(161).Min(1).Max(65535).Get().Value;
             string communityRead = xmlNode.AttributeAsString(ATTR_COMMUNITY_READ, context).Get().Value;
             string communityWrite = xmlNode.AttributeAsString(ATTR_COMMUNITY_WRITE, context).Get().Value;
-            return new SnmpAgent(port, communityRead, communityWrite);
+            SnmpAgent agent = new(port, communityRead, communityWrite);
+            relationBuilder = new RelationBuilder(agent);
+            return agent;
+        }
+
+        private class RelationBuilder : IRelationBuilder<Config>
+        {
+
+            private readonly SnmpAgent _agent;
+
+            public RelationBuilder(SnmpAgent agent)
+                => _agent = agent;
+
+            public void BuildRelations(Config config, DeserializationContext context)
+                => _agent.MeetConfig(config);
+
         }
 
         private const string ATTR_PORT = "port";

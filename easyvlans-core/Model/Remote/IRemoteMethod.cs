@@ -3,7 +3,6 @@
     public interface IRemoteMethod
     {
         string Code { get; }
-        void MeetConfig(Config config);
         void Start();
     }
 }
