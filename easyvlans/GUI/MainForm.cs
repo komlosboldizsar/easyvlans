@@ -21,6 +21,7 @@ namespace easyvlans.GUI
         private readonly string parsingError;
         private readonly bool oneInstanceMode;
         private readonly bool hideOnStartup;
+        private bool hidingOnStartup;
 
         public MainForm() => InitializeComponent();
 
@@ -39,21 +40,12 @@ namespace easyvlans.GUI
                 trayIcon.Visible = true;
                 OneInstancePipe.ShowMessageReceived += oneInstanceShowMessageReceived;
             }
-        }
-
-        private bool firstSetVisibleCoreCall = true;
-
-        // @source https://itecnote.com/tecnote/c-how-to-start-winform-app-minimized-to-tray/
-        protected override void SetVisibleCore(bool value)
-        {
-            if (firstSetVisibleCoreCall && hideOnStartup)
+            if (hideOnStartup)
             {
-                value = false;
-                if (!IsHandleCreated)
-                    CreateHandle();
+                hidingOnStartup = true;
+                ShowInTaskbar = false;
+                Opacity = 0;
             }
-            base.SetVisibleCore(value);
-            firstSetVisibleCoreCall = false;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -84,8 +76,17 @@ namespace easyvlans.GUI
             createPortsTable();
             showDefaultPortPage();
             createAndShowSwitchesTable();
+            if (hideOnStartup)
+            {
+                Hide();
+                Opacity = 1;
+                ShowInTaskbar = true;
+                hidingOnStartup = false;
+            }
         }
 
+        protected override bool ShowWithoutActivation => hidingOnStartup;
+        
         private void showPages()
         {
             if (config.PortPages.Count == 0)
@@ -199,7 +200,7 @@ namespace easyvlans.GUI
             }
             logTextBox.Select(selectionStart, selectionLength);
             logTextBox.SelectionColor = logColors[severity];
-            logTextBox.Select(textLength - 1, 0);
+            logTextBox.Select(logTextBox.Text.Length - 1, 0);
             logTextBox.ScrollToCaret();
         }
 
