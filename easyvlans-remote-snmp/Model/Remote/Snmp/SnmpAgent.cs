@@ -1,5 +1,6 @@
 ﻿using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
+using Lextm.SharpSnmpLib.Messaging;
 using Lextm.SharpSnmpLib.Pipeline;
 using System.Net;
 using System.Net.Sockets;
@@ -55,10 +56,17 @@ namespace easyvlans.Model.Remote.Snmp
         public void Start()
         {
             LogDispatcher.I($"Starting SNMP service at UDP port {_port}...");
-            _engine.Listener.ClearBindings();
-            if (Socket.OSSupportsIPv4)
-                _engine.Listener.AddBinding(new IPEndPoint(IPAddress.Any, _port));
-            _engine.Start();
+            try
+            {
+                _engine.Listener.ClearBindings();
+                if (Socket.OSSupportsIPv4)
+                    _engine.Listener.AddBinding(new IPEndPoint(IPAddress.Any, _port));
+                _engine.Start();
+            }
+            catch (Exception)
+            {
+                LogDispatcher.E($"Couldn't start SNMP service at UDP port {_port}, because IP endpoint is in use by another application.");
+            }
         }
 
         private class MyLogger : ILogger
