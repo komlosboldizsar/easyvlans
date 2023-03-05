@@ -96,7 +96,7 @@ namespace easyvlans.Model
             catch (Exception ex)
             {
                 ReadVlanConfigStatus = Status.Unsuccessful;
-                LogDispatcher.E($"Unsuccessfull reading of configuration of switch [{Label}]. Error message: [{ex.Message}]");
+                LogDispatcher.E($"Unsuccessful reading of configuration of switch [{Label}]. Error message: [{ex.Message}]");
             }
         }
 
