@@ -11,7 +11,11 @@ namespace easyvlans.Model.Deserializers
     public class ConfigDeserializer
     {
 
-        static ConfigDeserializer() => rootDeserializer = new(createDeserializer(), rootDeserializerContextInitializer);
+        static ConfigDeserializer()
+        {
+            Deserializer = createDeserializer();
+            RootDeserializer = new(Deserializer, rootDeserializerContextInitializer);
+        }
 
         private const string FILE_CONFIG = "config.xml";
 
@@ -21,7 +25,7 @@ namespace easyvlans.Model.Deserializers
             {
                 try
                 {
-                    Config config = rootDeserializer.Deserialize(FILE_CONFIG, out DeserializationContext context, reportHandler);
+                    Config config = RootDeserializer.Deserialize(FILE_CONFIG, out DeserializationContext context, reportHandler);
                     int infoReportsCount = context.Reports.Count(r => r.Severity == DeserializationReportSeverity.Info);
                     if (infoReportsCount > 0)
                         LogDispatcher.I($"{infoReportsCount} verbose messages from configuration XML deserialization process.");
@@ -54,9 +58,10 @@ namespace easyvlans.Model.Deserializers
             LogDispatcher.Log(severity, $"{report.XmlNode.GetPath()} :: {context.TranslateReportMessage(report)}");
         }
 
-        private static readonly RootDeserializer<Config> rootDeserializer;
+        public static readonly TypedCompositeDeserializer<Config, Config> Deserializer;
+        public static readonly RootDeserializer<Config> RootDeserializer;
 
-        private static IDeserializer<Config, Config> createDeserializer()
+        private static TypedCompositeDeserializer<Config, Config> createDeserializer()
         {
 
             TypedCompositeDeserializer<Config, Config> configDeserializer = new(ConfigTagNames.ROOT, () => new Config());

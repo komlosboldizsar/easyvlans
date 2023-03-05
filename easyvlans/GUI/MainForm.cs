@@ -16,60 +16,39 @@ namespace easyvlans.GUI
 
         private readonly Config config;
         private readonly string parsingError;
+        private readonly bool oneInstanceMode;
+        private readonly bool hideOnStartup;
 
         public MainForm() => InitializeComponent();
 
-        public MainForm(Config config, string parsingError)
+        public MainForm(Config config, string parsingError, bool oneInstanceMode, bool hideOnStartup)
         {
             LogDispatcher.NewLogMessage += newLogMessageHandler;
             this.config = config;
             this.parsingError = parsingError;
-            Load += loadAsync;
+            this.oneInstanceMode = oneInstanceMode;
+            this.hideOnStartup = hideOnStartup;
             InitializeComponent();
+            if (oneInstanceMode)
+                trayIcon.Visible = true;
         }
 
-        private void newLogMessageHandler(DateTime Timestamp, LogMessageSeverity severity, string message)
-            => logTextBox.InvokeIfRequired(() => addLogMessage(Timestamp, severity, message));
+        private bool firstSetVisibleCoreCall = true;
 
-        private void addLogMessage(DateTime timestamp, LogMessageSeverity severity, string message)
+        // @source https://itecnote.com/tecnote/c-how-to-start-winform-app-minimized-to-tray/
+        protected override void SetVisibleCore(bool value)
         {
-            if (!showVerboseLog.Checked && (severity >= LogMessageSeverity.Verbose))
-                return;
-            string textToAdd = $"[{timestamp:HH:mm:ss}] {message}\r\n";
-            logTextBox.AppendText(textToAdd);
-            int textLength = logTextBox.TextLength;
-            int selectionLength = textToAdd.Length;
-            int selectionStart = textLength - selectionLength + 1;
-            if (selectionStart < 0)
+            if (firstSetVisibleCoreCall && hideOnStartup)
             {
-                selectionStart = 0;
-                selectionLength = 0;
+                value = false;
+                if (!IsHandleCreated)
+                    CreateHandle();
             }
-            logTextBox.Select(selectionStart, selectionLength);
-            logTextBox.SelectionColor = logColors[severity];
-            logTextBox.Select(textLength - 1, 0);
-            logTextBox.ScrollToCaret();
+            base.SetVisibleCore(value);
+            firstSetVisibleCoreCall = false;
         }
 
-        private void showVerboseLogCheckedChanged(object sender, EventArgs e) => reloadLogMessages();
-
-        private void reloadLogMessages()
-        {
-            logTextBox.Text = string.Empty;
-            foreach (LogMessage logMessage in LogDispatcher.Messages)
-                addLogMessage(logMessage.Timestamp, logMessage.Severity, logMessage.Message);
-        }
-
-        private static readonly Dictionary<LogMessageSeverity, Color> logColors = new()
-        {
-            { LogMessageSeverity.Error, Color.Red },
-            { LogMessageSeverity.Warning, Color.Orange },
-            { LogMessageSeverity.Info, Color.Black },
-            { LogMessageSeverity.Verbose, Color.Blue },
-            { LogMessageSeverity.VerbosePlus, Color.BlueViolet }
-        };
-
-        private async void loadAsync(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
             reloadLogMessages();
             string errorToShow = parsingError;
@@ -97,11 +76,6 @@ namespace easyvlans.GUI
             createPortsTable();
             showDefaultPortPage();
             createAndShowSwitchesTable();
-            Task[] allReadVlansTask = new Task[config.Switches.Count];
-            int i = 0;
-            foreach (Switch @switch in config.Switches.Values)
-                allReadVlansTask[i++] = @switch.ReadConfigAsync();
-            await Task.WhenAll(allReadVlansTask);
         }
 
         private void showPages()
@@ -162,6 +136,67 @@ namespace easyvlans.GUI
             IEnumerable<Port> shownPorts = config.Ports.Where(p => ((p.Page == null) || (p.Page == portPage)));
             portTableManager.BindItems(shownPorts);
         }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (oneInstanceMode && !closingFromTrayMenu)
+            {
+                e.Cancel = true;
+                Hide();
+            }
+        }
+
+        private void trayIcon_DoubleClick(object sender, EventArgs e)
+            => Show();
+
+        bool closingFromTrayMenu = true;
+
+        private void trayMenuExit_Click(object sender, EventArgs e)
+        {
+            closingFromTrayMenu = true;
+            Close();
+        }
+
+        private void newLogMessageHandler(DateTime Timestamp, LogMessageSeverity severity, string message)
+            => logTextBox.InvokeIfRequired(() => addLogMessage(Timestamp, severity, message));
+
+        private void addLogMessage(DateTime timestamp, LogMessageSeverity severity, string message)
+        {
+            if (!showVerboseLog.Checked && (severity >= LogMessageSeverity.Verbose))
+                return;
+            string textToAdd = $"[{timestamp:HH:mm:ss}] {message}\r\n";
+            logTextBox.AppendText(textToAdd);
+            int textLength = logTextBox.TextLength;
+            int selectionLength = textToAdd.Length;
+            int selectionStart = textLength - selectionLength + 1;
+            if (selectionStart < 0)
+            {
+                selectionStart = 0;
+                selectionLength = 0;
+            }
+            logTextBox.Select(selectionStart, selectionLength);
+            logTextBox.SelectionColor = logColors[severity];
+            logTextBox.Select(textLength - 1, 0);
+            logTextBox.ScrollToCaret();
+        }
+
+        private void showVerboseLogCheckedChanged(object sender, EventArgs e) => reloadLogMessages();
+
+        private void reloadLogMessages()
+        {
+            logTextBox.Text = string.Empty;
+            foreach (LogMessage logMessage in LogDispatcher.Messages)
+                addLogMessage(logMessage.Timestamp, logMessage.Severity, logMessage.Message);
+        }
+
+        private static readonly Dictionary<LogMessageSeverity, Color> logColors = new()
+        {
+            { LogMessageSeverity.Error, Color.Red },
+            { LogMessageSeverity.Warning, Color.Orange },
+            { LogMessageSeverity.Info, Color.Black },
+            { LogMessageSeverity.Verbose, Color.Blue },
+            { LogMessageSeverity.VerbosePlus, Color.BlueViolet }
+        };
 
         private static void openUrl(string url) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
 

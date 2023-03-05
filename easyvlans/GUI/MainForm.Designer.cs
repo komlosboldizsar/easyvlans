@@ -29,6 +29,7 @@ namespace easyvlans.GUI
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.portTable = new System.Windows.Forms.TableLayoutPanel();
             this.titlePortPortLabel = new System.Windows.Forms.Label();
@@ -64,12 +65,16 @@ namespace easyvlans.GUI
             this.showVerboseLog = new System.Windows.Forms.CheckBox();
             this.portPageButtonContainer = new System.Windows.Forms.FlowLayoutPanel();
             this.portPageButton = new System.Windows.Forms.Button();
+            this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.trayMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.trayMenuExit = new System.Windows.Forms.ToolStripMenuItem();
             this.portTable.SuspendLayout();
             this.portTableContainer.SuspendLayout();
             this.switchTableContainer.SuspendLayout();
             this.switchTable.SuspendLayout();
             this.bottomPanel.SuspendLayout();
             this.portPageButtonContainer.SuspendLayout();
+            this.trayMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // portTable
@@ -507,6 +512,28 @@ namespace easyvlans.GUI
             this.portPageButton.Text = "Page 1";
             this.portPageButton.UseVisualStyleBackColor = true;
             // 
+            // trayIcon
+            // 
+            this.trayIcon.ContextMenuStrip = this.trayMenu;
+            this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
+            this.trayIcon.Text = "EasyVLANs";
+            this.trayIcon.DoubleClick += new System.EventHandler(this.trayIcon_DoubleClick);
+            // 
+            // trayMenu
+            // 
+            this.trayMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.trayMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.trayMenuExit});
+            this.trayMenu.Name = "trayMenu";
+            this.trayMenu.Size = new System.Drawing.Size(179, 28);
+            // 
+            // trayMenuExit
+            // 
+            this.trayMenuExit.Name = "trayMenuExit";
+            this.trayMenuExit.Size = new System.Drawing.Size(178, 24);
+            this.trayMenuExit.Text = "Exit EasyVLANs";
+            this.trayMenuExit.Click += new System.EventHandler(this.trayMenuExit_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -523,6 +550,8 @@ namespace easyvlans.GUI
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "EasyVLANs";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.portTable.ResumeLayout(false);
             this.portTable.PerformLayout();
             this.portTableContainer.ResumeLayout(false);
@@ -535,6 +564,7 @@ namespace easyvlans.GUI
             this.bottomPanel.PerformLayout();
             this.portPageButtonContainer.ResumeLayout(false);
             this.portPageButtonContainer.PerformLayout();
+            this.trayMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -576,6 +606,9 @@ namespace easyvlans.GUI
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label titleSwitchStatusPersist;
         private System.Windows.Forms.Label rowSwitchStatusPersist;
+        private System.Windows.Forms.NotifyIcon trayIcon;
+        private System.Windows.Forms.ContextMenuStrip trayMenu;
+        private System.Windows.Forms.ToolStripMenuItem trayMenuExit;
     }
 }
 
