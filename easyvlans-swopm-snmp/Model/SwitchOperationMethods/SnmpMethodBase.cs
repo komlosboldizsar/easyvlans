@@ -1,6 +1,6 @@
 ﻿namespace easyvlans.Model.SwitchOperationMethods
 {
-    public abstract class SnmpMethodBase : IMethod
+    public abstract class SnmpMethodBase : ISwitchOperationMethod
     {
 
         protected readonly ISnmpConnection _snmpConnection;
