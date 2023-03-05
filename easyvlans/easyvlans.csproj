@@ -3,7 +3,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <ApplicationIcon>icon2.ico</ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Komlós Boldizsár &lt;komlos.boldizsar@gmail.com&gt;</Authors>
     <Product>EsayVLANs</Product>
     <Description>A simple application to set VLAN membership of (access) switch ports fast and easily. </Description>
@@ -13,12 +13,6 @@
     <PackageId>EasyVLANs</PackageId>
     <AssemblyName>EasyVLANs</AssemblyName>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\icon\icon2.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
   </ItemGroup>
