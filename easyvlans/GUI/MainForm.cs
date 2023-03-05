@@ -23,12 +23,12 @@ namespace easyvlans.GUI
 
         public MainForm(Config config, string parsingError, bool oneInstanceMode, bool hideOnStartup)
         {
+            InitializeComponent();
             LogDispatcher.NewLogMessage += newLogMessageHandler;
             this.config = config;
             this.parsingError = parsingError;
             this.oneInstanceMode = oneInstanceMode;
             this.hideOnStartup = hideOnStartup;
-            InitializeComponent();
             if (oneInstanceMode)
                 trayIcon.Visible = true;
         }
