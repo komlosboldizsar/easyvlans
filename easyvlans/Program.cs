@@ -6,6 +6,9 @@ using easyvlans.Model.Deserializers;
 using easyvlans.Model.Remote;
 using easyvlans.Modules;
 using System;
+using System.IO;
+using System.IO.Pipes;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -46,6 +49,7 @@ namespace easyvlans
                 if (e.InnerException is OneInstanceAlreadyRunningException)
                 {
                     dontStart = true;
+                    OneInstancePipe.SignalOneInstanceToShow(_oneInstanceData.ID);
                 }
                 else
                 {
@@ -82,6 +86,7 @@ namespace easyvlans
             _oneInstanceMutex = new(true, mutexId, out bool mutexResult);
             if (!mutexResult)
                 throw new OneInstanceAlreadyRunningException();
+            OneInstancePipe.StartOneInstanceServer(oneInstanceData.ID);
         }
 
         private static OneInstanceData _oneInstanceData;

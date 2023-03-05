@@ -5,7 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
+using System.IO.Pipes;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -29,8 +32,13 @@ namespace easyvlans.GUI
             this.parsingError = parsingError;
             this.oneInstanceMode = oneInstanceMode;
             this.hideOnStartup = hideOnStartup;
+            lastWindowStateNotMinimized = WindowState;
+            Resize += MainForm_Resize;
             if (oneInstanceMode)
+            {
                 trayIcon.Visible = true;
+                OneInstancePipe.ShowMessageReceived += oneInstanceShowMessageReceived;
+            }
         }
 
         private bool firstSetVisibleCoreCall = true;
@@ -157,6 +165,21 @@ namespace easyvlans.GUI
             Close();
         }
 
+        FormWindowState lastWindowStateNotMinimized;
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (WindowState != FormWindowState.Minimized)
+                lastWindowStateNotMinimized = WindowState;
+        }
+
+        private void oneInstanceShowMessageReceived()
+            => this.InvokeIfRequired(() => {
+                Show();
+                WindowState = lastWindowStateNotMinimized;
+                Activate();
+            });
+
         private void newLogMessageHandler(DateTime Timestamp, LogMessageSeverity severity, string message)
             => logTextBox.InvokeIfRequired(() => addLogMessage(Timestamp, severity, message));
 
@@ -205,6 +228,7 @@ namespace easyvlans.GUI
 
         private const string URL_GITHUB = @"http://github.com/komlosboldizsar/easyvlans";
         private const string URL_GITHUB_ISSUEREPORT = @"http://github.com/komlosboldizsar/easyvlans/issues/new";
+
 
     }
 
