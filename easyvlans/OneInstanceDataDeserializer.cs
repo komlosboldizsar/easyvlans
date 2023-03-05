@@ -20,7 +20,7 @@ namespace easyvlans
             return new()
             {
                 ID = xmlNode.AttributeAsString(ATTR_ID, context).NotEmpty().Get().Value,
-                StartVisible = xmlNode.AttributeAsBool(ATTR_START_VISIBLE, context).Default(false).Get().Value
+                StartVisible = xmlNode.AttributeAsBool(ATTR_START_VISIBLE, context).Default(true).Get().Value
             };
         }
 
