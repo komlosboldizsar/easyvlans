@@ -6,9 +6,9 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Authors>Komlós Boldizsár &lt;komlos.boldizsar@gmail.com&gt;</Authors>
     <Product>EsayVLANs</Product>
-    <Description>A simple application to set VLAN membership of (access) switch ports fast and easily. </Description>
+    <Description>A simple application to set VLAN membership of (access) switch ports fast and easily.</Description>
     <PackageProjectUrl>https://github.com/komlosboldizsar/easyvlans</PackageProjectUrl>
-    <PackageIcon>icon2.png</PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl />
     <PackageId>EasyVLANs</PackageId>
     <AssemblyName>EasyVLANs</AssemblyName>
