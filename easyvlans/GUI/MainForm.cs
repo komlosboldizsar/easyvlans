@@ -200,7 +200,15 @@ namespace easyvlans.GUI
             }
             logTextBox.Select(selectionStart, selectionLength);
             logTextBox.SelectionColor = logColors[severity];
-            logTextBox.Select(logTextBox.Text.Length - 1, 0);
+            logTextBoxScrollToEnd();
+        }
+
+        private void logTextBox_Resize(object sender, EventArgs e)
+            => logTextBoxScrollToEnd();
+
+        private void logTextBoxScrollToEnd()
+        {
+            logTextBox.SelectionStart = logTextBox.Text.Length;
             logTextBox.ScrollToCaret();
         }
 
@@ -229,7 +237,6 @@ namespace easyvlans.GUI
 
         private const string URL_GITHUB = @"http://github.com/komlosboldizsar/easyvlans";
         private const string URL_GITHUB_ISSUEREPORT = @"http://github.com/komlosboldizsar/easyvlans/issues/new";
-
 
     }
 

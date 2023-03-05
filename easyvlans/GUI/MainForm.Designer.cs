@@ -269,6 +269,7 @@ namespace easyvlans.GUI
             this.logTextBox.Size = new System.Drawing.Size(1061, 100);
             this.logTextBox.TabIndex = 4;
             this.logTextBox.Text = "";
+            this.logTextBox.Resize += new System.EventHandler(this.logTextBox_Resize);
             // 
             // portTableContainer
             // 
