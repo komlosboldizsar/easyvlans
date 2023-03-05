@@ -1,4 +1,5 @@
 using B.XmlDeserializer.Exceptions;
+using CommandLine;
 using easyvlans.GUI;
 using easyvlans.Logger;
 using easyvlans.Model;
@@ -19,12 +20,13 @@ namespace easyvlans
     {
 
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            Arguments parsedArguments = Parser.Default.ParseArguments<Arguments>(args).Value;
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            _ = new FileLogger();
+            _ = new FileLogger(parsedArguments.VeryVerbose ? null : LogMessageSeverity.Verbose);
             LogDispatcher.I("Program started.");
             ModuleLoader.LoadAndInitModules();
             LogDispatcher.I($"Loaded and initialized {ModuleLoader.InitializedModuleCount} modules.");
@@ -35,7 +37,7 @@ namespace easyvlans
             {
                 LogDispatcher.I("Loading configuration...");
                 ConfigDeserializer.Deserializer.Register(new OneInstanceDataDeserializer(), (config, oneInstanceData) => oneInstanceDataHandler(oneInstanceData));
-                config = (new ConfigDeserializer()).LoadConfig();
+                config = (new ConfigDeserializer()).LoadConfig(parsedArguments.ConfigFile ?? DEFAULT_CONFIG_FILE);
                 if (config.Remotes != null)
                 {
                     foreach (IRemoteMethod remoteMethod in config.Remotes)
@@ -63,10 +65,13 @@ namespace easyvlans
             {
                 Task.Run(() => loadAsync(config));
                 LogDispatcher.I("Starting GUI...");
-                MainForm mainForm = new(config, parsingError, (_oneInstanceData != null), (_oneInstanceData?.StartVisible == false));
+                bool hideOnStartup = (_oneInstanceData?.StartVisible == false) || parsedArguments.Hidden;
+                MainForm mainForm = new(config, parsingError, (_oneInstanceData != null), hideOnStartup);
                 Application.Run(mainForm);
             }
         }
+
+        private const string DEFAULT_CONFIG_FILE = "config.xml";
 
         private async static Task loadAsync(Config config)
         {

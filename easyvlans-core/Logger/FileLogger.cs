@@ -5,10 +5,12 @@
 
         private const string LOG_FOLDER_PATH = @".\log";
         private readonly string filePath = null;
+        private readonly LogMessageSeverity? maxSeverity;
         private StreamWriter streamWriter;
 
-        public FileLogger()
+        public FileLogger(LogMessageSeverity? maxSeverity = null)
         {
+            this.maxSeverity = maxSeverity;
             string startTimestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
             filePath = $"{LOG_FOLDER_PATH}{Path.DirectorySeparatorChar}easyvlans-{startTimestamp}.log";
             string directoryPath = Path.GetDirectoryName(filePath);
@@ -33,6 +35,8 @@
 
         private void newLogMessageHandler(DateTime timestamp, LogMessageSeverity severity, string message)
         {
+            if ((maxSeverity != null) && (severity > maxSeverity))
+                return;
             lock (streamWriter)
             {
                 streamWriter.WriteLine($"[{timestamp:HH:mm:ss}][{convertTypeToString(severity)}] {message}");

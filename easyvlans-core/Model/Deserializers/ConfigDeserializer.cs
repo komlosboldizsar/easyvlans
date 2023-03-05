@@ -17,15 +17,13 @@ namespace easyvlans.Model.Deserializers
             RootDeserializer = new(Deserializer, rootDeserializerContextInitializer);
         }
 
-        private const string FILE_CONFIG = "config.xml";
-
-        public Config LoadConfig()
+        public Config LoadConfig(string fileName)
         {
-            if (File.Exists(FILE_CONFIG))
+            if (File.Exists(fileName))
             {
                 try
                 {
-                    Config config = RootDeserializer.Deserialize(FILE_CONFIG, out DeserializationContext context, reportHandler);
+                    Config config = RootDeserializer.Deserialize(fileName, out DeserializationContext context, reportHandler);
                     int infoReportsCount = context.Reports.Count(r => r.Severity == DeserializationReportSeverity.Info);
                     if (infoReportsCount > 0)
                         LogDispatcher.I($"{infoReportsCount} verbose messages from configuration XML deserialization process.");
@@ -42,7 +40,7 @@ namespace easyvlans.Model.Deserializers
             }
             else
             {
-                throw new DeserializationException($"Couldn't find {FILE_CONFIG}!");
+                throw new DeserializationException($"Couldn't find {fileName}!");
             }
         }
 

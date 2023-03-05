@@ -14,6 +14,9 @@
     <AssemblyName>EasyVLANs</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
   </ItemGroup>
   <Import Project="..\easyvlans-core\CopyToOutput.csproj" />
