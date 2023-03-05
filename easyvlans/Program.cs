@@ -63,7 +63,8 @@ namespace easyvlans
             }
             if (!dontStart)
             {
-                Task.Run(() => loadAsync(config));
+                if (config != null)
+                    Task.Run(() => loadAsync(config));
                 LogDispatcher.I("Starting GUI...");
                 bool hideOnStartup = (_oneInstanceData?.StartVisible == false) || parsedArguments.Hidden;
                 MainForm mainForm = new(config, parsingError, (_oneInstanceData != null), hideOnStartup);
