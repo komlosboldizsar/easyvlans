@@ -10,6 +10,7 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
 
         public Switch Switch { get; }
+        private string _ipEndPointString;
         protected readonly IPEndPoint _ipEndPoint;
         protected readonly OctetString _readCommunityString;
         protected readonly OctetString _writeCommunityString;
@@ -18,6 +19,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             Switch = @switch;
             _ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
+            _ipEndPointString = _ipEndPoint.ToString();
             string[] communityStringParts = communityStrings.Split(':');
             if (communityStringParts.Length > 1)
             {
@@ -35,12 +37,12 @@ namespace easyvlans.Model.SwitchOperationMethods
             try
             {
                 string transactionId = GenerateTransactionId();
-                LogDispatcher.V($"[{transactionId}] Walking from {objectIdentifierStr} using SNMP{Version}...");
+                LogDispatcher.VV($"[{transactionId}] Walking from {objectIdentifierStr} @ {_ipEndPointString} using SNMP{Version}...");
                 List<Variable> variables = await DoWalkAsync(objectIdentifierStr);
                 int i = 0;
                 foreach (Variable variable in variables)
                     LogDispatcher.VV($"[{transactionId}:{i++}] OID: [{variable.Id}], value: [{variable.Data.ToPrettyString()}]");
-                LogDispatcher.V($"[{transactionId}] Walking from {objectIdentifierStr} using SNMP{Version} ready, got {variables.Count} variables.");
+                LogDispatcher.VV($"[{transactionId}] Walking from {objectIdentifierStr} using SNMP{Version} ready, got {variables.Count} variables.");
                 return variables;
             }
             catch (ErrorException ex)
