@@ -36,12 +36,22 @@ namespace easyvlans.Model.Remote.Snmp
             IMembershipProvider v1MembershipProvider = new Version1MembershipProvider(
                 new OctetString(_communityRead ?? COMMUNITY_READ_DEFAULT),
                 new OctetString(_communityWrite ?? COMMUNITY_WRITE_DEFAULT));
-            IMembershipProvider membershipProvider = new ComposedMembershipProvider(new IMembershipProvider[] { v1MembershipProvider });
+            IMembershipProvider v2MembershipProvider = new Version2MembershipProvider(
+                new OctetString(_communityRead ?? COMMUNITY_READ_DEFAULT),
+                new OctetString(_communityWrite ?? COMMUNITY_WRITE_DEFAULT));
+            IMembershipProvider membershipProvider = new ComposedMembershipProvider(new IMembershipProvider[] {
+                v1MembershipProvider,
+                v2MembershipProvider
+            });
             var handlerFactory = new MessageHandlerFactory(new[]
             {
                 new HandlerMapping("v1", "GET", new GetV1MessageHandler()),
                 new HandlerMapping("v1", "GETNEXT", new GetNextV1MessageHandler()),
-                new HandlerMapping("v1", "SET", new MySetV1MessageHandler())
+                new HandlerMapping("v1", "SET", new MySetV1MessageHandler()),
+                new HandlerMapping("v2", "GET", new GetMessageHandler()),
+                new HandlerMapping("v2", "GETNEXT", new GetNextMessageHandler()),
+                new HandlerMapping("v2", "GETBULK", new GetBulkMessageHandler()),
+                new HandlerMapping("v2", "SET", new MySetMessageHandler())
             });
             var pipelineFactory = new SnmpApplicationFactory(new MyLogger(), _objectStore, membershipProvider, handlerFactory);
             _engine = new SnmpEngine(pipelineFactory, new Listener(), new EngineGroup());
