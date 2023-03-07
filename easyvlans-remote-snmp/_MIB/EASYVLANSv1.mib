@@ -1,0 +1,314 @@
+EASYVLANSv1 DEFINITIONS ::= BEGIN
+
+komlosboldizsar   OBJECT IDENTIFIER ::= { enterprises 59150 }
+easyvlans         OBJECT IDENTIFIER ::= { komlosboldizsar 1 }
+ 
+-------------------------
+-- Textual conventions --
+-------------------------
+ 
+RemoteIndex ::= TEXTUAL-CONVENTION
+	DISPLAY-HINT   "d"
+	STATUS         current
+	DESCRIPTION    "Index for accessing objects (switches and ports) remotely, defined in configuration XML."
+	SYNTAX         INTEGER (1..2147483647)
+	
+VlanId ::= TEXTUAL-CONVENTION
+	DISPLAY-HINT   "d"
+	STATUS         current
+	DESCRIPTION    "VLAN identifier."
+	SYNTAX         INTEGER (1..4094)
+ 
+Status ::= TEXTUAL-CONVENTION
+	DISPLAY-HINT   "d"
+	STATUS         current
+	DESCRIPTION    "Status of a process, e.g. setting VLAN membership of a port."
+	SYNTAX         INTEGER {
+		empty(0),
+		unknown(1),
+		querying(2),
+		successful(3),
+		unsuccessful(4)
+	}
+	
+TruthValue ::= TEXTUAL-CONVENTION
+	DISPLAY-HINT   "d"
+	STATUS         current
+	DESCRIPTION    "Boolean, the same as defined in SNMPv2-TC."
+	SYNTAX         INTEGER {
+		true(1),
+		false(2)
+	}
+	
+-------------------------
+-- Switches -------------
+-------------------------
+
+switchTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF SwitchEntry
+	ACCESS not-accessible
+	STATUS mandatory
+	DESCRIPTION "Table of switches that are remotely accessible."
+	::= { easyvlans 1 }
+	
+switchEntry OBJECT-TYPE
+	SYNTAX SwitchEntry
+	ACCESS not-accessible
+	STATUS mandatory
+	DESCRIPTION "A switch that is remotely accessible by having a 'remote_index'
+	             attribute in the configuration XML."
+	INDEX { switchRemoteIndex }
+	::= { switchTable 1 }
+	
+SwitchEntry ::= SEQUENCE {
+	switchRemoteIndex
+		RemoteIndex,
+	switchId
+		INTEGER,
+	switchLabel
+		DisplayString,
+	switchPortsWithPendingChangeCount
+		INTEGER,
+	switchCanReadVlanConfig
+		TruthValue,
+	switchDoReadVlanConfig
+		TruthValue,
+	switchReadVlanConfigStatus
+		Status,
+	switchCanPersistChanges
+		TruthValue,
+	switchDoPersistChanges
+		TruthValue,
+	switchPersistChangesStatus
+		Status
+}
+	   
+switchRemoteIndex OBJECT-TYPE
+	SYNTAX RemoteIndex
+	ACCESS not-accessible
+	STATUS mandatory
+	DESCRIPTION "The index of the switch defined in the configuration XML with the
+	             'remote_index' attribute of the <switch> tag."
+	::= { switchEntry 0 }
+	
+switchId OBJECT-TYPE
+	SYNTAX INTEGER
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "The ID of the switch defined in the configuration XML with the 'id' attribute
+	            of the <switch> tag. It is used in the XML to make references to the switch."
+	::= { switchEntry 1 }
+
+switchLabel OBJECT-TYPE
+	SYNTAX OCTET STRING
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "The label of switch defined in the configuration XML with the 'label'
+	             attribute of the <switch> tag. It is used for easy and quick identification
+				 of the switch, e.g. it can be it's location (RACK 4:2) or purpose
+				 (Room 21 computers)."
+	::= { switchEntry 2 }
+
+switchPortsWithPendingChangeCount OBJECT-TYPE
+	SYNTAX INTEGER
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Number switch ports with changed but unsaved VLAN membership since the last
+	             start of the application."
+	::= { switchEntry 3 }
+
+switchCanReadVlanConfig OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Is true(1) when a method is provided for the switch to read it's
+	             VLAN configuration (known VLANs, port memberships and PVIDs)."
+	::= { switchEntry 11 }
+	
+switchDoReadVlanConfig OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS write-only
+	STATUS mandatory
+	DESCRIPTION "Write true(1) to update/read the VLAN configuration (known VLANs, port
+	             memberships and PVIDs) from the switch. Will result a genError(5) if no
+				 method is provided for reading the VLAN configuration (see
+				 'switchCanReadVlanConfig'). Always read as 0."
+	::= { switchEntry 12 }
+
+switchReadVlanConfigStatus OBJECT-TYPE
+	SYNTAX Status
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Status of the process of reading VLAN configuration data from the switch."
+	::= { switchEntry 13 }
+
+switchCanPersistChanges OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Is true(1) when a method is provided for the switch to save it's current
+                 (running) configuration as startup configuration."
+	::= { switchEntry 21 }
+	
+switchDoPersistChanges OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS write-only
+	STATUS mandatory
+	DESCRIPTION "Write true(1) to copy the current (running) configuration of the switch
+	             as startup configuration. Will result a genError(5) if no method is provided
+				 for saving the configuration (see 'switchCanPersistChanges') or any error
+				 occurs during the process. Always read as 0."
+	::= { switchEntry 22 }
+
+switchPersistChagesStatus OBJECT-TYPE
+	SYNTAX Status
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Status of the process of saving the current (running) configuration of the
+	             switch as startup configuration."
+	::= { switchEntry 23 }
+
+-------------------------
+-- Ports ----------------
+-------------------------
+
+portTable OBJECT-TYPE
+	SYNTAX SEQUENCE OF PortEntry
+	ACCESS not-accessible
+	STATUS current
+	DESCRIPTION "Table of switch ports that are remotely accessible."
+	::= { easyvlans 2 }
+	
+portEntry OBJECT-TYPE
+	SYNTAX PortEntry
+	ACCESS not-accessible
+	STATUS current
+	DESCRIPTION "A switch port that is remotely accessible by having a 'remote_index'
+	             attribute in the configuration XML."
+	INDEX { portRemoteIndex }
+	::= { portTable 1 }
+	
+PortEntry ::= SEQUENCE {
+	portRemoteIndex
+		RemoteIndex,
+	portIndex
+		INTEGER,
+	portLabel
+		DisplayString,
+	portSwitchRemoteIndex
+		INTEGER,
+	portSwitchLabel
+		DisplayString,
+	portCurrentVlanId
+		VlanId,
+	portCurrentVlanName
+		DisplayString,
+	portHasComplexMemership
+		TruthValue,
+	portHasNotAllowedMemership
+		TruthValue,
+	portSetVlanMembershipStatus
+		Status,
+	portPendingChanges
+		TruthValue
+}
+
+portRemoteIndex OBJECT-TYPE
+	SYNTAX RemoteIndex
+	ACCESS not-accessible
+	STATUS mandatory
+	DESCRIPTION "The index of the port defined in the configuration XML with the
+	             'remote_index' attribute of the <port> tag. "
+	::= { portEntry 0 }
+	
+portIndex OBJECT-TYPE
+	SYNTAX INTEGER
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "The index of the port defined in the configuration XML with the 'index'
+	             attribute of the <port> tag. It is used for indexing the port in the
+				 containing switch. Sometimes it has an offset, e.g. the 10 port varitaion
+				 Cisco SG-300 uses #49 for the first port."
+	::= { portEntry 1 }
+	   
+portLabel OBJECT-TYPE
+	SYNTAX OCTET STRING
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "The label of port defined in the configuration XML with the 'label'
+	             attribute of the <port> tag. It is used for easy and quick identification
+				 of the port, e.g. it can be it's location (WALLBOX 1:1), purpose (Guest access)
+				 or endpoint device's name (MONITORING-1)."
+	::= { portEntry 2 }
+
+portSwitchRemoteIndex OBJECT-TYPE
+	SYNTAX RemoteIndex
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "The remote index of the owning/containing switch, see 'switchRemoteIndex'."
+	::= { portEntry 3 }
+
+portSwitchLabel OBJECT-TYPE
+	SYNTAX OCTET STRING
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "The label of the owning/containing switch, see 'switchLabel'."
+	::= { portEntry 4 }
+	
+portCurrentVlanId OBJECT-TYPE
+	SYNTAX VlanId
+	ACCESS read-write
+	STATUS mandatory
+	DESCRIPTION "The ID of the VLAN the port is currently associated to.
+	             If unknown by the application, set to 0. By writing this
+				 object, port can be associated to another VLAN. If given VLAN
+				 ID is unknown or associating port to it is prohibited by
+				 configuration XML ('vlan' attribute of <port> tag),
+				 response will be an error."
+	::= { portEntry 5 }
+
+portCurrentVlanName OBJECT-TYPE
+	SYNTAX OCTET STRING
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "The name of the VLAN the port is currently associated to.
+                 If unknown by the application, set to '(unknown)'."
+	::= { portEntry 6 }
+	
+portHasComplexMemership OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Is true(1) when the port's VLAN membership is something different
+	             than being associated to just one VLAN in untagged mode and
+				 having the same PVID as that VLAN."
+	::= { portEntry 7 }
+	
+portHasNotAllowedMemership OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Is true(1) when the port is not in 'complex' mode but is the member
+	             of a VLAN that is not associable to the port by the prohibition of
+	             the configuration XML ('vlan' attribute of <port> tag)."
+	::= { portEntry 8 }
+
+portSetVlanMembershipStatus OBJECT-TYPE
+	SYNTAX Status
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Status of the process of chaning the VLAN membership of the port."
+	::= { portEntry 9 }
+
+portPendingChanges OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Is true(1) when the VLAN membership of the port has been changed
+	             by the application since the last start but the configuration of the
+				 owner switch is not saved/persisted yet. For ports contained by a
+				 switch that doesn't need saving the running configuration as startup
+				 configuration, always set to false(2)."
+	::= { portEntry 10 }
+	
+END
