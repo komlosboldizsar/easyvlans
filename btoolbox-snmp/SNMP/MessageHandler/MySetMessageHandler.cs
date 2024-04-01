@@ -2,7 +2,7 @@
 using Lextm.SharpSnmpLib.Messaging;
 using Lextm.SharpSnmpLib.Pipeline;
 
-namespace easyvlans.Model.Remote.Snmp
+namespace BToolbox.SNMP
 {
     // copied from Lextm.SharpSnmpLib.Pipeline.SetMessageHandler
     public sealed class MySetMessageHandler : IMessageHandler

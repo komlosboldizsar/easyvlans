@@ -1,4 +1,5 @@
-﻿using easyvlans.GUI.Helpers;
+﻿using BToolbox.OneInstance;
+using easyvlans.GUI.Helpers;
 using easyvlans.Logger;
 using easyvlans.Model;
 using System;
@@ -86,7 +87,7 @@ namespace easyvlans.GUI
         }
 
         protected override bool ShowWithoutActivation => hidingOnStartup;
-        
+
         private void showPages()
         {
             if (config.PortPages.Count == 0)
@@ -175,7 +176,8 @@ namespace easyvlans.GUI
         }
 
         private void oneInstanceShowMessageReceived()
-            => this.InvokeIfRequired(() => {
+            => this.InvokeIfRequired(() =>
+            {
                 Show();
                 WindowState = lastWindowStateNotMinimized;
                 Activate();
@@ -220,7 +222,8 @@ namespace easyvlans.GUI
         private void reloadLogMessages()
         {
             logTextBox.Text = string.Empty;
-            foreach (LogMessage logMessage in LogDispatcher.Messages)
+            List<LogMessage> messages = new(LogDispatcher.Messages);
+            foreach (LogMessage logMessage in messages)
                 addLogMessage(logMessage.Timestamp, logMessage.Severity, logMessage.Message);
         }
 

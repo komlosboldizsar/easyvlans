@@ -1,8 +1,8 @@
 ﻿using Lextm.SharpSnmpLib;
 
-namespace easyvlans.Model.Remote.Snmp
+namespace BToolbox.SNMP
 {
-    internal class SnmpErrorCodeException : Exception
+    public class SnmpErrorCodeException : Exception
     {
 
         public ErrorCode ErrorCode { get; private init; }

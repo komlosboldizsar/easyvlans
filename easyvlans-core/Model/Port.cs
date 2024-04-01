@@ -11,6 +11,7 @@ namespace easyvlans.Model
 
         public Switch Switch;
         public PortPage Page;
+        public Vlan DefaultVlan;
 
         private readonly List<Vlan> _vlans = new();
         public List<Vlan> Vlans

@@ -4,6 +4,7 @@ using easyvlans.Helpers;
 using easyvlans.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -39,7 +40,60 @@ namespace easyvlans.GUI
             {
                 _setVlanToComboBox.SelectedIndexChanged += setVlanToComboBoxSelectedIndexChangedHandler;
                 _setButton.Click += setButtonClickHandler;
+                _setVlanToComboBox.DrawMode = DrawMode.OwnerDrawFixed;
+                _setVlanToComboBox.DrawItem += _setVlanToComboBox_DrawItem;
             }
+
+            private void _setVlanToComboBox_DrawItem(object sender, DrawItemEventArgs e)
+            {
+                if (e.Index == -1)
+                    return;
+                ComboBoxAdapter<Vlan>.ItemProxy comboBoxItem = _setVlanToComboBox.Items[e.Index] as ComboBoxAdapter<Vlan>.ItemProxy;
+                e.DrawBackground();
+                int defaultMarkVerticalSpace = (e.Bounds.Height - DEFAULT_MARK_SIZE) / 2;
+                Rectangle textBounds = e.Bounds with
+                {
+                    Width = e.Bounds.Width - DEFAULT_MARK_SIZE - 2 * defaultMarkVerticalSpace
+                };
+                using Pen textPen = new(e.ForeColor);
+                using Brush textBrush = new SolidBrush(e.ForeColor);
+                StringFormat stringFormat = new(StringFormat.GenericDefault)
+                {
+                    Alignment = StringAlignment.Far
+                };
+                Rectangle vlanIdFieldBounds = textBounds with
+                {
+                    Width = VLAN_ID_FIELD_WIDTH
+                };
+                Rectangle vlanNameFieldBounds = textBounds with
+                {
+                    X = textBounds.X + VLAN_ID_FIELD_WIDTH + FIELD_SEPARATOR_WIDTH,
+                    Width = textBounds.Width - VLAN_ID_FIELD_WIDTH - FIELD_SEPARATOR_WIDTH
+                };
+                e.Graphics.DrawString(comboBoxItem.Value?.ID.ToString(), e.Font, textBrush, vlanIdFieldBounds, stringFormat);
+                int px = textBounds.X + VLAN_ID_FIELD_WIDTH + FIELD_SEPARATOR_BAR_WIDTH;
+                Point p1 = new(px, textBounds.Top + 3);
+                Point p2 = new(px, textBounds.Bottom - 3);
+                e.Graphics.DrawLine(textPen, p1, p2);
+                e.Graphics.DrawString(comboBoxItem.Value?.Name.ToString(), e.Font, textBrush, vlanNameFieldBounds, StringFormat.GenericDefault);
+                if ((Item.DefaultVlan != null) && (comboBoxItem?.Value == Item.DefaultVlan))
+                {
+                    Rectangle defaultMarkRectangle = new(
+                        e.Bounds.X + e.Bounds.Width - defaultMarkVerticalSpace - DEFAULT_MARK_SIZE, 
+                        (e.Bounds.Top + e.Bounds.Bottom - DEFAULT_MARK_SIZE) / 2,
+                        DEFAULT_MARK_SIZE,
+                        DEFAULT_MARK_SIZE
+                    );
+                    e.Graphics.FillRectangle(Brushes.Purple, defaultMarkRectangle);
+                }
+                e.DrawFocusRectangle();
+            }
+
+            private const int VLAN_ID_FIELD_WIDTH = 30;
+            private const int FIELD_SEPARATOR_SPACE_HALF_WIDTH = 2;
+            private const int FIELD_SEPARATOR_BAR_WIDTH = 1;
+            private const int FIELD_SEPARATOR_WIDTH = FIELD_SEPARATOR_SPACE_HALF_WIDTH * 2 + FIELD_SEPARATOR_BAR_WIDTH;
+            private const int DEFAULT_MARK_SIZE = 10;
 
             protected override void DebindItem()
             {
@@ -64,6 +118,7 @@ namespace easyvlans.GUI
                 displayVlanMembership();
                 _setButton.Enabled = false;
                 displaySetVlanMembershipStatus();
+                _setVlanToComboBox.Tag = Item;
                 _setVlanToComboBox_changingAdapter = true;
                 _setVlanToComboBox.SetAdapterAsDataSource(getSetVlanToComboBoxAdapterForPort(Item));
                 _setVlanToComboBox_changingAdapter = false;
@@ -118,7 +173,7 @@ namespace easyvlans.GUI
 
             private static readonly Dictionary<Port, IComboBoxAdapter> setVlanToComboBoxAdaptersByPort = new();
 
-            private static IComboBoxAdapter getSetVlanToComboBoxAdapterForPort(Port port)
+            private IComboBoxAdapter getSetVlanToComboBoxAdapterForPort(Port port)
                 => setVlanToComboBoxAdaptersByPort.GetAnyway(port, p => new ComboBoxAdapter<Vlan>(port.Vlans, v => v.Label, true, string.Empty));
 
             private static readonly Dictionary<Port, Vlan> setVlanToComboBoxSelections = new();

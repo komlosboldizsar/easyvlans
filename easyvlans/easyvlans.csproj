@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
+    <ProjectReference Include="..\btoolbox-oneinstance\btoolbox-oneinstance.csproj" />
   </ItemGroup>
   <Import Project="..\easyvlans-core\CopyToOutput.csproj" />
 </Project>

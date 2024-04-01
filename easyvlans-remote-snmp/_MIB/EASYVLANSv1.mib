@@ -1,5 +1,12 @@
 EASYVLANSv1 DEFINITIONS ::= BEGIN
 
+IMPORTS
+	OBJECT-TYPE, NOTIFICATION-TYPE, Integer32
+		FROM SNMPv2-SMI
+	DisplayString, TruthValue
+		FROM SNMPv2-TC;
+
+
 komlosboldizsar   OBJECT IDENTIFIER ::= { enterprises 59150 }
 easyvlans         OBJECT IDENTIFIER ::= { komlosboldizsar 1 }
  

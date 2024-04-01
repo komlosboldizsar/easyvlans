@@ -28,6 +28,7 @@ namespace easyvlans.Model.Deserializers
             public void BuildRelations(XmlNode portNode, Port port, Config config, DeserializationContext context)
             {
                 RelationBuilderHelpers.HandleExceptions(findSwitch, portNode, port, config, context);
+                RelationBuilderHelpers.HandleExceptions(findDefaultVlan, portNode, port, config, context);
                 RelationBuilderHelpers.HandleExceptions(findVlans, portNode, port, config, context);
             }
 
@@ -38,6 +39,16 @@ namespace easyvlans.Model.Deserializers
                     RelatedObjectNotFoundException.Throw(switchData, typeof(Switch));
                 port.Switch = @switch;
                 @switch.AssociatePort(port);
+            }
+
+            private void findDefaultVlan(XmlNode portNode, Port port, Config config, DeserializationContext context)
+            {
+                XmlAttributeData<int?> defaultVlanData = portNode.AttributeAsInt(ATTR_DEFAULT_VLAN, context).Get();
+                if (defaultVlanData.Value == null)
+                    return;
+                if (!config.Vlans.TryGetValue((int)defaultVlanData.Value, out Vlan defaultVlan))
+                    RelatedObjectNotFoundException.Throw(defaultVlanData, typeof(Vlan));
+                port.DefaultVlan = defaultVlan;
             }
 
             private void findVlans(XmlNode portNode, Port port, Config config, DeserializationContext context)
@@ -52,6 +63,7 @@ namespace easyvlans.Model.Deserializers
         private const string ATTR_LABEL = "label";
         private const string ATTR_SWITCH = "switch";
         private const string ATTR_INDEX = "index";
+        private const string ATTR_DEFAULT_VLAN = "default_vlan";
         private const string ATTR_VLANS = "vlans";
         private const string ATTR_REMOTE_INDEX = "remote_index";
 

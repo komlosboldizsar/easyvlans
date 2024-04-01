@@ -1,24 +1,25 @@
-﻿using Lextm.SharpSnmpLib;
+﻿using BToolbox.SNMP;
+using Lextm.SharpSnmpLib;
 
 namespace easyvlans.Model.Remote.Snmp
 {
-    internal class SwitchDataTable : DataTable<Switch>
+    internal class SwitchDataTable : ObjectDataTable<Switch>
     {
-
-        public SwitchDataTable(Switch @switch) : base(@switch) { }
 
         protected override IVariableFactory[] VariableFactories => new IVariableFactory[]
         {
-            new VariableFactory<DataProviders.Id>(INDEX_Id),
-            new VariableFactory<DataProviders.Label>(INDEX_Label),
-            new VariableFactory<DataProviders.PortsWithPendingChangeCount>(INDEX_PortsWithPendingChangeCount),
-            new VariableFactory<DataProviders.CanReadVlanConfig>(INDEX_CanReadVlanConfig),
-            new VariableFactory<DataProviders.DoReadVlanConfig>(INDEX_DoReadVlanConfig),
-            new VariableFactory<DataProviders.ReadVlanConfigStatus>(INDEX_ReadVlanConfigStatus),
-            new VariableFactory<DataProviders.CanPersistChanges>(INDEX_CanPersistChanges),
-            new VariableFactory<DataProviders.DoPersistChanges>(INDEX_DoPersistChanges),
-            new VariableFactory<DataProviders.PersistConfigStatus>(INDEX_PersistChangesStatus),
+            VARFACT_Index,
+            VARFACT_Label,
+            VARFACT_PortsWithPendingChangeCount,
+            VARFACT_CanReadVlanConfig,
+            VARFACT_DoReadVlanConfig,
+            VARFACT_ReadVlanConfigStatus,
+            VARFACT_CanPersistChanges,
+            VARFACT_DoPersistChanges,
+            VARFACT_PersistChangesStatus
         };
+
+        protected override IVariableFactory IndexerVariableFactory => VARFACT_Index;
 
         public const int INDEX_Id = 1;
         public const int INDEX_Label = 2;
@@ -30,7 +31,21 @@ namespace easyvlans.Model.Remote.Snmp
         public const int INDEX_DoPersistChanges = 22;
         public const int INDEX_PersistChangesStatus = 23;
 
+        public static readonly IVariableFactory VARFACT_Index = new VariableFactory<DataProviders.Id>(INDEX_Id);
+        public static readonly IVariableFactory VARFACT_Label = new VariableFactory<DataProviders.Label>(INDEX_Label);
+        public static readonly IVariableFactory VARFACT_PortsWithPendingChangeCount = new VariableFactory<DataProviders.PortsWithPendingChangeCount>(INDEX_PortsWithPendingChangeCount);
+        public static readonly IVariableFactory VARFACT_CanReadVlanConfig = new VariableFactory<DataProviders.CanReadVlanConfig>(INDEX_CanReadVlanConfig);
+        public static readonly IVariableFactory VARFACT_DoReadVlanConfig = new VariableFactory<DataProviders.DoReadVlanConfig>(INDEX_DoReadVlanConfig);
+        public static readonly IVariableFactory VARFACT_ReadVlanConfigStatus = new VariableFactory<DataProviders.ReadVlanConfigStatus>(INDEX_ReadVlanConfigStatus);
+        public static readonly IVariableFactory VARFACT_CanPersistChanges = new VariableFactory<DataProviders.CanPersistChanges>(INDEX_CanPersistChanges);
+        public static readonly IVariableFactory VARFACT_DoPersistChanges = new VariableFactory<DataProviders.DoPersistChanges>(INDEX_DoPersistChanges);
+        public static readonly IVariableFactory VARFACT_PersistChangesStatus = new VariableFactory<DataProviders.PersistConfigStatus>(INDEX_PersistChangesStatus);
+
+
+        protected override ITrapGeneratorFactory[] TrapGeneratorFactories => Array.Empty<ITrapGeneratorFactory>();
+
         protected override string TableOid => $"{SnmpAgent.OID_BASE}.1";
+        protected override int ItemIndex => (int)Model.RemoteIndex;
 
         private class DataProviders
         {
@@ -38,25 +53,25 @@ namespace easyvlans.Model.Remote.Snmp
             // .1
             public class Id : VariableDataProvider
             {
-                public override ISnmpData Get() => new OctetString(Item.ID);
+                public override ISnmpData Get() => new OctetString(Model.ID);
             }
 
             // .2
             public class Label : VariableDataProvider
             {
-                public override ISnmpData Get() => new OctetString(Item.Label);
+                public override ISnmpData Get() => new OctetString(Model.Label);
             }
 
             // .3
             public class PortsWithPendingChangeCount : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32(Item.PortsWithPendingChangeCount);
+                public override ISnmpData Get() => new Integer32(Model.PortsWithPendingChangeCount);
             }
 
             // .11
             public class CanReadVlanConfig : VariableDataProvider
             {
-                public override ISnmpData Get() => TruthValue.Create(Item.OperationMethodCollection.ReadConfigMethod != null);
+                public override ISnmpData Get() => TruthValue.Create(Model.OperationMethodCollection.ReadConfigMethod != null);
             }
 
             // .12
@@ -74,22 +89,22 @@ namespace easyvlans.Model.Remote.Snmp
                         throwInvalidInputException(ErrorCode.WrongValue);
                     if (value != TruthValue.VALUE_TRUE)
                         return;
-                    if (Item.OperationMethodCollection.ReadConfigMethod == null)
+                    if (Model.OperationMethodCollection.ReadConfigMethod == null)
                         throw new SnmpErrorCodeException(ErrorCode.ResourceUnavailable, "No method provided for reading VLAN configuration of the switch.");
-                    await Item.ReadConfigAsync();
+                    await Model.ReadConfigAsync();
                 }
             }
 
             // .13
             public class ReadVlanConfigStatus : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32((int)Item.ReadVlanConfigStatus);
+                public override ISnmpData Get() => new Integer32((int)Model.ReadVlanConfigStatus);
             }
 
             // .21
             public class CanPersistChanges : VariableDataProvider
             {
-                public override ISnmpData Get() => TruthValue.Create(Item.OperationMethodCollection.PersistChangesMethod != null);
+                public override ISnmpData Get() => TruthValue.Create(Model.OperationMethodCollection.PersistChangesMethod != null);
             }
 
             // .22
@@ -107,9 +122,9 @@ namespace easyvlans.Model.Remote.Snmp
                         throwInvalidInputException(ErrorCode.WrongValue);
                     if (value != TruthValue.VALUE_TRUE)
                         return;
-                    if (Item.OperationMethodCollection.PersistChangesMethod == null)
+                    if (Model.OperationMethodCollection.PersistChangesMethod == null)
                         throw new SnmpErrorCodeException(ErrorCode.ResourceUnavailable, "No method provided for persisting changes of the configuration of the switch.");
-                    if (!await Item.PersistChangesAsync())
+                    if (!await Model.PersistChangesAsync())
                         throw new SnmpErrorCodeException(ErrorCode.GenError, "Persisting changes of the configuration of the switch not successful.");
                 }
             }
@@ -117,7 +132,7 @@ namespace easyvlans.Model.Remote.Snmp
             // .23
             public class PersistConfigStatus : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32((int)Item.PersistVlanConfigStatus);
+                public override ISnmpData Get() => new Integer32((int)Model.PersistVlanConfigStatus);
             }
 
         }

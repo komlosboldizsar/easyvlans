@@ -1,8 +1,8 @@
 ﻿using Lextm.SharpSnmpLib;
 
-namespace easyvlans.Model.Remote.Snmp
+namespace BToolbox.SNMP
 {
-    internal static class TruthValue
+    public static class TruthValue
     {
         public const int VALUE_TRUE = 1;
         public const int VALUE_FALSE = 2;

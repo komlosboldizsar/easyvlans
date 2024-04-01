@@ -1,4 +1,5 @@
-﻿using easyvlans.Logger;
+﻿using BToolbox.SNMP;
+using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 using Lextm.SharpSnmpLib.Pipeline;
@@ -7,84 +8,25 @@ using System.Net.Sockets;
 
 namespace easyvlans.Model.Remote.Snmp
 {
-    public class SnmpAgent : IRemoteMethod
+    public class MySnmpAgent : SnmpAgent, IRemoteMethod
     {
 
         public string Code => "snmp";
 
-        private readonly int _port;
-        private readonly string _communityRead;
-        private readonly string _communityWrite;
-
-        private MyObjectStore _objectStore;
-        private SnmpEngine _engine;
-
         private const string COMMUNITY_READ_DEFAULT = "public";
         private const string COMMUNITY_WRITE_DEFAULT = "public";
 
-        public SnmpAgent(int port, string communityRead, string communityWrite)
-        {
-            _port = port;
-            _communityRead = communityRead;
-            _communityWrite = communityWrite;
-            createEngine();
-        }
-
-        private void createEngine()
-        {
-            _objectStore = new();
-            IMembershipProvider v1MembershipProvider = new Version1MembershipProvider(
-                new OctetString(_communityRead ?? COMMUNITY_READ_DEFAULT),
-                new OctetString(_communityWrite ?? COMMUNITY_WRITE_DEFAULT));
-            IMembershipProvider v2MembershipProvider = new Version2MembershipProvider(
-                new OctetString(_communityRead ?? COMMUNITY_READ_DEFAULT),
-                new OctetString(_communityWrite ?? COMMUNITY_WRITE_DEFAULT));
-            IMembershipProvider membershipProvider = new ComposedMembershipProvider(new IMembershipProvider[] {
-                v1MembershipProvider,
-                v2MembershipProvider
-            });
-            var handlerFactory = new MessageHandlerFactory(new[]
-            {
-                new HandlerMapping("v1", "GET", new GetV1MessageHandler()),
-                new HandlerMapping("v1", "GETNEXT", new GetNextV1MessageHandler()),
-                new HandlerMapping("v1", "SET", new MySetV1MessageHandler()),
-                new HandlerMapping("v2", "GET", new GetMessageHandler()),
-                new HandlerMapping("v2", "GETNEXT", new GetNextMessageHandler()),
-                new HandlerMapping("v2", "GETBULK", new GetBulkMessageHandler()),
-                new HandlerMapping("v2", "SET", new MySetMessageHandler())
-            });
-            var pipelineFactory = new SnmpApplicationFactory(new MyLogger(), _objectStore, membershipProvider, handlerFactory);
-            _engine = new SnmpEngine(pipelineFactory, new Listener(), new EngineGroup());
-        }
+        public MySnmpAgent(int port, string communityRead, string communityWrite)
+            : base(port, communityRead ?? COMMUNITY_READ_DEFAULT, communityWrite ?? COMMUNITY_WRITE_DEFAULT, null)
+        { }
 
         public void MeetConfig(Config config)
         {
-            _objectStore.AddRange(config.Switches.Values.Where(s => s.RemoteIndex != null).Select(s => new SwitchDataTable(s)));
-            _objectStore.AddRange(config.Ports.Where(p => p.RemoteIndex != null).Select(p => new PortDataTable(p)));
+            _ = new DataTableBoundObjectStoreAdapter<Switch, SwitchDataTable>(this, config.Switches.Values);
+            _ = new DataTableBoundObjectStoreAdapter<Port, PortDataTable>(this, config.Ports);
         }
 
-        public void Start()
-        {
-            LogDispatcher.I($"Starting SNMP service at UDP port {_port}...");
-            try
-            {
-                _engine.Listener.ClearBindings();
-                if (Socket.OSSupportsIPv4)
-                    _engine.Listener.AddBinding(new IPEndPoint(IPAddress.Any, _port));
-                _engine.Start();
-            }
-            catch (Exception)
-            {
-                LogDispatcher.E($"Couldn't start SNMP service at UDP port {_port}, because IP endpoint is in use by another application.");
-            }
-        }
-
-        private class MyLogger : ILogger
-        {
-            public void Log(ISnmpContext context) { }
-        }
-
-        public const string OID_BASE = "1.3.6.1.4.1.59150.1";
+        public override string OID_BASE => "1.3.6.1.4.1.59150.1";
 
     }
 }

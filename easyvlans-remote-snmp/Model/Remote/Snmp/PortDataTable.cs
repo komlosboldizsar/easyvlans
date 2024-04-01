@@ -1,27 +1,25 @@
-﻿using Lextm.SharpSnmpLib;
+﻿using BToolbox.SNMP;
+using Lextm.SharpSnmpLib;
 
 namespace easyvlans.Model.Remote.Snmp
 {
-    internal class PortDataTable : DataTable<Port>
+    internal class PortDataTable : ObjectDataTable<Port>
     {
-
-        public PortDataTable(Port port) : base(port) { }
 
         protected override IVariableFactory[] VariableFactories => new IVariableFactory[]
         {
-            new VariableFactory<DataProviders.Index>(INDEX_Index),
-            new VariableFactory<DataProviders.Label>(INDEX_Label),
-            new VariableFactory<DataProviders.SwitchRemoteIndex>(INDEX_SwitchRemoteIndex),
-            new VariableFactory<DataProviders.SwitchLabel>(INDEX_SwitchLabel),
-            new VariableFactory<DataProviders.CurrentVlanId>(INDEX_CurrentVlanId),
-            new VariableFactory<DataProviders.CurrentVlanName>(INDEX_CurrentVlanName),
-            new VariableFactory<DataProviders.HasComplexMembership>(INDEX_HasComplexMembership),
-            new VariableFactory<DataProviders.HasNotAllowedMembership>(INDEX_HasNotAllowedMembership),
-            new VariableFactory<DataProviders.SetVlanMembershipStatus>(INDEX_SetVlanMembershipStatus),
-            new VariableFactory<DataProviders.PendingChanges>(INDEX_PendingChanges)
+            VARFACT_Index,
+            VARFACT_Label,
+            VARFACT_SwitchRemodeIndex,
+            VARFACT_CurrentVlanId,
+            VARFACT_CurrentVlanName,
+            VARFACT_HasComplexMembership,
+            VARFACT_HasNotAllowedMembership,
+            VARFACT_SetVlanMembershipStatus,
+            VARFACT_PendingChanges
         };
 
-        protected override string TableOid => $"{SnmpAgent.OID_BASE}.2";
+        protected override IVariableFactory IndexerVariableFactory => VARFACT_Index;
 
         public const int INDEX_Index = 1;
         public const int INDEX_Label = 2;
@@ -34,46 +32,63 @@ namespace easyvlans.Model.Remote.Snmp
         public const int INDEX_SetVlanMembershipStatus = 9;
         public const int INDEX_PendingChanges = 10;
 
+        public static readonly IVariableFactory VARFACT_Index = new VariableFactory<DataProviders.Index>(INDEX_Index);
+        public static readonly IVariableFactory VARFACT_Label = new VariableFactory<DataProviders.Label>(INDEX_Label);
+        public static readonly IVariableFactory VARFACT_SwitchRemodeIndex = new VariableFactory<DataProviders.SwitchRemoteIndex>(INDEX_SwitchRemoteIndex);
+        public static readonly IVariableFactory VARFACT_SwitchLabel = new VariableFactory<DataProviders.SwitchLabel>(INDEX_SwitchLabel);
+        public static readonly IVariableFactory VARFACT_CurrentVlanId = new VariableFactory<DataProviders.CurrentVlanId>(INDEX_CurrentVlanId);
+        public static readonly IVariableFactory VARFACT_CurrentVlanName = new VariableFactory<DataProviders.CurrentVlanName>(INDEX_CurrentVlanName);
+        public static readonly IVariableFactory VARFACT_HasComplexMembership = new VariableFactory<DataProviders.HasComplexMembership>(INDEX_HasComplexMembership);
+        public static readonly IVariableFactory VARFACT_HasNotAllowedMembership = new VariableFactory<DataProviders.HasNotAllowedMembership>(INDEX_HasNotAllowedMembership);
+        public static readonly IVariableFactory VARFACT_SetVlanMembershipStatus = new VariableFactory<DataProviders.SetVlanMembershipStatus>(INDEX_SetVlanMembershipStatus);
+        public static readonly IVariableFactory VARFACT_PendingChanges = new VariableFactory<DataProviders.PendingChanges>(INDEX_PendingChanges);
+
+        protected override ITrapGeneratorFactory[] TrapGeneratorFactories => Array.Empty<ITrapGeneratorFactory>();
+
+        protected override string TableOid => $"{SnmpAgent.OID_BASE}.2";
+        protected override int ItemIndex => (int)Model.RemoteIndex;
+
+
         private class DataProviders
         {
 
             // .1
             public class Index : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32(Item.Index);
+                public override ISnmpData Get() => new Integer32(Model.Index);
             }
             
             // .2
             public class Label : VariableDataProvider
             {
-                public override ISnmpData Get() => new OctetString(Item.Label);
+                public override ISnmpData Get() => new OctetString(Model.Label);
             }
 
             // .3
             public class SwitchRemoteIndex : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32(Item.Switch.RemoteIndex ?? 0);
+                public override ISnmpData Get() => new Integer32(Model.Switch.RemoteIndex ?? 0);
             }
             
             // .4
             public class SwitchLabel : VariableDataProvider
             {
-                public override ISnmpData Get() => new OctetString(Item.Switch.Label);
+                public override ISnmpData Get() => new OctetString(Model.Switch.Label);
             }
 
             // .5
             public class CurrentVlanId : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32(Item.CurrentVlan?.ID ?? 0);
+                public override ISnmpData Get() => new Integer32(Model.CurrentVlan?.ID ?? 0);
                 public override async void Set(ISnmpData data)
                 {
                     if (data is Integer32 intData)
                     {
                         int vlanId = intData.ToInt32();
-                        Vlan vlan = Item.Vlans.FirstOrDefault(v => v.ID == vlanId);
+                        Vlan vlan = Model.Vlans.FirstOrDefault(v => v.ID == vlanId);
                         if (vlan == null)
                             throw new SnmpErrorCodeException(ErrorCode.BadValue, "VLAN with given ID not found or not valid for this port.");
-                        if (!await Item.SetVlanTo(vlan))
+                        if (!await Model.SetVlanTo(vlan))
                             throw new SnmpErrorCodeException(ErrorCode.GenError, "Setting port to be the member of the given VLAN not successful.");
                     }
                 }
@@ -82,32 +97,32 @@ namespace easyvlans.Model.Remote.Snmp
             // .6
             public class CurrentVlanName : VariableDataProvider
             {
-                public override ISnmpData Get() => new OctetString(Item.CurrentVlan?.Name ?? CURRENT_VLAN_UNKNOWN);
+                public override ISnmpData Get() => new OctetString(Model.CurrentVlan?.Name ?? CURRENT_VLAN_UNKNOWN);
                 private const string CURRENT_VLAN_UNKNOWN = "(unknown)";
             }
 
             // .7
             public class HasComplexMembership : VariableDataProvider
             {
-                public override ISnmpData Get() => TruthValue.Create(Item.HasComplexMembership);
+                public override ISnmpData Get() => TruthValue.Create(Model.HasComplexMembership);
             }
 
             // .8
             public class HasNotAllowedMembership : VariableDataProvider
             {
-                public override ISnmpData Get() => TruthValue.Create(Item.HasNotAllowedMembership);
+                public override ISnmpData Get() => TruthValue.Create(Model.HasNotAllowedMembership);
             }
 
             // .9
             public class SetVlanMembershipStatus : VariableDataProvider
             {
-                public override ISnmpData Get() => new Integer32((int)Item.SetVlanMembershipStatus);
+                public override ISnmpData Get() => new Integer32((int)Model.SetVlanMembershipStatus);
             }
 
             // .10
             public class PendingChanges : VariableDataProvider
             {
-                public override ISnmpData Get() => TruthValue.Create(Item.PendingChanges);
+                public override ISnmpData Get() => TruthValue.Create(Model.PendingChanges);
             }
 
         }

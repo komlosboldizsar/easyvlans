@@ -1,4 +1,4 @@
-﻿namespace easyvlans.Model.Remote.Snmp
+﻿namespace BToolbox.SNMP
 {
     internal static class BoolHelpers
     {

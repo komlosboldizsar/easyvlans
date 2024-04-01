@@ -15,7 +15,7 @@ namespace easyvlans.Model.Remote.Snmp
             int port = (int)xmlNode.AttributeAsInt(ATTR_PORT, context).Default(161).Min(1).Max(65535).Get().Value;
             string communityRead = xmlNode.AttributeAsString(ATTR_COMMUNITY_READ, context).Get().Value;
             string communityWrite = xmlNode.AttributeAsString(ATTR_COMMUNITY_WRITE, context).Get().Value;
-            SnmpAgent agent = new(port, communityRead, communityWrite);
+            MySnmpAgent agent = new(port, communityRead, communityWrite);
             relationBuilder = new RelationBuilder(agent);
             return agent;
         }
@@ -23,9 +23,9 @@ namespace easyvlans.Model.Remote.Snmp
         private class RelationBuilder : IRelationBuilder<Config>
         {
 
-            private readonly SnmpAgent _agent;
+            private readonly MySnmpAgent _agent;
 
-            public RelationBuilder(SnmpAgent agent)
+            public RelationBuilder(MySnmpAgent agent)
                 => _agent = agent;
 
             public void BuildRelations(Config config, DeserializationContext context)

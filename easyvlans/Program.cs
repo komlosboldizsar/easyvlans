@@ -1,4 +1,5 @@
 using B.XmlDeserializer.Exceptions;
+using BToolbox.OneInstance;
 using CommandLine;
 using easyvlans.GUI;
 using easyvlans.Logger;
@@ -47,7 +48,7 @@ namespace easyvlans
                 if (e.InnerException is OneInstanceAlreadyRunningException)
                 {
                     dontStart = true;
-                    OneInstancePipe.SignalOneInstanceToShow(_oneInstanceData.ID);
+                    OneInstancePipe.SignalOtherInstanceToShow(_oneInstanceData.ID);
                 }
                 else
                 {

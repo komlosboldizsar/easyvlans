@@ -1,7 +1,7 @@
 ﻿using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Pipeline;
 
-namespace easyvlans.Model.Remote.Snmp
+namespace BToolbox.SNMP
 {
     internal static class ObjectCollectionExtensions
     {
