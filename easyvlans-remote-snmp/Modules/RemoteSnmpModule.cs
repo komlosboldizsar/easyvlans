@@ -6,7 +6,7 @@ namespace easyvlans.Modules
     {
         public void Init()
         {
-            RemoteMethodsDeserializer.Instance.Register(new SnmpAgentDeserializer());
+            RemoteMethodsDeserializer.Instance.Register(new MySnmpAgentDeserializer());
         }
     }
 }

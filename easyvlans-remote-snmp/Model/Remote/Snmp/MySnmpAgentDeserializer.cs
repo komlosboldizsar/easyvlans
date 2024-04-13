@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace easyvlans.Model.Remote.Snmp
 {
-    internal class SnmpAgentDeserializer : IRemoteMethodDeserializer
+    internal class MySnmpAgentDeserializer : IRemoteMethodDeserializer
     {
 
         public string ElementName => ELEMENT_NAME;
