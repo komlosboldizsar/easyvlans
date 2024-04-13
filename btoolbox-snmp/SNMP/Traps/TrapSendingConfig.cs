@@ -27,8 +27,10 @@ namespace BToolbox.SNMP
         {
             uint ticks = (uint)((DateTime.Now - _baseTime).Ticks / 100000);
             foreach (TrapReceiver receiver in _receivers)
-                receiver.Send(code, enterprise, ticks, variables);
+                receiver.Send(code, enterprise, ticks, variables ?? EMPTY_VARIABLE_LIST);
         }
+
+        private readonly IList<Variable> EMPTY_VARIABLE_LIST = new List<Variable>();
 
         public void AddReceiver(string ip, int port, TrapReceiverVersion version, string community, IEnumerable<string> filter, bool sendMyIp)
             => _receivers.Add(new(ip, port, version, community, filter, sendMyIp));
