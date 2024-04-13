@@ -8,7 +8,8 @@ namespace easyvlans.Model.Remote.Snmp
 
         protected override IVariableFactory[] VariableFactories => new IVariableFactory[]
         {
-            VARFACT_Index,
+            VARFACT_RemoteIndex,
+            VARFACT_Id,
             VARFACT_Label,
             VARFACT_PortsWithPendingChangeCount,
             VARFACT_CanReadVlanConfig,
@@ -19,8 +20,9 @@ namespace easyvlans.Model.Remote.Snmp
             VARFACT_PersistChangesStatus
         };
 
-        protected override IVariableFactory IndexerVariableFactory => VARFACT_Index;
+        protected override IVariableFactory IndexerVariableFactory => VARFACT_RemoteIndex;
 
+        public const int INDEX_RemoteIndex = 0;
         public const int INDEX_Id = 1;
         public const int INDEX_Label = 2;
         public const int INDEX_PortsWithPendingChangeCount = 3;
@@ -32,7 +34,8 @@ namespace easyvlans.Model.Remote.Snmp
         public const int INDEX_DoPersistChanges = 22;
         public const int INDEX_PersistChangesStatus = 23;
 
-        public static readonly IVariableFactory VARFACT_Index = new VariableFactory<DataProviders.Id>(INDEX_Id);
+        public static readonly IVariableFactory VARFACT_RemoteIndex = new VariableFactory<DataProviders.RemoteIndex>(INDEX_RemoteIndex);
+        public static readonly IVariableFactory VARFACT_Id = new VariableFactory<DataProviders.Id>(INDEX_Id);
         public static readonly IVariableFactory VARFACT_Label = new VariableFactory<DataProviders.Label>(INDEX_Label);
         public static readonly IVariableFactory VARFACT_PortsWithPendingChangeCount = new VariableFactory<DataProviders.PortsWithPendingChangeCount>(INDEX_PortsWithPendingChangeCount);
         public static readonly IVariableFactory VARFACT_CanReadVlanConfig = new VariableFactory<DataProviders.CanReadVlanConfig>(INDEX_CanReadVlanConfig);
@@ -57,6 +60,12 @@ namespace easyvlans.Model.Remote.Snmp
 
         private class DataProviders
         {
+
+            // .0
+            public class RemoteIndex : VariableDataProvider
+            {
+                public override ISnmpData Get() => new Integer32((int)Model.RemoteIndex);
+            }
 
             // .1
             public class Id : VariableDataProvider

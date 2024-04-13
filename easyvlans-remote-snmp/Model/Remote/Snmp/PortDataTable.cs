@@ -8,6 +8,7 @@ namespace easyvlans.Model.Remote.Snmp
 
         protected override IVariableFactory[] VariableFactories => new IVariableFactory[]
         {
+            VARFACT_RemoteIndex,
             VARFACT_Index,
             VARFACT_Label,
             VARFACT_SwitchRemodeIndex,
@@ -19,8 +20,9 @@ namespace easyvlans.Model.Remote.Snmp
             VARFACT_PendingChanges
         };
 
-        protected override IVariableFactory IndexerVariableFactory => VARFACT_Index;
+        protected override IVariableFactory IndexerVariableFactory => VARFACT_RemoteIndex;
 
+        public const int INDEX_RemoteIndex = 0;
         public const int INDEX_Index = 1;
         public const int INDEX_Label = 2;
         public const int INDEX_SwitchRemoteIndex = 3;
@@ -32,6 +34,7 @@ namespace easyvlans.Model.Remote.Snmp
         public const int INDEX_SetVlanMembershipStatus = 9;
         public const int INDEX_PendingChanges = 10;
 
+        public static readonly IVariableFactory VARFACT_RemoteIndex = new VariableFactory<DataProviders.RemoteIndex>(INDEX_RemoteIndex);
         public static readonly IVariableFactory VARFACT_Index = new VariableFactory<DataProviders.Index>(INDEX_Index);
         public static readonly IVariableFactory VARFACT_Label = new VariableFactory<DataProviders.Label>(INDEX_Label);
         public static readonly IVariableFactory VARFACT_SwitchRemodeIndex = new VariableFactory<DataProviders.SwitchRemoteIndex>(INDEX_SwitchRemoteIndex);
@@ -56,6 +59,12 @@ namespace easyvlans.Model.Remote.Snmp
 
         private class DataProviders
         {
+
+            // .0
+            public class RemoteIndex : VariableDataProvider
+            {
+                public override ISnmpData Get() => new Integer32((int)Model.RemoteIndex);
+            }
 
             // .1
             public class Index : VariableDataProvider
