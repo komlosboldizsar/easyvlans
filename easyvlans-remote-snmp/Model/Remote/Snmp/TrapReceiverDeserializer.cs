@@ -16,6 +16,7 @@ namespace easyvlans.Model.Remote.Snmp
 
         protected override TrapReceiver createElement(XmlNode elementNode, DeserializationContext context, object parent)
         {
+            List<string> filter = filterDeserializer.Parse(elementNode, context, out IRelationBuilder<Config> _);
             return new TrapReceiver()
             {
                 IP = elementNode.AttributeAsString(ATTR_IP, context).Get().Value,
@@ -25,7 +26,7 @@ namespace easyvlans.Model.Remote.Snmp
                                      .Translation("v2", TrapSendingConfig.TrapReceiverVersion.V2)
                                      .Get().Value,
                 Community = elementNode.AttributeAsString(ATTR_COMMUNITY, context).Get().Value,
-                Filter = filterDeserializer.Parse(elementNode, context, out IRelationBuilder<Config> _),
+                Filter = (filter.Count > 0) ? filter : null,
                 SendMyIp = elementNode.AttributeAsBool(ATTR_SEND_MY_IP, context).Default(false).Get().Value 
             };
         }
