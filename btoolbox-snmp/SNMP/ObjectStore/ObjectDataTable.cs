@@ -31,6 +31,7 @@ namespace BToolbox.SNMP
             foreach (ITrapGeneratorFactory trapGeneratorFactory in TrapGeneratorFactories)
             {
                 TrapGenerator trapGenerator = trapGeneratorFactory.CreateTrapGenerator(this);
+                trapGenerator.Init();
                 trapGenerator.Subscribe();
                 _trapGenerators.Add(trapGenerator);
             }
@@ -118,7 +119,7 @@ namespace BToolbox.SNMP
             public List<UniversalScalarObject> PayloadObjects { get; set; }
             private TrapEnterprise _enterprise;
 
-            public TrapGenerator()
+            public void Init()
                 => _enterprise = new(EnterpriseBase, SpecificCode);
 
             protected void SendTrap()
