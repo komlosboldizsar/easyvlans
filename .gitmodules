@@ -4,3 +4,6 @@
 [submodule "btoolbox-snmp"]
 	path = btoolbox-snmp
 	url = https://github.com/komlosboldizsar/btoolbox-snmp.git
+[submodule "btoolbox-oneinstance"]
+	path = btoolbox-oneinstance
+	url = https://github.com/komlosboldizsar/btoolbox-oneinstance.git
