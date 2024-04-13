@@ -1,3 +1,6 @@
 [submodule "btoolbox-xmldeserializer"]
 	path = btoolbox-xmldeserializer
 	url = https://github.com/komlosboldizsar/btoolbox-xmldeserializer.git
+[submodule "btoolbox-snmp"]
+	path = btoolbox-snmp
+	url = https://github.com/komlosboldizsar/btoolbox-snmp.git
