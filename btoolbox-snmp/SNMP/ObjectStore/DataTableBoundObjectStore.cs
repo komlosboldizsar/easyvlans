@@ -10,32 +10,35 @@ namespace BToolbox.SNMP
 
         private SnmpAgent _snmpAgent;
         private IEnumerable<TModel> _objectList;
+        private Predicate<TModel> _filter;
         private MyObjectStore _objectStore;
 
-        public DataTableBoundObjectStoreAdapter(SnmpAgent snmpAgent, ObservableList<TModel> objectList, MyObjectStore objectStore = null)
+        public DataTableBoundObjectStoreAdapter(SnmpAgent snmpAgent, ObservableList<TModel> objectList, Predicate<TModel> filter = null, MyObjectStore objectStore = null)
         {
-            ctorBase(snmpAgent, objectList, objectStore);
+            ctorBase(snmpAgent, objectList, filter, objectStore);
             generateEntriesForExistingListItems();
             subscribeToList(objectList);
         }
 
-        public DataTableBoundObjectStoreAdapter(SnmpAgent snmpAgent, IEnumerable<TModel> objectList, MyObjectStore objectStore = null)
+        public DataTableBoundObjectStoreAdapter(SnmpAgent snmpAgent, IEnumerable<TModel> objectList, Predicate<TModel> filter = null, MyObjectStore objectStore = null)
         {
-            ctorBase(snmpAgent, objectList, objectStore);
+            ctorBase(snmpAgent, objectList, filter, objectStore);
             generateEntriesForExistingListItems();
         }
 
-        private void ctorBase(SnmpAgent snmpAgent, IEnumerable<TModel> objectList, MyObjectStore objectStore = null)
+        private void ctorBase(SnmpAgent snmpAgent, IEnumerable<TModel> objectList, Predicate<TModel> filter = null, MyObjectStore objectStore = null)
         {
             _snmpAgent = snmpAgent;
             _objectList = objectList;
+            _filter = filter;
             _objectStore = objectStore ?? snmpAgent.ObjectStore;
         }
 
         private void generateEntriesForExistingListItems()
         {
             foreach (TModel model in _objectList)
-                addRow(model);
+                if ((_filter == null) || _filter(model))
+                    addRow(model);
         }
 
         private void subscribeToList(IObservableList<TModel> objectList)
@@ -46,6 +49,8 @@ namespace BToolbox.SNMP
 
         private void addRow(TModel model)
         {
+            if ((_filter != null) && !_filter(model))
+                return;
             TTable newTableObject = new();
             newTableObject.Init(model, _snmpAgent);
             _objectStore.Add(newTableObject);
