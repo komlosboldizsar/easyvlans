@@ -7,3 +7,6 @@
 [submodule "btoolbox-oneinstance"]
 	path = btoolbox-oneinstance
 	url = https://github.com/komlosboldizsar/btoolbox-oneinstance.git
+[submodule "btoolbox-model-general"]
+	path = btoolbox-model-general
+	url = https://github.com/komlosboldizsar/btoolbox-model-general.git
