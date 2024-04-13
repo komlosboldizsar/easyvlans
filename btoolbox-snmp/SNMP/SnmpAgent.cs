@@ -64,6 +64,7 @@ namespace BToolbox.SNMP
                 if (Socket.OSSupportsIPv4)
                     _engine.Listener.AddBinding(new IPEndPoint(IPAddress.Any, Port));
                 _engine.Start();
+                OnSuccessfulStart();
                 statusChanged(true, null);
             }
             catch (Exception ex)
@@ -76,12 +77,17 @@ namespace BToolbox.SNMP
         public void SendTraps(string code, TrapEnterprise enterprise, IList<Variable> variables)
             => TrapSendingConfig.SendAll(code, enterprise, variables);
 
+        public void SendTraps(string code, string enterpriseBase, int specificCode, IList<Variable> variables)
+            => TrapSendingConfig.SendAll(code, new TrapEnterprise(enterpriseBase, specificCode), variables);
+
         private void statusChanged(bool started, Exception startException)
         {
             Started = started;
             StartException = startException;
             StatusChanged?.Invoke(started, startException);
         }
+
+        protected virtual void OnSuccessfulStart() { } // hook
 
         private class MyLogger : ILogger
         {

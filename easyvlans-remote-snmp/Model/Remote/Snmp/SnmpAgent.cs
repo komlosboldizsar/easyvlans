@@ -16,8 +16,8 @@ namespace easyvlans.Model.Remote.Snmp
         private const string COMMUNITY_READ_DEFAULT = "public";
         private const string COMMUNITY_WRITE_DEFAULT = "public";
 
-        public MySnmpAgent(int port, string communityRead, string communityWrite)
-            : base(port, communityRead ?? COMMUNITY_READ_DEFAULT, communityWrite ?? COMMUNITY_WRITE_DEFAULT, null)
+        public MySnmpAgent(int port, string communityRead, string communityWrite, TrapSendingConfig trapSendingConfig)
+            : base(port, communityRead ?? COMMUNITY_READ_DEFAULT, communityWrite ?? COMMUNITY_WRITE_DEFAULT, trapSendingConfig)
         { }
 
         public void MeetConfig(Config config)
@@ -27,6 +27,9 @@ namespace easyvlans.Model.Remote.Snmp
         }
 
         public override string OID_BASE => "1.3.6.1.4.1.59150.1";
+
+        protected override void OnSuccessfulStart()
+            => SendTraps(TrapIdentifiers.CODE_Started, TrapIdentifiers.EnterpriseBase, TrapIdentifiers.SPECIFICCODE_Started, null);
 
     }
 }
