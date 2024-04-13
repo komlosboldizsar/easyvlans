@@ -43,7 +43,12 @@ namespace easyvlans.Model.Remote.Snmp
         public static readonly IVariableFactory VARFACT_SetVlanMembershipStatus = new VariableFactory<DataProviders.SetVlanMembershipStatus>(INDEX_SetVlanMembershipStatus);
         public static readonly IVariableFactory VARFACT_PendingChanges = new VariableFactory<DataProviders.PendingChanges>(INDEX_PendingChanges);
 
-        protected override ITrapGeneratorFactory[] TrapGeneratorFactories => Array.Empty<ITrapGeneratorFactory>();
+        protected override ITrapGeneratorFactory[] TrapGeneratorFactories => new ITrapGeneratorFactory[]
+        {
+            TRAPGENFACT_VlanMembershipChanged
+        };
+
+        public static readonly ITrapGeneratorFactory TRAPGENFACT_VlanMembershipChanged = new TrapGeneratorFactory<TrapGenerators.VlanMembershipChanged>();
 
         protected override string TableOid => $"{SnmpAgent.OID_BASE}.2";
         protected override int ItemIndex => (int)Model.RemoteIndex;
@@ -57,7 +62,7 @@ namespace easyvlans.Model.Remote.Snmp
             {
                 public override ISnmpData Get() => new Integer32(Model.Index);
             }
-            
+
             // .2
             public class Label : VariableDataProvider
             {
@@ -69,7 +74,7 @@ namespace easyvlans.Model.Remote.Snmp
             {
                 public override ISnmpData Get() => new Integer32(Model.Switch.RemoteIndex ?? 0);
             }
-            
+
             // .4
             public class SwitchLabel : VariableDataProvider
             {
@@ -123,6 +128,51 @@ namespace easyvlans.Model.Remote.Snmp
             public class PendingChanges : VariableDataProvider
             {
                 public override ISnmpData Get() => TruthValue.Create(Model.PendingChanges);
+            }
+
+        }
+
+        private class TrapGenerators
+        {
+
+            public class VlanMembershipChanged : TrapGenerator
+            {
+
+                public override string Code => TrapIdentifiers.CODE_PortVlanMembershipChanged;
+                public override string EnterpriseBase => $"{Table.SnmpAgent.OID_BASE}.{TrapIdentifiers.EnterpriseBase}";
+                public override int SpecificCode => TrapIdentifiers.SPECIFICCODE_PortVlanMembershipChanged;
+
+                public override IEnumerable<IVariableFactory> PayloadVariableFactories => new IVariableFactory[]
+                {
+                    VARFACT_CurrentVlanId,
+                    VARFACT_CurrentVlanName,
+                    VARFACT_HasComplexMembership,
+                    VARFACT_HasNotAllowedMembership
+                };
+
+                public override void Subscribe()
+                {
+                    Table.Model.CurrentVlanChanged += handleCurrentVlanChanged;
+                    Table.Model.HasComplexMembershipChanged += handleHasComplexMembershipChanged;
+                    Table.Model.HasNotAllowedMembershipChanged += handleHasNotAllowedMembershipChanged;
+                }
+
+                public override void Unsubscribe()
+                {
+                    Table.Model.CurrentVlanChanged -= handleCurrentVlanChanged;
+                    Table.Model.HasComplexMembershipChanged -= handleHasComplexMembershipChanged;
+                    Table.Model.HasNotAllowedMembershipChanged -= handleHasNotAllowedMembershipChanged;
+                }
+
+                private void handleCurrentVlanChanged(Port item, Vlan newValue)
+                    => SendTrap();
+
+                private void handleHasComplexMembershipChanged(Port item, bool newValue)
+                    => SendTrap();
+
+                private void handleHasNotAllowedMembershipChanged(Port item, bool newValue)
+                    => SendTrap();
+
             }
 
         }

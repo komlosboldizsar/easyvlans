@@ -27,6 +27,7 @@ namespace easyvlans.Model.Remote.Snmp
         public const int INDEX_CanReadVlanConfig = 11;
         public const int INDEX_DoReadVlanConfig = 12;
         public const int INDEX_ReadVlanConfigStatus = 13;
+        public const int INDEX_ReadVlanConfigStatusUpdateTime = 14;
         public const int INDEX_CanPersistChanges = 21;
         public const int INDEX_DoPersistChanges = 22;
         public const int INDEX_PersistChangesStatus = 23;
@@ -37,12 +38,19 @@ namespace easyvlans.Model.Remote.Snmp
         public static readonly IVariableFactory VARFACT_CanReadVlanConfig = new VariableFactory<DataProviders.CanReadVlanConfig>(INDEX_CanReadVlanConfig);
         public static readonly IVariableFactory VARFACT_DoReadVlanConfig = new VariableFactory<DataProviders.DoReadVlanConfig>(INDEX_DoReadVlanConfig);
         public static readonly IVariableFactory VARFACT_ReadVlanConfigStatus = new VariableFactory<DataProviders.ReadVlanConfigStatus>(INDEX_ReadVlanConfigStatus);
+        public static readonly IVariableFactory VARFACT_ReadVlanConfigStatusUpdateTime = new VariableFactory<DataProviders.ReadVlanConfigStatusUpdateTime>(INDEX_ReadVlanConfigStatusUpdateTime);
         public static readonly IVariableFactory VARFACT_CanPersistChanges = new VariableFactory<DataProviders.CanPersistChanges>(INDEX_CanPersistChanges);
         public static readonly IVariableFactory VARFACT_DoPersistChanges = new VariableFactory<DataProviders.DoPersistChanges>(INDEX_DoPersistChanges);
         public static readonly IVariableFactory VARFACT_PersistChangesStatus = new VariableFactory<DataProviders.PersistConfigStatus>(INDEX_PersistChangesStatus);
 
+        protected override ITrapGeneratorFactory[] TrapGeneratorFactories => new ITrapGeneratorFactory[]
+        {
+            TRAPGENFACT_PortsWithPendingChangeCountChanged,
+            TRAPGENFACT_ReadVlanConfigStatusChanged
+        };
 
-        protected override ITrapGeneratorFactory[] TrapGeneratorFactories => Array.Empty<ITrapGeneratorFactory>();
+        public static readonly ITrapGeneratorFactory TRAPGENFACT_PortsWithPendingChangeCountChanged = new TrapGeneratorFactory<TrapGenerators.PortsWithPendingChangeCountChanged>();
+        public static readonly ITrapGeneratorFactory TRAPGENFACT_ReadVlanConfigStatusChanged = new TrapGeneratorFactory<TrapGenerators.ReadVlanConfigStatusChanged>();
 
         protected override string TableOid => $"{SnmpAgent.OID_BASE}.1";
         protected override int ItemIndex => (int)Model.RemoteIndex;
@@ -101,6 +109,12 @@ namespace easyvlans.Model.Remote.Snmp
                 public override ISnmpData Get() => new Integer32((int)Model.ReadVlanConfigStatus);
             }
 
+            // .14
+            public class ReadVlanConfigStatusUpdateTime : VariableDataProvider
+            {
+                public override ISnmpData Get() => new OctetString(Model.ReadVlanConfigStatusUpdateTime.ToString("HH:mm:ss"));
+            }
+
             // .21
             public class CanPersistChanges : VariableDataProvider
             {
@@ -133,6 +147,67 @@ namespace easyvlans.Model.Remote.Snmp
             public class PersistConfigStatus : VariableDataProvider
             {
                 public override ISnmpData Get() => new Integer32((int)Model.PersistVlanConfigStatus);
+            }
+
+        }
+
+        private class TrapGenerators
+        {
+
+            public class PortsWithPendingChangeCountChanged : TrapGenerator
+            {
+
+                public override string Code => TrapIdentifiers.CODE_SwitchPortsWithPendingChangeCountChanged;
+                public override string EnterpriseBase => $"{Table.SnmpAgent.OID_BASE}.{TrapIdentifiers.EnterpriseBase}";
+                public override int SpecificCode => TrapIdentifiers.SPECIFICCODE_SwitchPortsWithPendingChangeCountChanged;
+
+                public override IEnumerable<IVariableFactory> PayloadVariableFactories => new IVariableFactory[]
+                {
+                    VARFACT_PortsWithPendingChangeCount
+                };
+
+                public override void Subscribe()
+                    => Table.Model.PortsWithPendingChangeCountChanged += handlePortsWithPendingChangeCountChanged;
+
+                public override void Unsubscribe()
+                    => Table.Model.PortsWithPendingChangeCountChanged -= handlePortsWithPendingChangeCountChanged;
+
+                private void handlePortsWithPendingChangeCountChanged(Switch item, int newValue)
+                    => SendTrap();
+
+            }
+
+            public class ReadVlanConfigStatusChanged : TrapGenerator
+            {
+
+                public override string Code => TrapIdentifiers.CODE_SwitchReadVlanConfigStatusChanged;
+                public override string EnterpriseBase => $"{Table.SnmpAgent.OID_BASE}.{TrapIdentifiers.EnterpriseBase}";
+                public override int SpecificCode => TrapIdentifiers.SPECIFICCODE_SwitchReadVlanConfigStatusChanged;
+
+                public override IEnumerable<IVariableFactory> PayloadVariableFactories => new IVariableFactory[]
+                {
+                    VARFACT_ReadVlanConfigStatus,
+                    VARFACT_ReadVlanConfigStatusUpdateTime
+                };
+
+                public override void Subscribe()
+                {
+                    Table.Model.ReadVlanConfigStatusChanged += handleReadVlanConfigStatusChanged;
+                    Table.Model.ReadVlanConfigStatusUpdateTimeChanged += handleReadVlanConfigStatusUpdateTimeChanged;
+                }
+
+                public override void Unsubscribe()
+                {
+                    Table.Model.ReadVlanConfigStatusChanged += handleReadVlanConfigStatusChanged;
+                    Table.Model.ReadVlanConfigStatusUpdateTimeChanged -= handleReadVlanConfigStatusUpdateTimeChanged;
+                }
+
+                private void handleReadVlanConfigStatusChanged(Switch item, Status newValue)
+                    => SendTrap();
+
+                private void handleReadVlanConfigStatusUpdateTimeChanged(Switch item, DateTime newValue)
+                    => SendTrap();
+
             }
 
         }
