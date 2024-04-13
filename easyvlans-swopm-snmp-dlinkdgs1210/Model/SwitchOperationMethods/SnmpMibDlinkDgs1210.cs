@@ -1,10 +1,5 @@
-﻿using B.XmlDeserializer.Context;
-using B.XmlDeserializer.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BToolbox.XmlDeserializer.Context;
+using BToolbox.XmlDeserializer.Exceptions;
 using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods

@@ -1,4 +1,4 @@
-﻿using B.XmlDeserializer.Attributes;
+﻿using BToolbox.XmlDeserializer.Attributes;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {

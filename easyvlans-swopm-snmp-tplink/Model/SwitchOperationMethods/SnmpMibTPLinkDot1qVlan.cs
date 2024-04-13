@@ -1,7 +1,6 @@
-﻿using B.XmlDeserializer;
-using B.XmlDeserializer.Context;
-using B.XmlDeserializer.Relations;
-using easyvlans.Logger;
+﻿using BToolbox.XmlDeserializer;
+using BToolbox.XmlDeserializer.Context;
+using BToolbox.XmlDeserializer.Relations;
 using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods

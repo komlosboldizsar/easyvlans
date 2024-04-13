@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-swopm-snmp-ciscoc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-swopm-snmp-oldciscosys", "easyvlans-swopm-snmp-oldciscosys\easyvlans-swopm-snmp-oldciscosys.csproj", "{304B76A2-63E2-4D43-A423-9752A303C5DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "b-xmldeserializer", "b-xmldeserializer\b-xmldeserializer.csproj", "{75F555F1-25B4-41EA-A00F-7C44C80379CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "btoolbox-xmldeserializer", "btoolbox-xmldeserializer\btoolbox-xmldeserializer.csproj", "{75F555F1-25B4-41EA-A00F-7C44C80379CF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-remote-snmp", "easyvlans-remote-snmp\easyvlans-remote-snmp.csproj", "{CEB973C4-EE5D-4904-AEAB-264B6AA2473B}"
 EndProject

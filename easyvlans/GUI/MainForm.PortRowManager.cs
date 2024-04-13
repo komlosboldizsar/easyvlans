@@ -4,7 +4,6 @@ using easyvlans.Helpers;
 using easyvlans.Model;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -79,7 +78,7 @@ namespace easyvlans.GUI
                 if ((Item.DefaultVlan != null) && (comboBoxItem?.Value == Item.DefaultVlan))
                 {
                     Rectangle defaultMarkRectangle = new(
-                        e.Bounds.X + e.Bounds.Width - defaultMarkVerticalSpace - DEFAULT_MARK_SIZE, 
+                        e.Bounds.X + e.Bounds.Width - defaultMarkVerticalSpace - DEFAULT_MARK_SIZE,
                         (e.Bounds.Top + e.Bounds.Bottom - DEFAULT_MARK_SIZE) / 2,
                         DEFAULT_MARK_SIZE,
                         DEFAULT_MARK_SIZE

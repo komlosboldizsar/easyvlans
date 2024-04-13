@@ -1,6 +1,4 @@
-﻿using easyvlans.Helpers;
-using easyvlans.Logger;
-using Lextm.SharpSnmpLib;
+﻿using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 
 namespace easyvlans.Model.SwitchOperationMethods

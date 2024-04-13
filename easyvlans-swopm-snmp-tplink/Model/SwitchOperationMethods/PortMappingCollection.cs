@@ -1,9 +1,4 @@
-﻿using B.XmlDeserializer;
-using B.XmlDeserializer.Attributes;
-using B.XmlDeserializer.Context;
-using System.Xml;
-
-namespace easyvlans.Model.SwitchOperationMethods
+﻿namespace easyvlans.Model.SwitchOperationMethods
 {
 
     internal class PortMappingCollection

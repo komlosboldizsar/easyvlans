@@ -1,6 +1,6 @@
-﻿using B.XmlDeserializer;
-using B.XmlDeserializer.Attributes;
-using B.XmlDeserializer.Context;
+﻿using BToolbox.XmlDeserializer;
+using BToolbox.XmlDeserializer.Attributes;
+using BToolbox.XmlDeserializer.Context;
 using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods

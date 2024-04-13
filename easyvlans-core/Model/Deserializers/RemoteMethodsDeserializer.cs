@@ -1,4 +1,4 @@
-﻿using B.XmlDeserializer;
+﻿using BToolbox.XmlDeserializer;
 using easyvlans.Model.Remote;
 
 namespace easyvlans.Model.Deserializers

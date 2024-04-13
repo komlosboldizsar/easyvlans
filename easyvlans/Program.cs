@@ -1,5 +1,5 @@
-using B.XmlDeserializer.Exceptions;
 using BToolbox.OneInstance;
+using BToolbox.XmlDeserializer.Exceptions;
 using CommandLine;
 using easyvlans.GUI;
 using easyvlans.Logger;
@@ -8,9 +8,6 @@ using easyvlans.Model.Deserializers;
 using easyvlans.Model.Remote;
 using easyvlans.Modules;
 using System;
-using System.IO;
-using System.IO.Pipes;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;

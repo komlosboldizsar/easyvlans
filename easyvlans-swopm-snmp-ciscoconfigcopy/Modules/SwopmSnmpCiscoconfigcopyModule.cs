@@ -1,5 +1,4 @@
-﻿using easyvlans.Model.Deserializers;
-using easyvlans.Model.SwitchOperationMethods;
+﻿using easyvlans.Model.SwitchOperationMethods;
 
 namespace easyvlans.Modules
 {

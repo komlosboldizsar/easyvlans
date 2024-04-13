@@ -1,10 +1,8 @@
-﻿using B.XmlDeserializer;
-using B.XmlDeserializer.Attributes;
-using B.XmlDeserializer.Context;
-using B.XmlDeserializer.Relations;
-using BToolbox.SNMP;
-using easyvlans.Model.SwitchOperationMethods;
-using System;
+﻿using BToolbox.SNMP;
+using BToolbox.XmlDeserializer;
+using BToolbox.XmlDeserializer.Attributes;
+using BToolbox.XmlDeserializer.Context;
+using BToolbox.XmlDeserializer.Relations;
 using System.Xml;
 
 namespace easyvlans.Model.Remote.Snmp

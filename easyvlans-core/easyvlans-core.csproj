@@ -14,7 +14,7 @@
     <PackageReference Include="System.Runtime.Experimental" Version="6.0.0-preview.7.21377.19" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\b-xmldeserializer\b-xmldeserializer.csproj" />
+    <ProjectReference Include="..\btoolbox-xmldeserializer\btoolbox-xmldeserializer.csproj" />
   </ItemGroup>
   <Import Project="CopyToOutput.csproj" />
 </Project>

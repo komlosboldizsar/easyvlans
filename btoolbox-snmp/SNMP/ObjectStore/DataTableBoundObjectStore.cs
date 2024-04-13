@@ -1,5 +1,4 @@
 ﻿using BToolbox.Model;
-using Lextm.SharpSnmpLib.Pipeline;
 
 namespace BToolbox.SNMP
 {

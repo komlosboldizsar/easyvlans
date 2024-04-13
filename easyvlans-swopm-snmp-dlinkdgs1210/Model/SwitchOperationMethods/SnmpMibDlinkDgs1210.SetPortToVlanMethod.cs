@@ -1,8 +1,5 @@
-﻿using B.XmlDeserializer.Context;
-using easyvlans.Helpers;
-using easyvlans.Logger;
+﻿using easyvlans.Helpers;
 using Lextm.SharpSnmpLib;
-using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {

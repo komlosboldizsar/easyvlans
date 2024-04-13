@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BToolbox.Model
 {
@@ -63,7 +58,7 @@ namespace BToolbox.Model
             underlying.Clear();
             if (count > 0)
                 ItemsRemoved?.Invoke(removedItems);
-        }   
+        }
 
         public bool ContainsValue(TValue value) => Values.Contains(value);
 
@@ -74,7 +69,7 @@ namespace BToolbox.Model
                 position = Keys.GetIndexOf(key);
             if (underlying.Remove(key, out TValue removedItem))
             {
-                ItemsRemoved?.Invoke(new IObservableEnumerable<KeyValuePair<TKey, TValue>>.ItemWithPosition[] { new (KeyValuePair.Create(key, removedItem), position) });
+                ItemsRemoved?.Invoke(new IObservableEnumerable<KeyValuePair<TKey, TValue>>.ItemWithPosition[] { new(KeyValuePair.Create(key, removedItem), position) });
                 return true;
             }
             return false;

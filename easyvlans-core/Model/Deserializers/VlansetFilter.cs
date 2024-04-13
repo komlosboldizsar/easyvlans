@@ -1,5 +1,5 @@
-﻿using B.XmlDeserializer.Attributes;
-using B.XmlDeserializer.Exceptions;
+﻿using BToolbox.XmlDeserializer.Attributes;
+using BToolbox.XmlDeserializer.Exceptions;
 
 namespace easyvlans.Model.Deserializers
 {

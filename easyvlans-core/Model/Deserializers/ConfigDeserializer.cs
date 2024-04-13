@@ -1,9 +1,8 @@
-﻿using B.XmlDeserializer;
-using B.XmlDeserializer.Context;
-using B.XmlDeserializer.Exceptions;
-using B.XmlDeserializer.Helpers;
+﻿using BToolbox.XmlDeserializer;
+using BToolbox.XmlDeserializer.Context;
+using BToolbox.XmlDeserializer.Exceptions;
+using BToolbox.XmlDeserializer.Helpers;
 using easyvlans.Logger;
-using easyvlans.Model.Remote;
 using easyvlans.Model.SwitchOperationMethods;
 
 namespace easyvlans.Model.Deserializers

@@ -1,5 +1,4 @@
 ﻿using Lextm.SharpSnmpLib;
-using Lextm.SharpSnmpLib.Messaging;
 using Lextm.SharpSnmpLib.Pipeline;
 using System.Net;
 using System.Net.Sockets;

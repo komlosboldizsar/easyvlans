@@ -1,8 +1,4 @@
-﻿using B.XmlDeserializer;
-using B.XmlDeserializer.Context;
-using System.Xml;
-
-namespace easyvlans.Model.SwitchOperationMethods
+﻿namespace easyvlans.Model.SwitchOperationMethods
 {
     internal record PortMapping(int LocalIndex, int SnmpIndex, int SimpleId, TPLinkDot1qThreePartPortId ThreePartId, int Count)
     {

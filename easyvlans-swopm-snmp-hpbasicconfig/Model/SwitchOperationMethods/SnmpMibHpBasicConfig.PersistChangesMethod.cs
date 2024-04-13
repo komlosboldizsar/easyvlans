@@ -1,6 +1,4 @@
-﻿using B.XmlDeserializer.Context;
-using Lextm.SharpSnmpLib;
-using System.Xml;
+﻿using Lextm.SharpSnmpLib;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {

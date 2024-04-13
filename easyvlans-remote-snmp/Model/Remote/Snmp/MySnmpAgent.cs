@@ -1,10 +1,4 @@
 ﻿using BToolbox.SNMP;
-using easyvlans.Logger;
-using Lextm.SharpSnmpLib;
-using Lextm.SharpSnmpLib.Messaging;
-using Lextm.SharpSnmpLib.Pipeline;
-using System.Net;
-using System.Net.Sockets;
 
 namespace easyvlans.Model.Remote.Snmp
 {

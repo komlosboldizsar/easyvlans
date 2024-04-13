@@ -1,9 +1,8 @@
-﻿using B.XmlDeserializer;
-using B.XmlDeserializer.Attributes;
-using B.XmlDeserializer.Context;
-using B.XmlDeserializer.Relations;
-using BToolbox.SNMP;
-using Lextm.SharpSnmpLib;
+﻿using BToolbox.SNMP;
+using BToolbox.XmlDeserializer;
+using BToolbox.XmlDeserializer.Attributes;
+using BToolbox.XmlDeserializer.Context;
+using BToolbox.XmlDeserializer.Relations;
 using System.Xml;
 
 namespace easyvlans.Model.Remote.Snmp
@@ -27,7 +26,7 @@ namespace easyvlans.Model.Remote.Snmp
                                      .Get().Value,
                 Community = elementNode.AttributeAsString(ATTR_COMMUNITY, context).Get().Value,
                 Filter = (filter.Count > 0) ? filter : null,
-                SendMyIp = elementNode.AttributeAsBool(ATTR_SEND_MY_IP, context).Default(false).Get().Value 
+                SendMyIp = elementNode.AttributeAsBool(ATTR_SEND_MY_IP, context).Default(false).Get().Value
             };
         }
 

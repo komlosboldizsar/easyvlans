@@ -1,7 +1,4 @@
-﻿using B.XmlDeserializer.Context;
-using System.Xml;
-
-namespace easyvlans.Model.SwitchOperationMethods
+﻿namespace easyvlans.Model.SwitchOperationMethods
 {
 
     internal sealed partial class SnmpMibTPLinkSysTool : ISnmpMib

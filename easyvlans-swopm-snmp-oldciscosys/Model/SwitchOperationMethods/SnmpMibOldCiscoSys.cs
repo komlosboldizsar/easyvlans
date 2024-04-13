@@ -1,8 +1,4 @@
-﻿using B.XmlDeserializer.Context;
-using Lextm.SharpSnmpLib;
-using System.Xml;
-
-namespace easyvlans.Model.SwitchOperationMethods
+﻿namespace easyvlans.Model.SwitchOperationMethods
 {
 
     internal sealed partial class SnmpMibOldCiscoSys : ISnmpMib
