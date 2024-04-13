@@ -1,0 +1,3 @@
+[submodule "btoolbox-xmldeserializer"]
+	path = btoolbox-xmldeserializer
+	url = https://github.com/komlosboldizsar/btoolbox-xmldeserializer.git
