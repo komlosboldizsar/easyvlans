@@ -29,7 +29,7 @@ namespace easyvlans.Model.Remote.Snmp
         public override string OID_BASE => "1.3.6.1.4.1.59150.1";
 
         protected override void OnSuccessfulStart()
-            => SendTraps(TrapIdentifiers.CODE_Started, TrapIdentifiers.EnterpriseBase, TrapIdentifiers.SPECIFICCODE_Started, null);
+            => SendTraps(TrapIdentifiers.CODE_Started, $"{OID_BASE}.{TrapIdentifiers.EnterpriseBase}", TrapIdentifiers.SPECIFICCODE_Started, null);
 
     }
 }
