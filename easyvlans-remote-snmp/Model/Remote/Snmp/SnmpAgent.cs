@@ -22,8 +22,8 @@ namespace easyvlans.Model.Remote.Snmp
 
         public void MeetConfig(Config config)
         {
-            _ = new DataTableBoundObjectStoreAdapter<Switch, SwitchDataTable>(this, config.Switches.Values);
-            _ = new DataTableBoundObjectStoreAdapter<Port, PortDataTable>(this, config.Ports);
+            _ = new DataTableBoundObjectStoreAdapter<Switch, SwitchDataTable>(this, config.Switches.Values, s => (s.RemoteIndex != null));
+            _ = new DataTableBoundObjectStoreAdapter<Port, PortDataTable>(this, config.Ports, p => (p.RemoteIndex != null));
         }
 
         public override string OID_BASE => "1.3.6.1.4.1.59150.1";
