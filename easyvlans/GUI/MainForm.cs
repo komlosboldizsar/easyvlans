@@ -190,13 +190,9 @@ namespace easyvlans.GUI
                     subCollectionToSelect ??= subCollections.FirstOrDefault();
                 }
                 if (subCollectionToSelect != null)
-                {
                     selectPortCollection(subCollectionToSelect);
-                }
                 else
-                {
                     showPortsOfCollection(portCollection);
-                }
             }
             else
             {
@@ -210,20 +206,13 @@ namespace easyvlans.GUI
             PortCollection previousChild = null;
             while (portCollection != null)
             {
-                bool before = true;
+                LinkedListNode<Port> addAfter = null;
                 foreach (IPortOrPortCollection portOrPortCollection in portCollection)
                 {
                     if (portOrPortCollection is Port port)
-                    {
-                        if (before)
-                            ports.AddFirst(port);
-                        else
-                            ports.AddLast(port);
-                    }
+                        addAfter = (addAfter == null) ? ports.AddFirst(port) : ports.AddAfter(addAfter, port);
                     else if (portOrPortCollection == previousChild)
-                    {
-                        before = false;
-                    }
+                        addAfter = ports.Last;
                 }
                 previousChild = portCollection;
                 portCollection = portCollection.Parent;
