@@ -63,18 +63,20 @@ namespace easyvlans.GUI
             linkLabel1 = new System.Windows.Forms.LinkLabel();
             githubLink = new System.Windows.Forms.LinkLabel();
             showVerboseLog = new System.Windows.Forms.CheckBox();
-            portPageButtonContainer = new System.Windows.Forms.FlowLayoutPanel();
-            portPageButton = new System.Windows.Forms.Button();
+            portCollectionButtonContainer = new System.Windows.Forms.FlowLayoutPanel();
+            portCollectionButton = new System.Windows.Forms.Button();
             trayIcon = new System.Windows.Forms.NotifyIcon(components);
             trayMenu = new System.Windows.Forms.ContextMenuStrip(components);
             trayMenuExit = new System.Windows.Forms.ToolStripMenuItem();
+            portCollectionButtonContainerContainer = new System.Windows.Forms.Panel();
             portTable.SuspendLayout();
             portTableContainer.SuspendLayout();
             switchTableContainer.SuspendLayout();
             switchTable.SuspendLayout();
             bottomPanel.SuspendLayout();
-            portPageButtonContainer.SuspendLayout();
+            portCollectionButtonContainer.SuspendLayout();
             trayMenu.SuspendLayout();
+            portCollectionButtonContainerContainer.SuspendLayout();
             SuspendLayout();
             // 
             // portTable
@@ -102,7 +104,8 @@ namespace easyvlans.GUI
             portTable.Controls.Add(rowPostStatusSetVlan, 6, 1);
             portTable.Controls.Add(titlePortStatus, 6, 0);
             portTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            portTable.Location = new System.Drawing.Point(10, 10);
+            portTable.Location = new System.Drawing.Point(10, 3);
+            portTable.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             portTable.Name = "portTable";
             portTable.RowCount = 2;
             portTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
@@ -263,10 +266,10 @@ namespace easyvlans.GUI
             // logTextBox
             // 
             logTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            logTextBox.Location = new System.Drawing.Point(0, 231);
+            logTextBox.Location = new System.Drawing.Point(0, 219);
             logTextBox.MinimumSize = new System.Drawing.Size(4, 100);
             logTextBox.Name = "logTextBox";
-            logTextBox.Size = new System.Drawing.Size(1061, 100);
+            logTextBox.Size = new System.Drawing.Size(1061, 106);
             logTextBox.TabIndex = 4;
             logTextBox.Text = "";
             logTextBox.Resize += logTextBox_Resize;
@@ -276,10 +279,11 @@ namespace easyvlans.GUI
             portTableContainer.AutoSize = true;
             portTableContainer.Controls.Add(portTable);
             portTableContainer.Dock = System.Windows.Forms.DockStyle.Top;
-            portTableContainer.Location = new System.Drawing.Point(0, 46);
+            portTableContainer.Location = new System.Drawing.Point(0, 41);
+            portTableContainer.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             portTableContainer.Name = "portTableContainer";
-            portTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
-            portTableContainer.Size = new System.Drawing.Size(1061, 80);
+            portTableContainer.Padding = new System.Windows.Forms.Padding(10, 3, 10, 0);
+            portTableContainer.Size = new System.Drawing.Size(1061, 73);
             portTableContainer.TabIndex = 5;
             // 
             // switchTableContainer
@@ -287,7 +291,7 @@ namespace easyvlans.GUI
             switchTableContainer.AutoSize = true;
             switchTableContainer.Controls.Add(switchTable);
             switchTableContainer.Dock = System.Windows.Forms.DockStyle.Top;
-            switchTableContainer.Location = new System.Drawing.Point(0, 126);
+            switchTableContainer.Location = new System.Drawing.Point(0, 114);
             switchTableContainer.Name = "switchTableContainer";
             switchTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 25);
             switchTableContainer.Size = new System.Drawing.Size(1061, 105);
@@ -489,29 +493,30 @@ namespace easyvlans.GUI
             showVerboseLog.UseVisualStyleBackColor = true;
             showVerboseLog.CheckedChanged += showVerboseLogCheckedChanged;
             // 
-            // portPageButtonContainer
+            // portCollectionButtonContainer
             // 
-            portPageButtonContainer.AutoSize = true;
-            portPageButtonContainer.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            portPageButtonContainer.Controls.Add(portPageButton);
-            portPageButtonContainer.Dock = System.Windows.Forms.DockStyle.Top;
-            portPageButtonContainer.Location = new System.Drawing.Point(0, 0);
-            portPageButtonContainer.Name = "portPageButtonContainer";
-            portPageButtonContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
-            portPageButtonContainer.Size = new System.Drawing.Size(1061, 46);
-            portPageButtonContainer.TabIndex = 1;
+            portCollectionButtonContainer.AutoSize = true;
+            portCollectionButtonContainer.Controls.Add(portCollectionButton);
+            portCollectionButtonContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
+            portCollectionButtonContainer.Location = new System.Drawing.Point(0, 5);
+            portCollectionButtonContainer.MinimumSize = new System.Drawing.Size(0, 36);
+            portCollectionButtonContainer.Name = "portCollectionButtonContainer";
+            portCollectionButtonContainer.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
+            portCollectionButtonContainer.Size = new System.Drawing.Size(1061, 36);
+            portCollectionButtonContainer.TabIndex = 1;
             // 
-            // portPageButton
+            // portCollectionButton
             // 
-            portPageButton.AutoSize = true;
-            portPageButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            portPageButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            portPageButton.Location = new System.Drawing.Point(13, 13);
-            portPageButton.Name = "portPageButton";
-            portPageButton.Size = new System.Drawing.Size(63, 30);
-            portPageButton.TabIndex = 0;
-            portPageButton.Text = "Page 1";
-            portPageButton.UseVisualStyleBackColor = true;
+            portCollectionButton.AutoSize = true;
+            portCollectionButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            portCollectionButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            portCollectionButton.Location = new System.Drawing.Point(13, 3);
+            portCollectionButton.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            portCollectionButton.Name = "portCollectionButton";
+            portCollectionButton.Size = new System.Drawing.Size(98, 30);
+            portCollectionButton.TabIndex = 0;
+            portCollectionButton.Text = "Collection 1";
+            portCollectionButton.UseVisualStyleBackColor = true;
             // 
             // trayIcon
             // 
@@ -534,6 +539,19 @@ namespace easyvlans.GUI
             trayMenuExit.Text = "Exit EasyVLANs";
             trayMenuExit.Click += trayMenuExit_Click;
             // 
+            // portCollectionButtonContainerContainer
+            // 
+            portCollectionButtonContainerContainer.AutoSize = true;
+            portCollectionButtonContainerContainer.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            portCollectionButtonContainerContainer.Controls.Add(portCollectionButtonContainer);
+            portCollectionButtonContainerContainer.Dock = System.Windows.Forms.DockStyle.Top;
+            portCollectionButtonContainerContainer.Location = new System.Drawing.Point(0, 0);
+            portCollectionButtonContainerContainer.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            portCollectionButtonContainerContainer.Name = "portCollectionButtonContainerContainer";
+            portCollectionButtonContainerContainer.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            portCollectionButtonContainerContainer.Size = new System.Drawing.Size(1061, 41);
+            portCollectionButtonContainerContainer.TabIndex = 2;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -544,7 +562,7 @@ namespace easyvlans.GUI
             Controls.Add(bottomPanel);
             Controls.Add(switchTableContainer);
             Controls.Add(portTableContainer);
-            Controls.Add(portPageButtonContainer);
+            Controls.Add(portCollectionButtonContainerContainer);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Location = new System.Drawing.Point(50, 50);
             Name = "MainForm";
@@ -562,9 +580,11 @@ namespace easyvlans.GUI
             switchTable.PerformLayout();
             bottomPanel.ResumeLayout(false);
             bottomPanel.PerformLayout();
-            portPageButtonContainer.ResumeLayout(false);
-            portPageButtonContainer.PerformLayout();
+            portCollectionButtonContainer.ResumeLayout(false);
+            portCollectionButtonContainer.PerformLayout();
             trayMenu.ResumeLayout(false);
+            portCollectionButtonContainerContainer.ResumeLayout(false);
+            portCollectionButtonContainerContainer.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -599,8 +619,8 @@ namespace easyvlans.GUI
         private System.Windows.Forms.Label rowSwitchStatusRead;
         private System.Windows.Forms.Panel bottomPanel;
         private System.Windows.Forms.CheckBox showVerboseLog;
-        private System.Windows.Forms.FlowLayoutPanel portPageButtonContainer;
-        private System.Windows.Forms.Button portPageButton;
+        private System.Windows.Forms.FlowLayoutPanel portCollectionButtonContainer;
+        private System.Windows.Forms.Button portCollectionButton;
         private System.Windows.Forms.LinkLabel githubLink;
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label titleSwitchStatusPersist;
@@ -608,6 +628,7 @@ namespace easyvlans.GUI
         private System.Windows.Forms.NotifyIcon trayIcon;
         private System.Windows.Forms.ContextMenuStrip trayMenu;
         private System.Windows.Forms.ToolStripMenuItem trayMenuExit;
+        private System.Windows.Forms.Panel portCollectionButtonContainerContainer;
     }
 }
 

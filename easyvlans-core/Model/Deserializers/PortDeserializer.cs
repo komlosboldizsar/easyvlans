@@ -17,7 +17,7 @@ namespace easyvlans.Model.Deserializers
             Label = elementNode.AttributeAsString(ATTR_LABEL, context).Mandatory().NotEmpty().Get().Value,
             Index = (int)elementNode.AttributeAsInt(ATTR_INDEX, context).Mandatory().Min(1).Get().Value,
             RemoteIndex = elementNode.AttributeAsInt(ATTR_REMOTE_INDEX, context).Min(1).Get().Value,
-            Page = parent as PortPage
+            Collection = parent as PortCollection
         };
 
         protected override ISlaveRelationBuilder<Port, Config> createSlaveRelationBuilder() => new RelationBuilder();

@@ -69,9 +69,9 @@ namespace easyvlans.GUI
                 MessageBox.Show(errorToShow, "Initialization error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            showPages();
+            initCollections();
             createPortsTable();
-            showDefaultPortPage();
+            selectPortCollection(config.PortCollection);
             createAndShowSwitchesTable();
             if (hideOnStartup)
             {
@@ -84,23 +84,40 @@ namespace easyvlans.GUI
 
         protected override bool ShowWithoutActivation => hidingOnStartup;
 
-        private void showPages()
+        private List<FlowLayoutPanel> portCollectionButtonContainers = new();
+
+        private void initCollections()
         {
-            if (config.PortPages.Count == 0)
+            if (config.PortCollectionStructure.Depth == 0)
             {
-                portPageButtonContainer.Visible = false;
+                portCollectionButtonContainer.Visible = false;
                 return;
             }
-            int portPageIndex = 0;
-            foreach (PortPage portPage in config.PortPages)
+            else
             {
-                Button newPortPageButton = (portPageIndex > 0) ? portPageButton.CloneT() : portPageButton;
-                newPortPageButton.Text = portPage.Title;
-                newPortPageButton.Tag = portPage;
-                newPortPageButton.Click += portPageButtonClick;
-                if (portPageIndex > 0)
-                    portPageButtonContainer.Controls.Add(newPortPageButton);
-                portPageIndex++;
+                portCollectionButtonContainers.Add(portCollectionButtonContainer);
+                if (config.PortCollectionStructure.Depth > 1)
+                {
+                    for (int level = 1; level < config.PortCollectionStructure.Depth; level++)
+                    {
+                        FlowLayoutPanel newLevelContainer = portCollectionButtonContainer.CloneT();
+                        portCollectionButtonContainerContainer.Controls.Add(newLevelContainer);
+                        portCollectionButtonContainers.Add(newLevelContainer);
+                    }
+                }
+            }
+            for (int level = 0; level < config.PortCollectionStructure.Depth; level++)
+            {
+                for (int buttonIndex = 0; buttonIndex < config.PortCollectionStructure.MaxSubCollectionCount[level]; buttonIndex++)
+                {
+                    bool existingButton = ((level == 0) && (buttonIndex == 0));
+                    {
+                        Button newPortCollectionButton = existingButton ? portCollectionButton : portCollectionButton.CloneT();
+                        newPortCollectionButton.Click += portCollectionButtonClick;
+                        if (!existingButton)
+                            portCollectionButtonContainers[level].Controls.Add(newPortCollectionButton);
+                    }
+                }
             }
         }
 
@@ -110,13 +127,9 @@ namespace easyvlans.GUI
         {
             if (config.Ports.Count == 0)
                 return; // Todo...
-            int maxPortRowCount = config.Ports.Where(p => p.Page == null).Count() + config.Ports.GroupBy(p => p.Page).Max(gp => gp.Count());
             portTableManager = new(this, portTable, 1);
-            portTableManager.CreateAllRows(maxPortRowCount);
+            portTableManager.CreateAllRows(config.PortCollectionStructure.MaxVisibleSize);
         }
-
-        private void showDefaultPortPage()
-            => showPortPage(config.PortPages.FirstOrDefault(pp => pp.IsDefault) ?? config.PortPages.FirstOrDefault());
 
         private RecyclerTableLayoutManager<Switch, SwitchRowManager> switchTableManager;
 
@@ -129,19 +142,91 @@ namespace easyvlans.GUI
             switchTableManager.BindItems(config.Switches.Values);
         }
 
-        private void portPageButtonClick(object sender, EventArgs e) => showPortPage(((Button)sender).Tag as PortPage);
+        private void portCollectionButtonClick(object sender, EventArgs e)
+            => selectPortCollection(((Button)sender).Tag as PortCollection);
 
-        private void showPortPage(PortPage portPage)
+        private void selectPortCollection(PortCollection portCollection)
         {
-            foreach (Button btn in portPageButtonContainer.Controls.OfType<Button>())
+            if (portCollection.Parent != null)
             {
-                bool selected = ReferenceEquals(btn.Tag, portPage); // == gives a CS0252
-                btn.BackColor = selected ? Color.DarkBlue : SystemColors.Control;
-                btn.ForeColor = selected ? Color.White : SystemColors.ControlText;
+                lastSelectedSubCollections[portCollection.Parent] = portCollection;
             }
-            IEnumerable<Port> shownPorts = config.Ports.Where(p => ((p.Page == null) || (p.Page == portPage)));
-            portTableManager.BindItems(shownPorts);
+            if (portCollection.Level > 0)
+            {
+                foreach (Button button in portCollectionButtonContainers[portCollection.Level - 1].Controls.OfType<Button>())
+                {
+                    bool selected = ReferenceEquals(button.Tag, portCollection); // == gives a CS0252
+                    button.BackColor = selected ? ACTIVE_COLLECTION_BUTTON_COLORS[(portCollection.Level - 1) % ACTIVE_COLLECTION_BUTTON_COLORS.Length] : SystemColors.Control;
+                    button.ForeColor = selected ? Color.White : SystemColors.ControlText;
+                }
+            }
+            if (config.PortCollectionStructure.Depth > portCollection.Level)
+            {
+                IEnumerable<PortCollection> subCollections = portCollection.OfType<PortCollection>();
+                IEnumerator<PortCollection> subCollectionsEnumerator = subCollections.GetEnumerator();
+                foreach (Button button in portCollectionButtonContainers[portCollection.Level].Controls.OfType<Button>())
+                {
+                    if (subCollectionsEnumerator.MoveNext())
+                    {
+                        PortCollection subCollection = subCollectionsEnumerator.Current;
+                        button.Visible = true;
+                        button.Text = subCollection.Title;
+                        button.Tag = subCollection;
+                    }
+                    else
+                    {
+                        button.Visible = false;
+                    }
+                }
+                if (!lastSelectedSubCollections.TryGetValue(portCollection, out PortCollection subCollectionToSelect))
+                {
+                    subCollectionToSelect = subCollections.FirstOrDefault(pc => pc.IsDefault);
+                }
+                if (subCollectionToSelect != null)
+                {
+                    selectPortCollection(subCollectionToSelect);
+                }
+                else
+                {
+                    showPortsOfCollection(portCollection);
+                }
+            }
+            else
+            {
+                showPortsOfCollection(portCollection);
+            }
         }
+
+        private void showPortsOfCollection(PortCollection portCollection)
+        {
+            LinkedList<Port> ports = new();
+            PortCollection previousChild = null;
+            while (portCollection != null)
+            {
+                bool before = true;
+                foreach (IPortOrPortCollection portOrPortCollection in portCollection)
+                {
+                    if (portOrPortCollection is Port port)
+                    {
+                        if (before)
+                            ports.AddFirst(port);
+                        else
+                            ports.AddLast(port);
+                    }
+                    else if (portOrPortCollection == previousChild)
+                    {
+                        before = false;
+                    }
+                }
+                previousChild = portCollection;
+                portCollection = portCollection.Parent;
+            }
+            portTableManager.BindItems(ports);
+        }
+
+        private Color[] ACTIVE_COLLECTION_BUTTON_COLORS = new[] { Color.DarkBlue, Color.DarkRed, Color.DarkGreen };
+
+        private Dictionary<PortCollection, PortCollection> lastSelectedSubCollections = new();
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {

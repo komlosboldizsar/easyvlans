@@ -79,27 +79,11 @@ namespace easyvlans.Model.Deserializers
                 vlansVlansetsResult.GetForRegistration(vlansetsDeserializerRegistration, vlansets => config.Vlansets = vlansets);
             });
 
-            HeterogenousListDeserializer<object, Config> portsPortpagesDeserializer = new(ConfigTagNames.PORTS);
-            portsPortpagesDeserializer.Register(new PortDeserializer());
-            portsPortpagesDeserializer.Register(new PortPageDeserializer());
-            configDeserializer.Register(portsPortpagesDeserializer, (config, portsAndPages) =>
+            HeterogenousCollectionDeserializerBase<PortCollection, IPortOrPortCollection, Config> portsPortpagesDeserializer = new PortCollectionDeserializer(true);
+            configDeserializer.Register(portsPortpagesDeserializer, (config, portCollections) =>
             {
-                List<Port> ports = new();
-                List<PortPage> portPages = new();
-                foreach (object portOrPage in portsAndPages)
-                {
-                    if (portOrPage is Port port)
-                    {
-                        ports.Add(port);
-                    }
-                    else if (portOrPage is PortPage portPage)
-                    {
-                        portPages.Add(portPage);
-                        ports.AddRange(portPage);
-                    }
-                }
-                config.Ports = ports;
-                config.PortPages = portPages;
+                config.PortCollection = portCollections;
+                (config.Ports, config.PortCollectionStructure) = portCollections.GetAllPortsAndStructure();
             });
 
             return configDeserializer;
@@ -112,7 +96,7 @@ namespace easyvlans.Model.Deserializers
                 context.RegisterTypeName(registeredTypeName.Key, registeredTypeName.Value);
             context.RegisterTypeName<Switch>("switch");
             context.RegisterTypeName<Port>("port");
-            context.RegisterTypeName<PortPage>("page");
+            context.RegisterTypeName<PortCollection>("page");
             context.RegisterTypeName<Vlan>("vlan");
             context.RegisterTypeName<Vlanset>("vlanset");
             context.RegisterTypeName<ISwitchOperationMethodCollection>("Switch operation method collection");

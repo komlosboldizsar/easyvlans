@@ -2,7 +2,7 @@
 
 namespace easyvlans.Model
 {
-    public class Port : IRemoteable, ISetProperty
+    public class Port : IPortOrPortCollection, IRemoteable, ISetProperty
     {
 
         public string Label { get; init; }
@@ -10,7 +10,7 @@ namespace easyvlans.Model
         public int? RemoteIndex { get; init; }
 
         public Switch Switch;
-        public PortPage Page;
+        public PortCollection Collection;
         public Vlan DefaultVlan;
 
         private readonly List<Vlan> _vlans = new();

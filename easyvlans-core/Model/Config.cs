@@ -9,6 +9,7 @@ namespace easyvlans.Model
         public IDictionary<int, Vlan> Vlans { get; set; }
         public IDictionary<string, Vlanset> Vlansets { get; set; }
         public IList<Port> Ports { get; set; }
-        public IList<PortPage> PortPages { get; set; }
+        public PortCollection PortCollection { get; set; }
+        public PortCollectionStructure PortCollectionStructure { get; set; }
     }
 }
