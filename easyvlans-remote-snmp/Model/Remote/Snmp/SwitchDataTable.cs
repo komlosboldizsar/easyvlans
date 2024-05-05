@@ -136,14 +136,7 @@ namespace easyvlans.Model.Remote.Snmp
                 public override ISnmpData Get() => new Integer32(0);
                 public override async void Set(ISnmpData data)
                 {
-                    static void throwInvalidInputException(ErrorCode errorCode)
-                        => throw new SnmpErrorCodeException(errorCode, $"Value must be a TruthValue ({TruthValue.VALUE_TRUE} or {TruthValue.VALUE_FALSE}) and set to 1 ({TruthValue.VALUE_TRUE}) to persist changes of the configuration of the switch.");
-                    if (data is not Integer32 intData)
-                        throwInvalidInputException(ErrorCode.WrongType);
-                    int value = intData.ToInt32();
-                    if ((value != TruthValue.VALUE_TRUE) && (value != TruthValue.VALUE_FALSE))
-                        throwInvalidInputException(ErrorCode.WrongValue);
-                    if (value != TruthValue.VALUE_TRUE)
+                    if (!TruthValue.CheckForDo(data, "persist changes of the configuration of the switch"))
                         return;
                     if (Model.OperationMethodCollection.PersistChangesMethod == null)
                         throw new SnmpErrorCodeException(ErrorCode.ResourceUnavailable, "No method provided for persisting changes of the configuration of the switch.");

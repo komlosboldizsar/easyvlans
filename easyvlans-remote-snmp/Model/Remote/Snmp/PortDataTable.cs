@@ -14,10 +14,15 @@ namespace easyvlans.Model.Remote.Snmp
             VARFACT_SwitchRemodeIndex,
             VARFACT_CurrentVlanId,
             VARFACT_CurrentVlanName,
+            VARFACT_DefaultVlanId,
+            VARFACT_DefaultVlanName,
+            VARFACT_HasDefaultVlanDefined,
             VARFACT_HasComplexMembership,
             VARFACT_HasNotAllowedMembership,
+            VARFACT_HasDifferentMembershipFromDefault,
             VARFACT_SetVlanMembershipStatus,
-            VARFACT_PendingChanges
+            VARFACT_PendingChanges,
+            VARFACT_DoSetToDefaultVlan
         };
 
         protected override IVariableFactory IndexerVariableFactory => VARFACT_RemoteIndex;
@@ -29,10 +34,15 @@ namespace easyvlans.Model.Remote.Snmp
         public const int INDEX_SwitchLabel = 4;
         public const int INDEX_CurrentVlanId = 5;
         public const int INDEX_CurrentVlanName = 6;
-        public const int INDEX_HasComplexMembership = 7;
-        public const int INDEX_HasNotAllowedMembership = 8;
-        public const int INDEX_SetVlanMembershipStatus = 9;
-        public const int INDEX_PendingChanges = 10;
+        public const int INDEX_DefaultVlanId = 7;
+        public const int INDEX_DefaultVlanName = 8;
+        public const int INDEX_HasDefaultVlanDefined = 9;
+        public const int INDEX_HasComplexMembership = 21;
+        public const int INDEX_HasNotAllowedMembership = 22;
+        public const int INDEX_HasDifferentMembershipFromDefault = 23;
+        public const int INDEX_SetVlanMembershipStatus = 41;
+        public const int INDEX_PendingChanges = 42;
+        public const int INDEX_DoSetToDefaultVlan = 61;
 
         public static readonly IVariableFactory VARFACT_RemoteIndex = new VariableFactory<DataProviders.RemoteIndex>(INDEX_RemoteIndex);
         public static readonly IVariableFactory VARFACT_Index = new VariableFactory<DataProviders.Index>(INDEX_Index);
@@ -41,10 +51,15 @@ namespace easyvlans.Model.Remote.Snmp
         public static readonly IVariableFactory VARFACT_SwitchLabel = new VariableFactory<DataProviders.SwitchLabel>(INDEX_SwitchLabel);
         public static readonly IVariableFactory VARFACT_CurrentVlanId = new VariableFactory<DataProviders.CurrentVlanId>(INDEX_CurrentVlanId);
         public static readonly IVariableFactory VARFACT_CurrentVlanName = new VariableFactory<DataProviders.CurrentVlanName>(INDEX_CurrentVlanName);
+        public static readonly IVariableFactory VARFACT_DefaultVlanId = new VariableFactory<DataProviders.DefaultVlanId>(INDEX_DefaultVlanId);
+        public static readonly IVariableFactory VARFACT_DefaultVlanName = new VariableFactory<DataProviders.DefaultVlanName>(INDEX_DefaultVlanName);
+        public static readonly IVariableFactory VARFACT_HasDefaultVlanDefined = new VariableFactory<DataProviders.HasDefaultVlanDefined>(INDEX_HasDefaultVlanDefined);
         public static readonly IVariableFactory VARFACT_HasComplexMembership = new VariableFactory<DataProviders.HasComplexMembership>(INDEX_HasComplexMembership);
         public static readonly IVariableFactory VARFACT_HasNotAllowedMembership = new VariableFactory<DataProviders.HasNotAllowedMembership>(INDEX_HasNotAllowedMembership);
+        public static readonly IVariableFactory VARFACT_HasDifferentMembershipFromDefault = new VariableFactory<DataProviders.HasDifferentMembershipFromDefault>(INDEX_HasDifferentMembershipFromDefault);
         public static readonly IVariableFactory VARFACT_SetVlanMembershipStatus = new VariableFactory<DataProviders.SetVlanMembershipStatus>(INDEX_SetVlanMembershipStatus);
         public static readonly IVariableFactory VARFACT_PendingChanges = new VariableFactory<DataProviders.PendingChanges>(INDEX_PendingChanges);
+        public static readonly IVariableFactory VARFACT_DoSetToDefaultVlan = new VariableFactory<DataProviders.DoSetToDefaultVlan>(INDEX_DoSetToDefaultVlan);
 
         protected override ITrapGeneratorFactory[] TrapGeneratorFactories => new ITrapGeneratorFactory[]
         {
@@ -116,27 +131,67 @@ namespace easyvlans.Model.Remote.Snmp
             }
 
             // .7
+            public class DefaultVlanId : VariableDataProvider
+            {
+                public override ISnmpData Get() => new Integer32(Model.DefaultVlan?.ID ?? 0);
+            }
+
+            // .8
+            public class DefaultVlanName : VariableDataProvider
+            {
+                public override ISnmpData Get() => new OctetString(Model.DefaultVlan?.Name ?? DEFAULT_VLAN_UNDEFINED);
+                private const string DEFAULT_VLAN_UNDEFINED = "(undefined)";
+            }
+
+            // .9
+            public class HasDefaultVlanDefined : VariableDataProvider
+            {
+                public override ISnmpData Get() => TruthValue.Create(Model.DefaultVlan != null);
+            }
+
+            // .21
             public class HasComplexMembership : VariableDataProvider
             {
                 public override ISnmpData Get() => TruthValue.Create(Model.HasComplexMembership);
             }
 
-            // .8
+            // .22
             public class HasNotAllowedMembership : VariableDataProvider
             {
                 public override ISnmpData Get() => TruthValue.Create(Model.HasNotAllowedMembership);
             }
 
-            // .9
+            // .23
+            public class HasDifferentMembershipFromDefault : VariableDataProvider
+            {
+                public override ISnmpData Get() => TruthValue.Create((Model.DefaultVlan != null) && (Model.DefaultVlan != Model.CurrentVlan));
+            }
+
+            // .41
             public class SetVlanMembershipStatus : VariableDataProvider
             {
                 public override ISnmpData Get() => new Integer32((int)Model.SetVlanMembershipStatus);
             }
 
-            // .10
+            // .42
             public class PendingChanges : VariableDataProvider
             {
                 public override ISnmpData Get() => TruthValue.Create(Model.PendingChanges);
+            }
+
+            // .61
+            public class DoSetToDefaultVlan : VariableDataProvider
+            {
+                public override ISnmpData Get() => new Integer32(0);
+                public override async void Set(ISnmpData data)
+                {
+                    if (!TruthValue.CheckForDo(data, "set ports VLAN membership to its default state"))
+                        return;
+                    if (Model.DefaultVlan == null)
+                        throw new SnmpErrorCodeException(ErrorCode.InconsistentValue, "No default VLAN defined for port.");
+                    if (!await Model.SetVlanTo(Model.DefaultVlan))
+                        throw new SnmpErrorCodeException(ErrorCode.GenError, "Setting port to be the member of its default VLAN not successful.");
+                }
             }
 
         }
@@ -156,30 +211,21 @@ namespace easyvlans.Model.Remote.Snmp
                     VARFACT_CurrentVlanId,
                     VARFACT_CurrentVlanName,
                     VARFACT_HasComplexMembership,
-                    VARFACT_HasNotAllowedMembership
+                    VARFACT_HasNotAllowedMembership,
+                    VARFACT_HasDifferentMembershipFromDefault
                 };
 
                 public override void Subscribe()
                 {
                     Table.Model.CurrentVlanChanged += handleCurrentVlanChanged;
-                    Table.Model.HasComplexMembershipChanged += handleHasComplexMembershipChanged;
-                    Table.Model.HasNotAllowedMembershipChanged += handleHasNotAllowedMembershipChanged;
                 }
 
                 public override void Unsubscribe()
                 {
                     Table.Model.CurrentVlanChanged -= handleCurrentVlanChanged;
-                    Table.Model.HasComplexMembershipChanged -= handleHasComplexMembershipChanged;
-                    Table.Model.HasNotAllowedMembershipChanged -= handleHasNotAllowedMembershipChanged;
                 }
 
                 private void handleCurrentVlanChanged(Port item, Vlan newValue)
-                    => SendTrap();
-
-                private void handleHasComplexMembershipChanged(Port item, bool newValue)
-                    => SendTrap();
-
-                private void handleHasNotAllowedMembershipChanged(Port item, bool newValue)
                     => SendTrap();
 
             }
