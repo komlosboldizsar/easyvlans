@@ -134,8 +134,12 @@ namespace easyvlans.GUI
                     vlanText = Item.CurrentVlan.Label;
                     if (Item.PendingChanges)
                         foreColor = COLOR_HAS_PENDING_CHANGES;
+                    else if ((Item.DefaultVlan != null) && (Item.DefaultVlan != Item.CurrentVlan))
+                        foreColor = COLOR_NOT_ON_DEFAULT_VLAN;
+                    else if (Item.HasNotAllowedMembership)
+                        foreColor = COLOR_HAS_NOT_ALLOWED_MEMBERSHIP;
                     else
-                        foreColor = Item.HasNotAllowedMembership ? COLOR_HAS_NOT_ALLOWED_MEMBERSHIP : COLOR_NO_PENDING_CHANGES;
+                        foreColor = COLOR_NO_PENDING_CHANGES;
                 }
                 else if (Item.HasComplexMembership)
                 {
@@ -181,6 +185,7 @@ namespace easyvlans.GUI
             private const string CURRENT_VLAN_UNKNOWN = "unknown";
             private static readonly Color COLOR_NO_PENDING_CHANGES = SystemColors.ControlText;
             private static readonly Color COLOR_HAS_PENDING_CHANGES = Color.DarkRed;
+            private static readonly Color COLOR_NOT_ON_DEFAULT_VLAN = Color.Purple;
             private static readonly Color COLOR_HAS_COMPLEX_MEMBERSHIP = Color.Blue;
             private static readonly Color COLOR_HAS_NOT_ALLOWED_MEMBERSHIP = Color.Red;
 
