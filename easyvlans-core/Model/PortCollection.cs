@@ -7,6 +7,7 @@
         public bool IsDefault { get; init; }
         public PortCollection Parent { get; init; }
         public int Level { get; init; }
+        public bool RememberLastSelectedSubCollection { get; init; } = true;
 
         public (List<Port>, PortCollectionStructure) GetAllPortsAndStructure()
         {

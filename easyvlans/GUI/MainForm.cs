@@ -182,7 +182,7 @@ namespace easyvlans.GUI
                     }
                 }
                 // last selected...
-                if (!lastSelectedSubCollections.TryGetValue(portCollection, out PortCollection subCollectionToSelect))
+                if (!portCollection.RememberLastSelectedSubCollection || !lastSelectedSubCollections.TryGetValue(portCollection, out PortCollection subCollectionToSelect))
                 {
                     // ...or default...
                     subCollectionToSelect = subCollections.FirstOrDefault(pc => pc.IsDefault);

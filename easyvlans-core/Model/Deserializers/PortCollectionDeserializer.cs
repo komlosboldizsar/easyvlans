@@ -31,7 +31,8 @@ namespace easyvlans.Model.Deserializers
                 Title = collectionNode.AttributeAsString(ATTR_TITLE, context).Mandatory().Get().Value,
                 IsDefault = collectionNode.AttributeAsBool(ATTR_DEFAULT, context).Get().Value,
                 Parent = parentCollection,
-                Level = parentCollection?.Level + 1 ?? 0
+                Level = parentCollection?.Level + 1 ?? 0,
+                RememberLastSelectedSubCollection = collectionNode.AttributeAsBool(ATTR_REMEMBER_LAST_SUBPAGE, context).Default(true).Get().Value,
             };
         }
 
@@ -40,6 +41,7 @@ namespace easyvlans.Model.Deserializers
 
         private const string ATTR_TITLE = "title";
         private const string ATTR_DEFAULT = "default";
+        private const string ATTR_REMEMBER_LAST_SUBPAGE = "remember_last_subpage";
 
     }
 }
