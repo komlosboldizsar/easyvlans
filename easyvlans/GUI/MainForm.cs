@@ -147,10 +147,12 @@ namespace easyvlans.GUI
 
         private void selectPortCollection(PortCollection portCollection)
         {
+            // store last selected subcollection
             if (portCollection.Parent != null)
             {
                 lastSelectedSubCollections[portCollection.Parent] = portCollection;
             }
+            // show active collection on the level of the selected collection
             if (portCollection.Level > 0)
             {
                 foreach (Button button in portCollectionButtonContainers[portCollection.Level - 1].Controls.OfType<Button>())
@@ -160,6 +162,7 @@ namespace easyvlans.GUI
                     button.ForeColor = selected ? Color.White : SystemColors.ControlText;
                 }
             }
+            // update levels below the selected collection (subcollections)
             if (config.PortCollectionStructure.Depth > portCollection.Level)
             {
                 IEnumerable<PortCollection> subCollections = portCollection.OfType<PortCollection>();
@@ -178,9 +181,13 @@ namespace easyvlans.GUI
                         button.Visible = false;
                     }
                 }
+                // last selected...
                 if (!lastSelectedSubCollections.TryGetValue(portCollection, out PortCollection subCollectionToSelect))
                 {
+                    // ...or default...
                     subCollectionToSelect = subCollections.FirstOrDefault(pc => pc.IsDefault);
+                    // ...or first
+                    subCollectionToSelect ??= subCollections.FirstOrDefault();
                 }
                 if (subCollectionToSelect != null)
                 {
