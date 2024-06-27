@@ -210,13 +210,23 @@ PortEntry ::= SEQUENCE {
 		VlanId,
 	portCurrentVlanName
 		DisplayString,
+	portDefaultVlanId
+		VlanId,
+	portDefaultVlanName
+		DisplayString,
+	portHasDefaultVlanDefined
+		TruthValue,
 	portHasComplexMemership
 		TruthValue,
 	portHasNotAllowedMemership
 		TruthValue,
+	portHasDifferentMembershipFromDefault
+		TruthValue,
 	portSetVlanMembershipStatus
 		Status,
 	portPendingChanges
+		TruthValue,
+	portDoSetToDefaultVlan
 		TruthValue
 }
 
@@ -282,6 +292,29 @@ portCurrentVlanName OBJECT-TYPE
                  If unknown by the application, set to '(unknown)'."
 	::= { portEntry 6 }
 	
+portDefaultVlanId OBJECT-TYPE
+	SYNTAX VlanId
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "The ID of the VLAN that is defined as default for the port.
+	             If not defined, set to 0."
+	::= { portEntry 7 }
+
+portDefaultVlanName OBJECT-TYPE
+	SYNTAX OCTET STRING
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "The name of the VLAN that is defined as default for the port.
+                 If not defined, set to '(undefined)'."
+	::= { portEntry 8 }
+
+portHasDefaultVlanDefined OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Is true(1) when there is a default VLAN defined for the port."
+	::= { portEntry 9 }
+	
 portHasComplexMemership OBJECT-TYPE
 	SYNTAX TruthValue
 	ACCESS read-only
@@ -289,7 +322,7 @@ portHasComplexMemership OBJECT-TYPE
 	DESCRIPTION "Is true(1) when the port's VLAN membership is something different
 	             than being associated to just one VLAN in untagged mode and
 				 having the same PVID as that VLAN."
-	::= { portEntry 7 }
+	::= { portEntry 21 }
 	
 portHasNotAllowedMemership OBJECT-TYPE
 	SYNTAX TruthValue
@@ -298,14 +331,22 @@ portHasNotAllowedMemership OBJECT-TYPE
 	DESCRIPTION "Is true(1) when the port is not in 'complex' mode but is the member
 	             of a VLAN that is not associable to the port by the prohibition of
 	             the configuration XML ('vlan' attribute of <port> tag)."
-	::= { portEntry 8 }
+	::= { portEntry 22 }
+	
+portHasDifferentMembershipFromDefault OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS read-only
+	STATUS mandatory
+	DESCRIPTION "Is true(1) when there is a default VLAN defined for the port but
+	             the current membership is different from that."
+	::= { portEntry 23 }
 
 portSetVlanMembershipStatus OBJECT-TYPE
 	SYNTAX Status
 	ACCESS read-only
 	STATUS mandatory
 	DESCRIPTION "Status of the process of chaning the VLAN membership of the port."
-	::= { portEntry 9 }
+	::= { portEntry 41 }
 
 portPendingChanges OBJECT-TYPE
 	SYNTAX TruthValue
@@ -316,6 +357,16 @@ portPendingChanges OBJECT-TYPE
 				 owner switch is not saved/persisted yet. For ports contained by a
 				 switch that doesn't need saving the running configuration as startup
 				 configuration, always set to false(2)."
-	::= { portEntry 10 }
+	::= { portEntry 42 }
+	
+portDoSetToDefaultVlan OBJECT-TYPE
+	SYNTAX TruthValue
+	ACCESS write-only
+	STATUS mandatory
+	DESCRIPTION "Write true(1) to set the VLAN membership of the port to the defined
+	             default value. Will result a genError(5) if no method is provided
+				 for saving the configuration (see 'switchCanPersistChanges') or any error
+				 occurs during the process. Always read as 0."
+	::= { switchEntry 61 }
 	
 END
