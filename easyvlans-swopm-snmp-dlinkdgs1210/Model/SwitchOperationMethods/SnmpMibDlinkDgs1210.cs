@@ -39,8 +39,8 @@ namespace easyvlans.Model.SwitchOperationMethods
 
             private const string DATA_TAG_MODEL = "model";
 
-            protected override IReadConfigMethod createReadConfigMethod(ISnmpConnection snmpConnection, object commonData)
-                => new ReadConfigMethod(snmpConnection, commonData);
+            protected override IReadVlanMembershipMethod createReadConfigMethod(ISnmpConnection snmpConnection, object commonData)
+                => new ReadVlanMembershipMethod(snmpConnection, commonData);
 
             protected override ISetPortToVlanMethod createSetPortToVlanMethod(ISnmpConnection snmpConnection, object commonData)
                 => new SetPortToVlanMethod(snmpConnection, commonData);

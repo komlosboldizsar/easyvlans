@@ -32,7 +32,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             ISnmpConnection snmpConnection = createConnection(parent as Switch, ip, port, communityString);
             List<ISwitchOperationMethodCollection> operationMethods = operationMethodsDeserializer.ParseWithGivenParent(elementNode, context, out IRelationBuilder<Config> _, snmpConnection);
             ISwitchOperationMethodCollection finalOperationMethodCollection = MixedSwitchOperationMethodCollection.Create(operationMethods, out MixedSwitchOperationMethodCollection.MethodCounts methodCounts);
-            reportMethodCount(elementNode, context, methodCounts.ReadConfigMethodCount, "reading configuraion");
+            reportMethodCount(elementNode, context, methodCounts.ReadVlanMembershipMethodCount, "reading configuraion");
             reportMethodCount(elementNode, context, methodCounts.SetPortToVlanMethodCount, "setting VLAN membership");
             reportMethodCount(elementNode, context, methodCounts.PersistChangesMethodCount, "persisting changes", true);
             return finalOperationMethodCollection;

@@ -88,7 +88,7 @@ namespace easyvlans.Model.Remote.Snmp
             // .11
             public class CanReadVlanConfig : VariableDataProvider
             {
-                public override ISnmpData Get() => TruthValue.Create(Model.OperationMethodCollection.ReadConfigMethod != null);
+                public override ISnmpData Get() => TruthValue.Create(Model.OperationMethodCollection.ReadVlanMembershipMethod != null);
             }
 
             // .12
@@ -106,7 +106,7 @@ namespace easyvlans.Model.Remote.Snmp
                         throwInvalidInputException(ErrorCode.WrongValue);
                     if (value != TruthValue.VALUE_TRUE)
                         return;
-                    if (Model.OperationMethodCollection.ReadConfigMethod == null)
+                    if (Model.OperationMethodCollection.ReadVlanMembershipMethod == null)
                         throw new SnmpErrorCodeException(ErrorCode.ResourceUnavailable, "No method provided for reading VLAN configuration of the switch.");
                     await Model.ReadConfigAsync();
                 }

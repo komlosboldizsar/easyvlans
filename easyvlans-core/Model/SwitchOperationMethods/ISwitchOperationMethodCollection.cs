@@ -3,7 +3,7 @@
     public interface ISwitchOperationMethodCollection
     {
         IReadInterfaceStatusMethod ReadInterfaceStatusMethod { get; }
-        IReadConfigMethod ReadConfigMethod { get; }
+        IReadVlanMembershipMethod ReadVlanMembershipMethod { get; }
         ISetPortToVlanMethod SetPortToVlanMethod { get; }
         IPersistChangesMethod PersistChangesMethod { get; }
     }

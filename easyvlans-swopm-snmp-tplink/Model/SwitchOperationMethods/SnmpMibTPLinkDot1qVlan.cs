@@ -33,8 +33,8 @@ namespace easyvlans.Model.SwitchOperationMethods
                 public readonly List<PortMapping> PortMappings = new();
             }
 
-            protected override IReadConfigMethod createReadConfigMethod(ISnmpConnection snmpConnection, object commonData)
-                => new ReadConfigMethod(snmpConnection, commonData);
+            protected override IReadVlanMembershipMethod createReadConfigMethod(ISnmpConnection snmpConnection, object commonData)
+                => new ReadVlanMembershipMethod(snmpConnection, commonData);
 
             protected override ISetPortToVlanMethod createSetPortToVlanMethod(ISnmpConnection snmpConnection, object commonData)
                 => new SetPortToVlanMethod(snmpConnection, commonData);

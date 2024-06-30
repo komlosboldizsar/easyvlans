@@ -5,10 +5,10 @@ namespace easyvlans.Model.SwitchOperationMethods
 {
     internal sealed partial class SnmpMibTPLinkDot1qVlan
     {
-        internal class ReadConfigMethod : MethodBase, IReadConfigMethod
+        internal class ReadVlanMembershipMethod : MethodBase, IReadVlanMembershipMethod
         {
 
-            public ReadConfigMethod(ISnmpConnection snmpConnection, object commonData)
+            public ReadVlanMembershipMethod(ISnmpConnection snmpConnection, object commonData)
                 : base(snmpConnection, commonData) { }
 
             public async Task DoAsync()

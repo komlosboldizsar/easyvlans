@@ -19,7 +19,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             return new MixedSwitchOperationMethodCollection()
             {
                 ReadInterfaceStatusMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__READ_INTERFACEF_STATUS)) ? createReadInterfaceStatusMethod(snmpConnection, commonData) : null,
-                ReadConfigMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__READ_CONFIG)) ? createReadConfigMethod(snmpConnection, commonData) : null,
+                ReadVlanMembershipMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__READ_VLAN_MEMBERSHIP)) ? createReadConfigMethod(snmpConnection, commonData) : null,
                 SetPortToVlanMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__SET_PORT_TO_VLAN)) ? createSetPortToVlanMethod(snmpConnection, commonData) : null,
                 PersistChangesMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__PERSIST_CHANGES)) ? createPersistChangesMethod(snmpConnection, commonData) : null
             };
@@ -27,7 +27,7 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         private const string ATTR_METHOD_FILTER = "method_filter";
         private const string METHOD_FILTER__READ_INTERFACEF_STATUS = "read_interface_status";
-        private const string METHOD_FILTER__READ_CONFIG = "read_config";
+        private const string METHOD_FILTER__READ_VLAN_MEMBERSHIP = "read_vlan_membership";
         private const string METHOD_FILTER__SET_PORT_TO_VLAN = "set_port_to_vlan";
         private const string METHOD_FILTER__PERSIST_CHANGES = "persist_changes";
 
@@ -37,7 +37,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         protected virtual IReadInterfaceStatusMethod createReadInterfaceStatusMethod(ISnmpConnection snmpConnection, object commonData)
             => null;
 
-        protected virtual IReadConfigMethod createReadConfigMethod(ISnmpConnection snmpConnection, object commonData)
+        protected virtual IReadVlanMembershipMethod createReadConfigMethod(ISnmpConnection snmpConnection, object commonData)
             => null;
 
         protected virtual ISetPortToVlanMethod createSetPortToVlanMethod(ISnmpConnection snmpConnection, object commonData)

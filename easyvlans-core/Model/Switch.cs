@@ -77,17 +77,17 @@ namespace easyvlans.Model
 
         public async Task ReadConfigAsync()
         {
-            if (OperationMethodCollection?.ReadConfigMethod == null)
+            if (OperationMethodCollection?.ReadVlanMembershipMethod == null)
             {
                 LogDispatcher.E($"Couldn't read configuration of switch [{Label}], because no method is associated.");
                 return;
             }
             ReadVlanConfigStatus = Status.Querying;
             LogDispatcher.I($"Reading configuration of switch [{Label}]...");
-            LogDispatcher.V($"Method for reading configuration of switch [{Label}]: [{OperationMethodCollection.ReadConfigMethod.DetailedCode}].");
+            LogDispatcher.V($"Method for reading configuration of switch [{Label}]: [{OperationMethodCollection.ReadVlanMembershipMethod.DetailedCode}].");
             try
             {
-                await OperationMethodCollection.ReadConfigMethod.DoAsync();
+                await OperationMethodCollection.ReadVlanMembershipMethod.DoAsync();
                 ReadVlanConfigStatus = Status.Successful;
                 LogDispatcher.I($"Reading configuration of switch [{Label}] ready.");
             }

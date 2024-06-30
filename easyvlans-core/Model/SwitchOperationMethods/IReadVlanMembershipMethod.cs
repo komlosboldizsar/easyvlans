@@ -1,6 +1,6 @@
 ﻿namespace easyvlans.Model.SwitchOperationMethods
 {
-    public interface IReadConfigMethod : ISwitchOperationMethod
+    public interface IReadVlanMembershipMethod : ISwitchOperationMethod
     {
         Task DoAsync();
     }
