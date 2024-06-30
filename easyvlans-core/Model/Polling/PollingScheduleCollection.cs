@@ -55,7 +55,7 @@ namespace easyvlans.Model.Polling
 
         private static readonly string[] POLLABLE_METHODS =
         {
-            MethodCodes.METHOD__READ_INTERFACEF_STATUS,
+            MethodCodes.METHOD__READ_INTERFACE_STATUS,
             MethodCodes.METHOD__READ_VLAN_MEMBERSHIP
         };
 

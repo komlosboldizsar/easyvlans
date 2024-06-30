@@ -18,7 +18,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             object commonData = createCommonData(xmlNode, context);
             return new MixedSwitchOperationMethodCollection()
             {
-                ReadInterfaceStatusMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__READ_INTERFACEF_STATUS)) ? createReadInterfaceStatusMethod(snmpConnection, commonData) : null,
+                ReadInterfaceStatusMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__READ_INTERFACE_STATUS)) ? createReadInterfaceStatusMethod(snmpConnection, commonData) : null,
                 ReadVlanMembershipMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__READ_VLAN_MEMBERSHIP)) ? createReadConfigMethod(snmpConnection, commonData) : null,
                 SetPortToVlanMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__SET_PORT_TO_VLAN)) ? createSetPortToVlanMethod(snmpConnection, commonData) : null,
                 PersistChangesMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__PERSIST_CHANGES)) ? createPersistChangesMethod(snmpConnection, commonData) : null

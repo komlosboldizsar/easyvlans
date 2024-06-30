@@ -8,7 +8,7 @@ namespace easyvlans.Model.Polling
 
         public static readonly string[] POLLABLE_METHOD_CODES =
         {
-            MethodCodes.METHOD__READ_INTERFACEF_STATUS,
+            MethodCodes.METHOD__READ_INTERFACE_STATUS,
             MethodCodes.METHOD__READ_VLAN_MEMBERSHIP
         };
 
@@ -17,7 +17,7 @@ namespace easyvlans.Model.Polling
             Switch @switch = request.Switch;
             switch (request.MethodCode)
             {
-                case MethodCodes.METHOD__READ_INTERFACEF_STATUS:
+                case MethodCodes.METHOD__READ_INTERFACE_STATUS:
                     break;
                 case MethodCodes.METHOD__READ_VLAN_MEMBERSHIP:
                     await @switch.ReadConfigAsync();
