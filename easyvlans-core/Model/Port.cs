@@ -13,6 +13,57 @@ namespace easyvlans.Model
         public PortCollection Collection;
         public Vlan DefaultVlan;
 
+        #region Property: AdministrativeStatus
+        public event PropertyChangedDelegate<Port, PortStatus> AdministrativeStatusChanged;
+        private PortStatus _administrativeStatus = PortStatus.Unknown;
+        public PortStatus AdministrativeStatus
+        {
+            get => _administrativeStatus;
+            set => this.setProperty(ref _administrativeStatus, value, AdministrativeStatusChanged);
+        }
+        #endregion
+
+        #region Property: AdministrativeStatusString
+        public event PropertyChangedDelegate<Port, string> AdministrativeStatusStringChanged;
+        private string _administrativeStatusString;
+        public string AdministrativeStatusString
+        {
+            get => _administrativeStatusString;
+            set => this.setProperty(ref _administrativeStatusString, value, AdministrativeStatusStringChanged);
+        }
+        #endregion
+
+        #region Property: OperationalStatus
+        public event PropertyChangedDelegate<Port, PortStatus> OperationalStatusChanged;
+        private PortStatus _operationalStatus = PortStatus.Unknown;
+        public PortStatus OperationalStatus
+        {
+            get => _operationalStatus;
+            set => this.setProperty(ref _operationalStatus, value, OperationalStatusChanged);
+        }
+        #endregion
+
+        #region Property: OperationalStatusString
+        public event PropertyChangedDelegate<Port, string> OperationalStatusStringChanged;
+        private string _operationalStatusString;
+        public string OperationalStatusString
+        {
+            get => _operationalStatusString;
+            set => this.setProperty(ref _operationalStatusString, value, OperationalStatusStringChanged);
+        }
+        #endregion
+
+        #region Property: LastStatusChange
+        public event PropertyChangedDelegate<Port, DateTime?> LastStatusChangeChanged;
+        private DateTime? _lastStatusChange;
+        public DateTime? LastStatusChange
+        {
+            get => _lastStatusChange;
+            set => this.setProperty(ref _lastStatusChange, value, LastStatusChangeChanged);
+        }
+        #endregion
+
+        #region Vlans
         private readonly List<Vlan> _vlans = new();
         public List<Vlan> Vlans
         {
@@ -25,7 +76,9 @@ namespace easyvlans.Model
                 _vlans.AddRange(value.Intersect(Switch.Vlans));
             }
         }
+        #endregion
 
+        #region Property: CurrentVlan
         public event PropertyChangedDelegate<Port, Vlan> CurrentVlanChanged;
         private Vlan _currentVlan;
         public Vlan CurrentVlan
@@ -37,7 +90,9 @@ namespace easyvlans.Model
                     HasNotAllowedMembership = (value != null) && !Vlans.Contains(value);
             }
         }
+        #endregion
 
+        #region Property: HasComplexMembership
         public event PropertyChangedDelegate<Port, bool> HasComplexMembershipChanged;
         private bool _hasComplexMembership;
         public bool HasComplexMembership
@@ -45,7 +100,9 @@ namespace easyvlans.Model
             get => _hasComplexMembership;
             set => this.setProperty(ref _hasComplexMembership, value, HasComplexMembershipChanged);
         }
+        #endregion
 
+        #region Property: HasNotAllowedMembership
         public event PropertyChangedDelegate<Port, bool> HasNotAllowedMembershipChanged;
         private bool _hasNotAllowedMembership;
         public bool HasNotAllowedMembership
@@ -53,7 +110,9 @@ namespace easyvlans.Model
             get => _hasNotAllowedMembership;
             private set => this.setProperty(ref _hasNotAllowedMembership, value, HasNotAllowedMembershipChanged);
         }
+        #endregion
 
+        #region Property: SetVlanMembershipStatus
         public event PropertyChangedDelegate<Port, Status> SetVlanMembershipStatusChanged;
         private Status _setVlanMembershipStatus = Status.Empty;
         public Status SetVlanMembershipStatus
@@ -65,7 +124,9 @@ namespace easyvlans.Model
                     SetVlanMembershipStatusUpdateTime = DateTime.Now;
             }
         }
+        #endregion
 
+        #region Property: SetVlanMembershipStatusUpdateTime
         public event PropertyChangedDelegate<Port, DateTime> SetVlanMembershipStatusUpdateTimeChanged;
         private DateTime _setVlanMembershipStatusUpdateTime = DateTime.Now;
         public DateTime SetVlanMembershipStatusUpdateTime
@@ -73,7 +134,9 @@ namespace easyvlans.Model
             get => _setVlanMembershipStatusUpdateTime;
             private set => this.setProperty(ref _setVlanMembershipStatusUpdateTime, value, SetVlanMembershipStatusUpdateTimeChanged);
         }
+        #endregion
 
+        #region Property: PendingChanges
         public event PropertyChangedDelegate<Port, bool> PendingChangesChanged;
         private bool _pendingChanges;
         public bool PendingChanges
@@ -81,6 +144,7 @@ namespace easyvlans.Model
             get => _pendingChanges;
             internal set => this.setProperty(ref _pendingChanges, value, PendingChangesChanged);
         }
+        #endregion
 
         public async Task<bool> SetVlanTo(Vlan vlan)
         {
