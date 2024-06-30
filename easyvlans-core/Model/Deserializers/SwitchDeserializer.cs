@@ -25,6 +25,7 @@ namespace easyvlans.Model.Deserializers
             };
             List<ISwitchOperationMethodCollection> operationMethods = operationMethodsDeserializer.ParseWithGivenParent(elementNode, context, out IRelationBuilder<Config> _, @switch);
             @switch.OperationMethodCollection = MixedSwitchOperationMethodCollection.Create(operationMethods, out MixedSwitchOperationMethodCollection.MethodCounts methodCounts);
+            reportMethodCount(elementNode, context, methodCounts.ReadInterfaceStatusMethodCount, "read interface status");
             reportMethodCount(elementNode, context, methodCounts.ReadVlanMembershipMethodCount, "read VLAN membership");
             reportMethodCount(elementNode, context, methodCounts.SetPortToVlanMethodCount, "set VLAN membership");
             reportMethodCount(elementNode, context, methodCounts.PersistChangesMethodCount, "persist changes", true);
