@@ -4,6 +4,7 @@ using BToolbox.XmlDeserializer.Context;
 using BToolbox.XmlDeserializer.Exceptions;
 using BToolbox.XmlDeserializer.Relations;
 using easyvlans.Logger;
+using easyvlans.Model.Polling;
 using easyvlans.Model.SwitchOperationMethods;
 using System.Xml;
 
@@ -29,6 +30,8 @@ namespace easyvlans.Model.Deserializers
             reportMethodCount(elementNode, context, methodCounts.ReadVlanMembershipMethodCount, "read VLAN membership");
             reportMethodCount(elementNode, context, methodCounts.SetPortToVlanMethodCount, "set VLAN membership");
             reportMethodCount(elementNode, context, methodCounts.PersistChangesMethodCount, "persist changes", true);
+            PollingScheduleCollection pollingScheduleCollection = PollingScheduleCollection.GetFromXml(elementNode, context);
+            PollingDispatcher.RegisterForAll(@switch, pollingScheduleCollection);
             return @switch;
         }
 
@@ -71,6 +74,11 @@ namespace easyvlans.Model.Deserializers
         private const string ATTR_VLANS = "vlans";
 
         private static readonly HeterogenousListDeserializer<ISwitchOperationMethodCollection, Config> operationMethodsDeserializer = new(ConfigTagNames.SWITCH);
+
+        static SwitchDeserializer()
+        {
+            operationMethodsDeserializer.AddIgnoredElement(PollingScheduleCollection.NODE_POLL);
+        }
 
         public static void RegisterOperationMethodsDeserializer(IDeserializer<ISwitchOperationMethodCollection, Config> deserializer)
         {

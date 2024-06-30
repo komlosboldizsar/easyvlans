@@ -5,6 +5,7 @@ using easyvlans.GUI;
 using easyvlans.Logger;
 using easyvlans.Model;
 using easyvlans.Model.Deserializers;
+using easyvlans.Model.Polling;
 using easyvlans.Model.Remote;
 using easyvlans.Modules;
 using System;
@@ -59,6 +60,7 @@ namespace easyvlans
             {
                 if (config != null)
                     Task.Run(() => loadAsync(config));
+                PollingDispatcher.Start();
                 LogDispatcher.I("Starting GUI...");
                 bool hideOnStartup = (_oneInstanceData?.StartVisible == false);
                 if (parsedArguments.Hidden)
