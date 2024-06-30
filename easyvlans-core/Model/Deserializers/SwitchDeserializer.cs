@@ -58,7 +58,7 @@ namespace easyvlans.Model.Deserializers
 
             private void findVlans(XmlNode portNode, Switch @switch, Config config, DeserializationContext context)
             {
-                XmlAttributeData<string> filterStringData = portNode.AttributeAsString(ATTR_VLANS, context).Get();
+                XmlAttributeOrInnerData<string> filterStringData = portNode.AttributeAsString(ATTR_VLANS, context).Get();
                 Action<DeserializationException> invalidRelationHandler = (ex) => context.ReportInvalidRelation(ex, filterStringData.Attribute, @switch);
                 @switch.Vlans = VlansetFilter.FilterVlans(filterStringData.Value, config.Vlans, config.Vlansets, invalidRelationHandler);
             }

@@ -29,7 +29,7 @@ namespace easyvlans.Model.Deserializers
 
             private void findVlans(XmlNode vlansetNode, Vlanset vlanset, Config config, DeserializationContext context)
             {
-                XmlAttributeData<string> filterStringData = vlansetNode.AttributeAsString(ATTR_VLANS, context).Mandatory().Get();
+                XmlAttributeOrInnerData<string> filterStringData = vlansetNode.AttributeAsString(ATTR_VLANS, context).Mandatory().Get();
                 Action<DeserializationException> invalidRelationHandler = (ex) => context.ReportInvalidRelation(ex, filterStringData.Attribute, vlanset);
                 vlanset.AddRange(VlansetFilter.FilterVlans(filterStringData.Value, config.Vlans, null, invalidRelationHandler));
             }

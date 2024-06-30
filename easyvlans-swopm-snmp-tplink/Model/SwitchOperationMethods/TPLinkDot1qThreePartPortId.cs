@@ -5,7 +5,7 @@ namespace easyvlans.Model.SwitchOperationMethods
     internal record TPLinkDot1qThreePartPortId(string Prefix, int Counter)
     {
 
-        internal class XmlAttributeConverter : IAttributeConverter<TPLinkDot1qThreePartPortId>
+        internal class XmlAttributeConverter : IAttributeOrInnerConverter<TPLinkDot1qThreePartPortId>
         {
 
             public static readonly XmlAttributeConverter Instance = new();

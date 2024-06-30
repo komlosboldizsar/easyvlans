@@ -23,10 +23,10 @@ namespace easyvlans.Model.SwitchOperationMethods
         public ISwitchOperationMethodCollection Parse(XmlNode elementNode, DeserializationContext context, out IRelationBuilder<Config> relationBuilder, object parent = null)
         {
             relationBuilder = null;
-            XmlAttributeData<string> ipAddressAttribute = elementNode.AttributeAsString(ATTR_IP, context).Mandatory().NotEmpty().Get();
+            XmlAttributeOrInnerData<string> ipAddressAttribute = elementNode.AttributeAsString(ATTR_IP, context).Mandatory().NotEmpty().Get();
             string ip = ipAddressAttribute.Value;
             if (!REGEXP_IP_ADDRESS.IsMatch(ip))
-                throw new AttributeValueInvalidException($"Invalid IP address.", ipAddressAttribute.Attribute);
+                throw new AttributeOrInnerValueInvalidException($"Invalid IP address.", ipAddressAttribute.Attribute);
             int port = (int)elementNode.AttributeAsInt(ATTR_PORT, context).Default(161).Min(1).Max(65535).Get().Value;
             string communityString = elementNode.AttributeAsString(ATTR_COMMUNITY_STRING, context).Mandatory().Get().Value;
             ISnmpConnection snmpConnection = createConnection(parent as Switch, ip, port, communityString);

@@ -34,7 +34,7 @@ namespace easyvlans.Model.Deserializers
 
             private void findSwitch(XmlNode portNode, Port port, Config config, DeserializationContext context)
             {
-                XmlAttributeData<string> switchData = portNode.AttributeAsString(ATTR_SWITCH, context).Mandatory().NotEmpty().Get();
+                XmlAttributeOrInnerData<string> switchData = portNode.AttributeAsString(ATTR_SWITCH, context).Mandatory().NotEmpty().Get();
                 if (!config.Switches.TryGetValue(switchData.Value, out Switch @switch))
                     RelatedObjectNotFoundException.Throw(switchData, typeof(Switch));
                 port.Switch = @switch;
@@ -43,7 +43,7 @@ namespace easyvlans.Model.Deserializers
 
             private void findDefaultVlan(XmlNode portNode, Port port, Config config, DeserializationContext context)
             {
-                XmlAttributeData<int?> defaultVlanData = portNode.AttributeAsInt(ATTR_DEFAULT_VLAN, context).Get();
+                XmlAttributeOrInnerData<int?> defaultVlanData = portNode.AttributeAsInt(ATTR_DEFAULT_VLAN, context).Get();
                 if (defaultVlanData.Value == null)
                     return;
                 if (!config.Vlans.TryGetValue((int)defaultVlanData.Value, out Vlan defaultVlan))
@@ -53,7 +53,7 @@ namespace easyvlans.Model.Deserializers
 
             private void findVlans(XmlNode portNode, Port port, Config config, DeserializationContext context)
             {
-                XmlAttributeData<string> filterStringData = portNode.AttributeAsString(ATTR_VLANS, context).Get();
+                XmlAttributeOrInnerData<string> filterStringData = portNode.AttributeAsString(ATTR_VLANS, context).Get();
                 Action<DeserializationException> invalidRelationHandler = (ex) => context.ReportInvalidRelation(ex, filterStringData.Attribute, port);
                 port.Vlans = VlansetFilter.FilterVlans(filterStringData.Value, config.Vlans, config.Vlansets, invalidRelationHandler);
             }
