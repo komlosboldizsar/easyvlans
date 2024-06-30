@@ -17,6 +17,7 @@ namespace easyvlans.GUI
             private Label _portLabel;
             private Label _switchLabel;
             private Label _portIndexLabel;
+            private PortStatusDisplay _portStatusDisplay;
             private Label _currentVlanLabel;
             private ComboBox _setVlanToComboBox;
             private Button _setButton;
@@ -29,10 +30,11 @@ namespace easyvlans.GUI
                 new MemberBinding<Label>(0, c => _portLabel = c),
                 new MemberBinding<Label>(1, c => _switchLabel = c),
                 new MemberBinding<Label>(2, c => _portIndexLabel = c),
-                new MemberBinding<Label>(3, c => _currentVlanLabel = c),
-                new MemberBinding<ComboBox>(4, c => _setVlanToComboBox = c),
-                new MemberBinding<Button>(5, c => _setButton = c),
-                new MemberBinding<Label>(6, c =>_setVlanStatusLabel = c),
+                new MemberBinding<PortStatusDisplay>(3, c => _portStatusDisplay = c),
+                new MemberBinding<Label>(4, c => _currentVlanLabel = c),
+                new MemberBinding<ComboBox>(5, c => _setVlanToComboBox = c),
+                new MemberBinding<Button>(6, c => _setButton = c),
+                new MemberBinding<Label>(7, c =>_setVlanStatusLabel = c),
             };
 
             public override void SubscribeControlEvents()
@@ -51,6 +53,7 @@ namespace easyvlans.GUI
                 Item.PendingChangesChanged -= pendingChangesChangedHandler;
                 Item.HasComplexMembershipChanged -= hasComplexMembershipChangedHandler;
                 Item.CurrentVlanChanged -= currentVlanChangedHandler;
+                _portStatusDisplay.Port = null;
             }
 
             protected override void BindItem()
@@ -64,6 +67,7 @@ namespace easyvlans.GUI
                 _portLabel.Text = Item.Label;
                 _switchLabel.Text = Item.Switch?.Label ?? string.Empty;
                 _portIndexLabel.Text = Item.Index.ToString();
+                _portStatusDisplay.Port = Item;
                 displayVlanMembership();
                 _setButton.Enabled = false;
                 displaySetVlanMembershipStatus();

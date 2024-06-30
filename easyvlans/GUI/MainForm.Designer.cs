@@ -35,8 +35,10 @@ namespace easyvlans.GUI
             titlePortPortLabel = new System.Windows.Forms.Label();
             titlePortSwitch = new System.Windows.Forms.Label();
             titlePortPortIndex = new System.Windows.Forms.Label();
+            titlePortStatus = new System.Windows.Forms.Label();
             titlePortCurrentVlan = new System.Windows.Forms.Label();
             titlePortSetVlanTo = new System.Windows.Forms.Label();
+            titlePortStatusSet = new System.Windows.Forms.Label();
             rowPortSet = new System.Windows.Forms.Button();
             rowPortSwitch = new System.Windows.Forms.Label();
             rowPortPortLabel = new System.Windows.Forms.Label();
@@ -44,7 +46,7 @@ namespace easyvlans.GUI
             rowPortCurrentVlan = new System.Windows.Forms.Label();
             rowPortSetVlanTo = new System.Windows.Forms.ComboBox();
             rowPostStatusSetVlan = new System.Windows.Forms.Label();
-            titlePortStatus = new System.Windows.Forms.Label();
+            portStatusDisplay1 = new PortStatusDisplay();
             logTextBox = new System.Windows.Forms.RichTextBox();
             portTableContainer = new System.Windows.Forms.Panel();
             switchTableContainer = new System.Windows.Forms.Panel();
@@ -82,7 +84,8 @@ namespace easyvlans.GUI
             // portTable
             // 
             portTable.AutoSize = true;
-            portTable.ColumnCount = 7;
+            portTable.ColumnCount = 8;
+            portTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             portTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             portTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             portTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
@@ -93,16 +96,18 @@ namespace easyvlans.GUI
             portTable.Controls.Add(titlePortPortLabel, 0, 0);
             portTable.Controls.Add(titlePortSwitch, 1, 0);
             portTable.Controls.Add(titlePortPortIndex, 2, 0);
-            portTable.Controls.Add(titlePortCurrentVlan, 3, 0);
-            portTable.Controls.Add(titlePortSetVlanTo, 4, 0);
-            portTable.Controls.Add(rowPortSet, 5, 1);
+            portTable.Controls.Add(titlePortStatus, 3, 0);
+            portTable.Controls.Add(titlePortCurrentVlan, 4, 0);
+            portTable.Controls.Add(titlePortSetVlanTo, 5, 0);
+            portTable.Controls.Add(titlePortStatusSet, 7, 0);
+            portTable.Controls.Add(rowPortSet, 6, 1);
             portTable.Controls.Add(rowPortSwitch, 1, 1);
             portTable.Controls.Add(rowPortPortLabel, 0, 1);
             portTable.Controls.Add(rowPortPortIndex, 2, 1);
-            portTable.Controls.Add(rowPortCurrentVlan, 3, 1);
-            portTable.Controls.Add(rowPortSetVlanTo, 4, 1);
-            portTable.Controls.Add(rowPostStatusSetVlan, 6, 1);
-            portTable.Controls.Add(titlePortStatus, 6, 0);
+            portTable.Controls.Add(rowPortCurrentVlan, 4, 1);
+            portTable.Controls.Add(rowPortSetVlanTo, 5, 1);
+            portTable.Controls.Add(rowPostStatusSetVlan, 7, 1);
+            portTable.Controls.Add(portStatusDisplay1, 3, 1);
             portTable.Dock = System.Windows.Forms.DockStyle.Fill;
             portTable.Location = new System.Drawing.Point(10, 3);
             portTable.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
@@ -110,7 +115,7 @@ namespace easyvlans.GUI
             portTable.RowCount = 2;
             portTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             portTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            portTable.Size = new System.Drawing.Size(1041, 70);
+            portTable.Size = new System.Drawing.Size(1128, 70);
             portTable.TabIndex = 0;
             // 
             // titlePortPortLabel
@@ -149,12 +154,24 @@ namespace easyvlans.GUI
             titlePortPortIndex.Text = "Index";
             titlePortPortIndex.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // titlePortStatus
+            // 
+            titlePortStatus.AutoSize = true;
+            titlePortStatus.Dock = System.Windows.Forms.DockStyle.Left;
+            titlePortStatus.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            titlePortStatus.Location = new System.Drawing.Point(303, 0);
+            titlePortStatus.Name = "titlePortStatus";
+            titlePortStatus.Size = new System.Drawing.Size(49, 35);
+            titlePortStatus.TabIndex = 15;
+            titlePortStatus.Text = "Status";
+            titlePortStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // titlePortCurrentVlan
             // 
             titlePortCurrentVlan.AutoSize = true;
             titlePortCurrentVlan.Dock = System.Windows.Forms.DockStyle.Left;
             titlePortCurrentVlan.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            titlePortCurrentVlan.Location = new System.Drawing.Point(303, 0);
+            titlePortCurrentVlan.Location = new System.Drawing.Point(403, 0);
             titlePortCurrentVlan.Name = "titlePortCurrentVlan";
             titlePortCurrentVlan.Size = new System.Drawing.Size(98, 35);
             titlePortCurrentVlan.TabIndex = 3;
@@ -166,18 +183,30 @@ namespace easyvlans.GUI
             titlePortSetVlanTo.AutoSize = true;
             titlePortSetVlanTo.Dock = System.Windows.Forms.DockStyle.Left;
             titlePortSetVlanTo.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            titlePortSetVlanTo.Location = new System.Drawing.Point(453, 0);
+            titlePortSetVlanTo.Location = new System.Drawing.Point(553, 0);
             titlePortSetVlanTo.Name = "titlePortSetVlanTo";
             titlePortSetVlanTo.Size = new System.Drawing.Size(98, 35);
             titlePortSetVlanTo.TabIndex = 4;
             titlePortSetVlanTo.Text = "Set VLAN to...";
             titlePortSetVlanTo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // titlePortStatusSet
+            // 
+            titlePortStatusSet.AutoSize = true;
+            titlePortStatusSet.Dock = System.Windows.Forms.DockStyle.Left;
+            titlePortStatusSet.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            titlePortStatusSet.Location = new System.Drawing.Point(853, 0);
+            titlePortStatusSet.Name = "titlePortStatusSet";
+            titlePortStatusSet.Size = new System.Drawing.Size(82, 35);
+            titlePortStatusSet.TabIndex = 14;
+            titlePortStatusSet.Text = "Status (set)";
+            titlePortStatusSet.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // rowPortSet
             // 
             rowPortSet.AutoSize = true;
             rowPortSet.Dock = System.Windows.Forms.DockStyle.Fill;
-            rowPortSet.Location = new System.Drawing.Point(653, 38);
+            rowPortSet.Location = new System.Drawing.Point(753, 38);
             rowPortSet.Name = "rowPortSet";
             rowPortSet.Size = new System.Drawing.Size(94, 29);
             rowPortSet.TabIndex = 7;
@@ -223,7 +252,7 @@ namespace easyvlans.GUI
             rowPortCurrentVlan.AutoSize = true;
             rowPortCurrentVlan.Dock = System.Windows.Forms.DockStyle.Left;
             rowPortCurrentVlan.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            rowPortCurrentVlan.Location = new System.Drawing.Point(303, 35);
+            rowPortCurrentVlan.Location = new System.Drawing.Point(403, 35);
             rowPortCurrentVlan.Name = "rowPortCurrentVlan";
             rowPortCurrentVlan.Size = new System.Drawing.Size(75, 35);
             rowPortCurrentVlan.TabIndex = 11;
@@ -235,7 +264,7 @@ namespace easyvlans.GUI
             rowPortSetVlanTo.Dock = System.Windows.Forms.DockStyle.Fill;
             rowPortSetVlanTo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             rowPortSetVlanTo.FormattingEnabled = true;
-            rowPortSetVlanTo.Location = new System.Drawing.Point(453, 38);
+            rowPortSetVlanTo.Location = new System.Drawing.Point(553, 38);
             rowPortSetVlanTo.Name = "rowPortSetVlanTo";
             rowPortSetVlanTo.Size = new System.Drawing.Size(194, 28);
             rowPortSetVlanTo.TabIndex = 12;
@@ -244,24 +273,21 @@ namespace easyvlans.GUI
             // 
             rowPostStatusSetVlan.AutoSize = true;
             rowPostStatusSetVlan.Dock = System.Windows.Forms.DockStyle.Left;
-            rowPostStatusSetVlan.Location = new System.Drawing.Point(753, 35);
+            rowPostStatusSetVlan.Location = new System.Drawing.Point(853, 35);
             rowPostStatusSetVlan.Name = "rowPostStatusSetVlan";
             rowPostStatusSetVlan.Size = new System.Drawing.Size(91, 35);
             rowPostStatusSetVlan.TabIndex = 13;
             rowPostStatusSetVlan.Text = "In progress...";
             rowPostStatusSetVlan.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // titlePortStatus
+            // portStatusDisplay1
             // 
-            titlePortStatus.AutoSize = true;
-            titlePortStatus.Dock = System.Windows.Forms.DockStyle.Left;
-            titlePortStatus.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            titlePortStatus.Location = new System.Drawing.Point(753, 0);
-            titlePortStatus.Name = "titlePortStatus";
-            titlePortStatus.Size = new System.Drawing.Size(82, 35);
-            titlePortStatus.TabIndex = 14;
-            titlePortStatus.Text = "Status (set)";
-            titlePortStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            portStatusDisplay1.Dock = System.Windows.Forms.DockStyle.Left;
+            portStatusDisplay1.Location = new System.Drawing.Point(303, 38);
+            portStatusDisplay1.Name = "portStatusDisplay1";
+            portStatusDisplay1.Port = null;
+            portStatusDisplay1.Size = new System.Drawing.Size(75, 29);
+            portStatusDisplay1.TabIndex = 16;
             // 
             // logTextBox
             // 
@@ -269,7 +295,7 @@ namespace easyvlans.GUI
             logTextBox.Location = new System.Drawing.Point(0, 219);
             logTextBox.MinimumSize = new System.Drawing.Size(4, 100);
             logTextBox.Name = "logTextBox";
-            logTextBox.Size = new System.Drawing.Size(1061, 106);
+            logTextBox.Size = new System.Drawing.Size(1148, 106);
             logTextBox.TabIndex = 4;
             logTextBox.Text = "";
             logTextBox.Resize += logTextBox_Resize;
@@ -283,7 +309,7 @@ namespace easyvlans.GUI
             portTableContainer.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             portTableContainer.Name = "portTableContainer";
             portTableContainer.Padding = new System.Windows.Forms.Padding(10, 3, 10, 0);
-            portTableContainer.Size = new System.Drawing.Size(1061, 73);
+            portTableContainer.Size = new System.Drawing.Size(1148, 73);
             portTableContainer.TabIndex = 5;
             // 
             // switchTableContainer
@@ -294,7 +320,7 @@ namespace easyvlans.GUI
             switchTableContainer.Location = new System.Drawing.Point(0, 114);
             switchTableContainer.Name = "switchTableContainer";
             switchTableContainer.Padding = new System.Windows.Forms.Padding(10, 10, 10, 25);
-            switchTableContainer.Size = new System.Drawing.Size(1061, 105);
+            switchTableContainer.Size = new System.Drawing.Size(1148, 105);
             switchTableContainer.TabIndex = 1;
             // 
             // switchTable
@@ -322,7 +348,7 @@ namespace easyvlans.GUI
             switchTable.RowCount = 2;
             switchTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             switchTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            switchTable.Size = new System.Drawing.Size(1041, 70);
+            switchTable.Size = new System.Drawing.Size(1128, 70);
             switchTable.TabIndex = 0;
             // 
             // titleSwitchSwitchName
@@ -451,7 +477,7 @@ namespace easyvlans.GUI
             bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             bottomPanel.Location = new System.Drawing.Point(0, 325);
             bottomPanel.Name = "bottomPanel";
-            bottomPanel.Size = new System.Drawing.Size(1061, 33);
+            bottomPanel.Size = new System.Drawing.Size(1148, 33);
             bottomPanel.TabIndex = 1;
             // 
             // linkLabel1
@@ -485,7 +511,7 @@ namespace easyvlans.GUI
             // 
             showVerboseLog.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             showVerboseLog.AutoSize = true;
-            showVerboseLog.Location = new System.Drawing.Point(909, 5);
+            showVerboseLog.Location = new System.Drawing.Point(996, 5);
             showVerboseLog.Name = "showVerboseLog";
             showVerboseLog.Size = new System.Drawing.Size(149, 24);
             showVerboseLog.TabIndex = 0;
@@ -502,7 +528,7 @@ namespace easyvlans.GUI
             portCollectionButtonContainer.MinimumSize = new System.Drawing.Size(0, 36);
             portCollectionButtonContainer.Name = "portCollectionButtonContainer";
             portCollectionButtonContainer.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
-            portCollectionButtonContainer.Size = new System.Drawing.Size(1061, 36);
+            portCollectionButtonContainer.Size = new System.Drawing.Size(1148, 36);
             portCollectionButtonContainer.TabIndex = 1;
             // 
             // portCollectionButton
@@ -549,7 +575,7 @@ namespace easyvlans.GUI
             portCollectionButtonContainerContainer.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             portCollectionButtonContainerContainer.Name = "portCollectionButtonContainerContainer";
             portCollectionButtonContainerContainer.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            portCollectionButtonContainerContainer.Size = new System.Drawing.Size(1061, 41);
+            portCollectionButtonContainerContainer.Size = new System.Drawing.Size(1148, 41);
             portCollectionButtonContainerContainer.TabIndex = 2;
             // 
             // MainForm
@@ -557,7 +583,7 @@ namespace easyvlans.GUI
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             AutoSize = true;
-            ClientSize = new System.Drawing.Size(1061, 358);
+            ClientSize = new System.Drawing.Size(1148, 358);
             Controls.Add(logTextBox);
             Controls.Add(bottomPanel);
             Controls.Add(switchTableContainer);
@@ -606,7 +632,7 @@ namespace easyvlans.GUI
         private System.Windows.Forms.ComboBox rowPortSetVlanTo;
         private System.Windows.Forms.Label rowPostStatusSetVlan;
         private System.Windows.Forms.Panel portTableContainer;
-        private System.Windows.Forms.Label titlePortStatus;
+        private System.Windows.Forms.Label titlePortStatusSet;
         private System.Windows.Forms.Panel switchTableContainer;
         private System.Windows.Forms.TableLayoutPanel switchTable;
         private System.Windows.Forms.Label titleSwitchSwitchName;
@@ -629,6 +655,8 @@ namespace easyvlans.GUI
         private System.Windows.Forms.ContextMenuStrip trayMenu;
         private System.Windows.Forms.ToolStripMenuItem trayMenuExit;
         private System.Windows.Forms.Panel portCollectionButtonContainerContainer;
+        private System.Windows.Forms.Label titlePortStatus;
+        private PortStatusDisplay portStatusDisplay1;
     }
 }
 
