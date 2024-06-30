@@ -18,18 +18,14 @@ namespace easyvlans.Model.SwitchOperationMethods
             object commonData = createCommonData(xmlNode, context);
             return new MixedSwitchOperationMethodCollection()
             {
-                ReadInterfaceStatusMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__READ_INTERFACEF_STATUS)) ? createReadInterfaceStatusMethod(snmpConnection, commonData) : null,
-                ReadVlanMembershipMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__READ_VLAN_MEMBERSHIP)) ? createReadConfigMethod(snmpConnection, commonData) : null,
-                SetPortToVlanMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__SET_PORT_TO_VLAN)) ? createSetPortToVlanMethod(snmpConnection, commonData) : null,
-                PersistChangesMethod = (noMethodFilter || methodFilters.Contains(METHOD_FILTER__PERSIST_CHANGES)) ? createPersistChangesMethod(snmpConnection, commonData) : null
+                ReadInterfaceStatusMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__READ_INTERFACEF_STATUS)) ? createReadInterfaceStatusMethod(snmpConnection, commonData) : null,
+                ReadVlanMembershipMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__READ_VLAN_MEMBERSHIP)) ? createReadConfigMethod(snmpConnection, commonData) : null,
+                SetPortToVlanMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__SET_PORT_TO_VLAN)) ? createSetPortToVlanMethod(snmpConnection, commonData) : null,
+                PersistChangesMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__PERSIST_CHANGES)) ? createPersistChangesMethod(snmpConnection, commonData) : null
             };
         }
 
         private const string ATTR_METHOD_FILTER = "method_filter";
-        private const string METHOD_FILTER__READ_INTERFACEF_STATUS = "read_interface_status";
-        private const string METHOD_FILTER__READ_VLAN_MEMBERSHIP = "read_vlan_membership";
-        private const string METHOD_FILTER__SET_PORT_TO_VLAN = "set_port_to_vlan";
-        private const string METHOD_FILTER__PERSIST_CHANGES = "persist_changes";
 
         protected virtual object createCommonData(XmlNode xmlNode, DeserializationContext context)
             => null;
