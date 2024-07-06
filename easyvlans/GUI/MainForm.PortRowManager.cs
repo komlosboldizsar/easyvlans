@@ -18,6 +18,7 @@ namespace easyvlans.GUI
             private Label _switchLabel;
             private Label _portIndexLabel;
             private PortStatusDisplay _portStatusDisplay;
+            private PortSpeedDisplay _portSpeedDisplay;
             private Label _currentVlanLabel;
             private ComboBox _setVlanToComboBox;
             private Button _setButton;
@@ -31,10 +32,11 @@ namespace easyvlans.GUI
                 new MemberBinding<Label>(1, c => _switchLabel = c),
                 new MemberBinding<Label>(2, c => _portIndexLabel = c),
                 new MemberBinding<PortStatusDisplay>(3, c => _portStatusDisplay = c),
-                new MemberBinding<Label>(4, c => _currentVlanLabel = c),
-                new MemberBinding<ComboBox>(5, c => _setVlanToComboBox = c),
-                new MemberBinding<Button>(6, c => _setButton = c),
-                new MemberBinding<Label>(7, c =>_setVlanStatusLabel = c),
+                new MemberBinding<PortSpeedDisplay>(4, c => _portSpeedDisplay = c),
+                new MemberBinding<Label>(5, c => _currentVlanLabel = c),
+                new MemberBinding<ComboBox>(6, c => _setVlanToComboBox = c),
+                new MemberBinding<Button>(7, c => _setButton = c),
+                new MemberBinding<Label>(8, c =>_setVlanStatusLabel = c),
             };
 
             public override void SubscribeControlEvents()
@@ -68,6 +70,7 @@ namespace easyvlans.GUI
                 _switchLabel.Text = Item.Switch?.Label ?? string.Empty;
                 _portIndexLabel.Text = Item.Index.ToString();
                 _portStatusDisplay.Port = Item;
+                _portSpeedDisplay.Port = Item;
                 displayVlanMembership();
                 _setButton.Enabled = false;
                 displaySetVlanMembershipStatus();
