@@ -5,10 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Lextm.SharpSnmpLib" Version="12.4.0" />
+    <PackageReference Include="Lextm.SharpSnmpLib" Version="12.5.2" />
     <PackageReference Include="SharpSnmpLib.Engine" Version="12.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\btoolbox-snmp\btoolbox-snmp.csproj" />
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
   </ItemGroup>
   <Import Project="..\easyvlans-core\CopyToOutput.csproj" />
