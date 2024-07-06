@@ -1,4 +1,5 @@
-﻿using Lextm.SharpSnmpLib;
+﻿using BToolbox.Model;
+using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 
 namespace easyvlans.Model.SwitchOperationMethods
@@ -13,6 +14,12 @@ namespace easyvlans.Model.SwitchOperationMethods
             : base(@switch, ip, port, communityStrings, trapPort, trapCommunityString, trapVersionStrict)
         {
             Messenger.UseFullRange = false;
+        }
+
+        protected override async Task<IList<Variable>> DoGetAsync(IEnumerable<string> objectIdentifierStrs)
+        {
+            IList<Variable> variables = objectIdentifierStrs.Select(oid => new Variable(new ObjectIdentifier(oid))).ToList();
+            return await Messenger.GetAsync(VersionCode.V2, _ipEndPoint, _readCommunityString, variables);
         }
 
         protected override async Task<List<Variable>> DoWalkAsync(string objectIdentifierStr)

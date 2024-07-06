@@ -7,6 +7,7 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
         string Version { get; }
         Switch Switch { get; }
+        Task<IList<Variable>> GetAsync(IEnumerable<string> objectIdentifierStrs);
         Task<List<Variable>> WalkAsync(string objectIdentifierStr);
         Task SetAsync(List<Variable> variables);
         void SubscribeForTrap(ITrapSubscriber subscriber, TrapEnterprise enterprise);

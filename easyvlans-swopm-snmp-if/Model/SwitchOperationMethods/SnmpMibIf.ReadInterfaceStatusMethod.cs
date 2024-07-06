@@ -14,25 +14,60 @@ namespace easyvlans.Model.SwitchOperationMethods
 
             public override string MibName => MIB_NAME;
 
-            public async Task DoAsync()
+            public async Task DoAsync(IEnumerable<Port> ports = null)
             {
-                Dictionary<int, IfSnmpPort> snmpPorts = await readSnmpPortsAsync();
-                updateUserPorts(snmpPorts);
+                Dictionary<int, IfSnmpPort> snmpPorts = await readSnmpPortsAsync(ports);
+                updateUserPorts(snmpPorts, ports);
             }
 
-            private async Task<Dictionary<int, IfSnmpPort>> readSnmpPortsAsync()
+            private async Task<Dictionary<int, IfSnmpPort>> readSnmpPortsAsync(IEnumerable<Port> userPorts = null)
             {
                 Dictionary<int, IfSnmpPort> snmpPorts = new();
-                async Task WaP(string oid, Action<IfSnmpPort, Variable> act) => await WalkAndProcess(oid, snmpPorts, id => new(id), act);
-                await WaP(OID_IF_ADMIN_STATUS, (p, v) => v.ToInt(i => p.AdminStatus = i));
-                await WaP(OID_IF_OPER_STATUS, (p, v) => v.ToInt(i => p.OperStatus = i));
-                await WaP(OID_IF_LAST_CHANGE, (p, v) => v.ToUInt(i => p.LastChange = i));
+                void processIfAdminStatus(IfSnmpPort p, Variable v) => v.ToInt(i => p.AdminStatus = i);
+                void processIfOperStatus(IfSnmpPort p, Variable v) => v.ToInt(i => p.OperStatus = i);
+                void processIfLastChange(IfSnmpPort p, Variable v) => v.ToUInt(i => p.LastChange = i);
+                if (userPorts == null)
+                {
+                    async Task WaP(string oid, Action<IfSnmpPort, Variable> act) => await WalkAndProcess(oid, snmpPorts, id => new(id), act);
+                    await WaP(OID_IF_ADMIN_STATUS, processIfAdminStatus);
+                    await WaP(OID_IF_OPER_STATUS, processIfOperStatus);
+                    await WaP(OID_IF_LAST_CHANGE, processIfLastChange);
+                }
+                else
+                {
+                    List<string> oids = new();
+                    foreach (Port userPort in userPorts)
+                    {
+                        if (userPort.Switch == _snmpConnection.Switch)
+                        {
+                            oids.Add($"{OID_IF_ADMIN_STATUS}.{userPort.Index}");
+                            oids.Add($"{OID_IF_OPER_STATUS}.{userPort.Index}");
+                            oids.Add($"{OID_IF_OPER_STATUS}.{userPort.Index}");
+                        }
+                    }
+                    Action<string, Variable, IfSnmpPort> processIfTableRow = (nodeId, ifTableRow, snmpPort) =>
+                    {
+                        switch (nodeId)
+                        {
+                            case OID_IF_ADMIN_STATUS:
+                                processIfAdminStatus(snmpPort, ifTableRow);
+                                break;
+                            case OID_IF_OPER_STATUS:
+                                processIfOperStatus(snmpPort, ifTableRow);
+                                break;
+                            case OID_IF_LAST_CHANGE:
+                                processIfLastChange(snmpPort, ifTableRow);
+                                break;
+                        }
+                    };
+                    TableProcessHelpers.ProcessTableRows(await _snmpConnection.GetAsync(oids), snmpPorts, id => new IfSnmpPort(id), processIfTableRow);
+                }
                 return snmpPorts;
             }
 
-            private void updateUserPorts(Dictionary<int, IfSnmpPort> snmpPorts)
+            private void updateUserPorts(Dictionary<int, IfSnmpPort> snmpPorts, IEnumerable<Port> userPorts = null)
             {
-                foreach (Port userPort in _snmpConnection.Switch.Ports)
+                foreach (Port userPort in userPorts ?? _snmpConnection.Switch.Ports)
                 {
                     if (!snmpPorts.TryGetValue(userPort.Index, out IfSnmpPort snmpPort))
                     {

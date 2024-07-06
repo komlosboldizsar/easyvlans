@@ -45,6 +45,29 @@ namespace easyvlans.Model.SwitchOperationMethods
             }
         }
 
+        public async Task<IList<Variable>> GetAsync(IEnumerable<string> objectIdentifierStrs)
+        {
+            try
+            {
+                int variableCount = objectIdentifierStrs.Count();
+                string transactionId = GenerateTransactionId();
+                LogDispatcher.VV($"[{transactionId}] Getting {variableCount} variables @ {_ipEndPointString} using SNMP{Version}...");
+                IList<Variable> variables = await DoGetAsync(objectIdentifierStrs);
+                int i = 0;
+                foreach (Variable variable in variables)
+                    LogDispatcher.VV($"[{transactionId}:{i++}] OID: [{variable.Id}], value: [{variable.Data.ToPrettyString()}]");
+                LogDispatcher.VV($"[{transactionId}] Getting {variableCount} variables using SNMP{Version} ready, got {variables.Count} variables.");
+                return variables;
+            }
+            catch (ErrorException ex)
+            {
+                ISnmpPdu pdu = ex.Body?.Pdu();
+                if (pdu != null)
+                    LogDispatcher.E($"SNMP{Version} error when walking, status: [{pdu.ErrorStatus}], index: [{pdu.ErrorIndex}]");
+                throw ex;
+            }
+        }
+
         public async Task<List<Variable>> WalkAsync(string objectIdentifierStr)
         {
             try
@@ -67,6 +90,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             }
         }
 
+        protected abstract Task<IList<Variable>> DoGetAsync(IEnumerable<string> objectIdentifierStrs);
         protected abstract Task<List<Variable>> DoWalkAsync(string objectIdentifierStr);
 
         public async Task SetAsync(List<Variable> variables)

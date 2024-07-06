@@ -2,6 +2,6 @@
 {
     public interface IReadInterfaceStatusMethod : ISwitchOperationMethod
     {
-        Task DoAsync();
+        Task DoAsync(IEnumerable<Port> ports = null);
     }
 }
