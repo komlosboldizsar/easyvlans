@@ -20,5 +20,10 @@
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
     <ProjectReference Include="..\btoolbox-oneinstance\btoolbox-oneinstance.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="GUI\PortSpeedDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
   <Import Project="..\easyvlans-core\CopyToOutput.csproj" />
 </Project>
