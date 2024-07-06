@@ -53,6 +53,16 @@ namespace easyvlans.Model
         }
         #endregion
 
+        #region Property: Speed
+        public event PropertyChangedDelegate<Port, long?> SpeedChanged;
+        private long? _speed = null;
+        public long? Speed
+        {
+            get => _speed;
+            set => this.setProperty(ref _speed, value, SpeedChanged);
+        }
+        #endregion
+
         #region Property: LastStatusChange
         public event PropertyChangedDelegate<Port, DateTime?> LastStatusChangeChanged;
         private DateTime? _lastStatusChange;
