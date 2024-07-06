@@ -1,4 +1,5 @@
-﻿using easyvlans.Helpers;
+﻿using BToolbox.SNMP;
+using easyvlans.Helpers;
 using easyvlans.Logger;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
@@ -14,8 +15,12 @@ namespace easyvlans.Model.SwitchOperationMethods
         protected readonly IPEndPoint _ipEndPoint;
         protected readonly OctetString _readCommunityString;
         protected readonly OctetString _writeCommunityString;
+        protected readonly int? _trapPort;
+        protected readonly string _trapCommunityString;
+        protected readonly bool _trapVersionStrict;
+        protected readonly TrapReceiver _trapReceiver;
 
-        public SnmpV1V2Connection(Switch @switch, string ip, int port, string communityStrings)
+        public SnmpV1V2Connection(Switch @switch, string ip, int port, string communityStrings, int? trapPort, string trapCommunityString, bool trapVersionStrict)
         {
             Switch = @switch;
             _ipEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
@@ -29,6 +34,14 @@ namespace easyvlans.Model.SwitchOperationMethods
             else
             {
                 _readCommunityString = _writeCommunityString = new OctetString(communityStrings);
+            }
+
+            if ((trapPort != null) && (trapCommunityString != null))
+            {
+                _trapPort = trapPort;
+                _trapCommunityString = trapCommunityString;
+                _trapVersionStrict = trapVersionStrict;
+                _trapReceiver = MultiportTrapReceiver.GetForPort((int)trapPort);
             }
         }
 
@@ -79,7 +92,11 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         protected abstract Task DoSetAsync(List<Variable> variables);
 
+        public void SubscribeForTrap(ITrapSubscriber subscriber, TrapEnterprise enterprise)
+            => _trapReceiver?.SubscribeForTrap(subscriber, enterprise, _trapVersionStrict ? VersionCode : null, _trapCommunityString);
+
         public abstract string Version { get; }
+        public abstract VersionCode VersionCode { get; }
 
         private const int TRANSACTION_ID_LENGTH = 4;
         private string GenerateTransactionId() => RandomStringGenerator.RandomString(TRANSACTION_ID_LENGTH);

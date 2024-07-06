@@ -1,4 +1,5 @@
-﻿using Lextm.SharpSnmpLib;
+﻿using BToolbox.SNMP;
+using Lextm.SharpSnmpLib;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
@@ -8,5 +9,6 @@ namespace easyvlans.Model.SwitchOperationMethods
         Switch Switch { get; }
         Task<List<Variable>> WalkAsync(string objectIdentifierStr);
         Task SetAsync(List<Variable> variables);
+        void SubscribeForTrap(ITrapSubscriber subscriber, TrapEnterprise enterprise);
     }
 }

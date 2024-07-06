@@ -7,9 +7,10 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
 
         public override string Version => "v1";
+        public override VersionCode VersionCode => VersionCode.V1;
 
-        public SnmpV1Connection(Switch @switch, string ip, int port, string communityStrings)
-            : base(@switch, ip, port, communityStrings)
+        public SnmpV1Connection(Switch @switch, string ip, int port, string communityStrings, int? trapPort, string trapCommunityString, bool trapVersionStrict)
+            : base(@switch, ip, port, communityStrings, trapPort, trapCommunityString, trapVersionStrict)
         {
             Messenger.UseFullRange = false;
         }

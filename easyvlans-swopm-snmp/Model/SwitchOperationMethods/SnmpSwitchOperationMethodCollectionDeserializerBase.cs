@@ -22,21 +22,35 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         public ISwitchOperationMethodCollection Parse(XmlNode elementNode, DeserializationContext context, out IRelationBuilder<Config> relationBuilder, object parent = null)
         {
+
             relationBuilder = null;
+
+            // Connection basics
             XmlAttributeOrInnerData<string> ipAddressAttribute = elementNode.AttributeAsString(ATTR_IP, context).Mandatory().NotEmpty().Get();
             string ip = ipAddressAttribute.Value;
             if (!REGEXP_IP_ADDRESS.IsMatch(ip))
                 throw new AttributeOrInnerValueInvalidException($"Invalid IP address.", ipAddressAttribute.Attribute);
             int port = (int)elementNode.AttributeAsInt(ATTR_PORT, context).Default(161).Min(1).Max(65535).Get().Value;
             string communityString = elementNode.AttributeAsString(ATTR_COMMUNITY_STRING, context).Mandatory().Get().Value;
-            ISnmpConnection snmpConnection = createConnection(parent as Switch, ip, port, communityString);
+            
+            // Traps
+            int? trapPort = elementNode.AttributeAsInt(ATTR_TRAP_PORT, context).Min(1).Max(65535).Get().Value;
+            string trapCommunityString = elementNode.AttributeAsString(ATTR_TRAP_COMMUNITY_STRING, context).Get().Value;
+            bool trapVersionStrict = elementNode.AttributeAsBool(ATTR_TRAP_VERSION_STRICT, context).Default(true).Get().Value;
+
+            // Create connection
+            ISnmpConnection snmpConnection = createConnection(parent as Switch, ip, port, communityString, trapPort, trapCommunityString, trapVersionStrict);
+
+            // MIBs
             List<ISwitchOperationMethodCollection> operationMethods = operationMethodsDeserializer.ParseWithGivenParent(elementNode, context, out IRelationBuilder<Config> _, snmpConnection);
             ISwitchOperationMethodCollection finalOperationMethodCollection = MixedSwitchOperationMethodCollection.Create(operationMethods, out MixedSwitchOperationMethodCollection.MethodCounts methodCounts);
             reportMethodCount(elementNode, context, methodCounts.ReadInterfaceStatusMethodCount, "reading interface status");
             reportMethodCount(elementNode, context, methodCounts.ReadVlanMembershipMethodCount, "reading VLAN membership");
             reportMethodCount(elementNode, context, methodCounts.SetPortToVlanMethodCount, "setting VLAN membership");
             reportMethodCount(elementNode, context, methodCounts.PersistChangesMethodCount, "persisting changes", true);
+
             return finalOperationMethodCollection;
+
         }
 
         private static void reportMethodCount(XmlNode elementNode, DeserializationContext context, int methodCount, string methodPurpose, bool suppressWarning = false)
@@ -47,12 +61,15 @@ namespace easyvlans.Model.SwitchOperationMethods
                 context.Report(DeserializationReportSeverity.Info, elementNode, $"Multiple MIBs supporting {methodPurpose} found for switch, using the first one.");
         }
 
-        protected abstract ISnmpConnection createConnection(Switch @switch, string ip, int port, string communityStrings);
+        protected abstract ISnmpConnection createConnection(Switch @switch, string ip, int port, string communityStrings, int? trapPort, string trapCommunityString, bool trapVersionStrict);
         private readonly HeterogenousListDeserializer<ISwitchOperationMethodCollection, Config> operationMethodsDeserializer;
 
         private const string ATTR_IP = "ip";
         private const string ATTR_PORT = "port";
         private const string ATTR_COMMUNITY_STRING = "community_string";
+        private const string ATTR_TRAP_PORT = "trap_port";
+        private const string ATTR_TRAP_COMMUNITY_STRING = "trap_community_string";
+        private const string ATTR_TRAP_VERSION_STRICT = "trap_version_strict";
 
         private readonly Regex REGEXP_IP_ADDRESS = new(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 

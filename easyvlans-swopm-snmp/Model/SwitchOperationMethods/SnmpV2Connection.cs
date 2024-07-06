@@ -7,9 +7,10 @@ namespace easyvlans.Model.SwitchOperationMethods
     {
 
         public override string Version => "v2";
+        public override VersionCode VersionCode => VersionCode.V2;
 
-        public SnmpV2Connection(Switch @switch, string ip, int port, string communityStrings)
-            : base(@switch, ip, port, communityStrings) { }
+        public SnmpV2Connection(Switch @switch, string ip, int port, string communityStrings, int? trapPort, string trapCommunityString, bool trapVersionStrict)
+            : base(@switch, ip, port, communityStrings, trapPort, trapCommunityString, trapVersionStrict) { }
 
         protected override async Task<List<Variable>> DoWalkAsync(string objectIdentifierStr)
         {
