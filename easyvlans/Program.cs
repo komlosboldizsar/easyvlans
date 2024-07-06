@@ -79,7 +79,7 @@ namespace easyvlans
             Task[] allReadVlansTask = new Task[config.Switches.Count];
             int i = 0;
             foreach (Switch @switch in config.Switches.Values)
-                allReadVlansTask[i++] = Task.Run(@switch.ReadConfigAsync);
+                allReadVlansTask[i++] = Task.Run(@switch.ReadVlanMembershipAsync);
             await Task.WhenAll(allReadVlansTask);
         }
 

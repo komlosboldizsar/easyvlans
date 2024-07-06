@@ -108,7 +108,7 @@ namespace easyvlans.Model.Remote.Snmp
                         return;
                     if (Model.OperationMethodCollection.ReadVlanMembershipMethod == null)
                         throw new SnmpErrorCodeException(ErrorCode.ResourceUnavailable, "No method provided for reading VLAN configuration of the switch.");
-                    await Model.ReadConfigAsync();
+                    await Model.ReadVlanMembershipAsync();
                 }
             }
 

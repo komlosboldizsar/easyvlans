@@ -20,7 +20,7 @@ namespace easyvlans.Model.Polling
                 case MethodCodes.METHOD__READ_INTERFACE_STATUS:
                     break;
                 case MethodCodes.METHOD__READ_VLAN_MEMBERSHIP:
-                    await @switch.ReadConfigAsync();
+                    await @switch.ReadVlanMembershipAsync();
                     break;
                 default:
                     LogDispatcher.E($"Requested poll with unknown method code [{request.MethodCode}] for switch [{@switch.Label}].");
