@@ -5,38 +5,21 @@ using System.Windows.Forms;
 
 namespace easyvlans.GUI
 {
-    public partial class PortSpeedDisplay : UserControl
+    public partial class PortSpeedDisplay : PortDataDisplay
     {
 
-        public PortSpeedDisplay()
+        public PortSpeedDisplay() => InitializeComponent();
+
+        protected override void unsubscribeEvents()
         {
-            InitializeComponent();
-            displayStyle(ST_UNKNOWN);
+            _port.SpeedChanged -= portSpeedChangedHandler;
+            _port.LastStatusChangeChanged -= portLastStatusChangeChangedHandler;
         }
 
-        private readonly ToolTip toolTip = new();
-
-        private Port _port;
-        public Port Port
+        protected override void subscribeEvents()
         {
-            get => _port;
-            set
-            {
-                if (value == _port)
-                    return;
-                if (_port != null)
-                {
-                    _port.SpeedChanged -= portSpeedChangedHandler;
-                    _port.LastStatusChangeChanged -= portLastStatusChangeChangedHandler;
-                }
-                _port = value;
-                if (_port != null)
-                {
-                    _port.SpeedChanged += portSpeedChangedHandler;
-                    _port.LastStatusChangeChanged += portLastStatusChangeChangedHandler;
-                    update();
-                }
-            }
+            _port.SpeedChanged += portSpeedChangedHandler;
+            _port.LastStatusChangeChanged += portLastStatusChangeChangedHandler;
         }
 
         private void portSpeedChangedHandler(Port item, long? newValue)
@@ -48,27 +31,7 @@ namespace easyvlans.GUI
         private void portLastStatusChangeChangedHandler(Port item, DateTime? newValue)
             => reshowTooltip();
 
-        private void update()
-            => displayStyle(getStyleFromSpeed());
-
-        private StatusStyle getStyleFromSpeed()
-            => getStyleForSpeed(_port.Speed);
-
-        bool tooltipShown = true;
-
-        private void statusLabel_MouseEnter(object sender, EventArgs e)
-        {
-            tooltipShown = true;
-            showTooltip();
-        }
-
-        private void statusLabel_MouseLeave(object sender, EventArgs e)
-        {
-            tooltipShown = false;
-            toolTip.Hide(statusLabel);
-        }
-
-        private void showTooltip()
+        protected override string getTooltipText()
         {
             string speedStr = string.Empty;
             if (_port.Speed != null)
@@ -82,37 +45,22 @@ namespace easyvlans.GUI
                     speedStr += " (" + speedReadableStr + ")";
                 }
             }
-            string toolTipLabel = "Bits per second: " + speedStr;
+            string toolTipText = "Bits per second: " + speedStr;
             string lastChangeStr = _port.LastStatusChange?.ToString("yyyy.MM.dd. HH:mm:ss") ?? string.Empty;
-            toolTipLabel += $"\r\nLast change: {lastChangeStr}";
-            toolTip.Show(toolTipLabel, statusLabel);
+            toolTipText += $"\r\nLast change: {lastChangeStr}";
+            return toolTipText;
         }
 
-        private void reshowTooltip()
-        {
-            if (!tooltipShown)
-                return;
-            showTooltip();
-        }
+        private static readonly StatusStyle ST_ZERO = new(Color.Maroon, Color.White, () => "0");
+        private static readonly StatusStyle ST_OTHER = new(Color.PaleTurquoise, Color.Black, () => "other");
+        private static readonly StatusStyle ST_10M = new(Color.Gold, Color.Black, () => "10M");
+        private static readonly StatusStyle ST_100M = new(Color.Green, Color.White, () => "100M");
+        private static readonly StatusStyle ST_1G = new(Color.Lime, Color.Black, () => "1G");
+        private static readonly StatusStyle ST_10G = new(Color.Lime, Color.Black, () => "10G");
 
-        private record StatusStyle(Color Background, Color Foreground, string Str);
-        private static readonly StatusStyle ST_UNKNOWN = new(Color.Silver, Color.Black, "unknw");
-        private static readonly StatusStyle ST_ZERO = new(Color.Maroon, Color.White, "0");
-        private static readonly StatusStyle ST_OTHER = new(Color.PaleTurquoise, Color.Black, "other");
-        private static readonly StatusStyle ST_10M = new(Color.Gold, Color.Black, "10M");
-        private static readonly StatusStyle ST_100M = new(Color.Green, Color.White, "100M");
-        private static readonly StatusStyle ST_1G = new(Color.Lime, Color.Black, "1G");
-        private static readonly StatusStyle ST_10G = new(Color.Lime, Color.Black, "10G");
-
-        private void displayStyle(StatusStyle statusStyle)
+        protected override StatusStyle getStyleFromData()
         {
-            statusLabel.BackColor = statusStyle.Background;
-            statusLabel.ForeColor = statusStyle.Foreground;
-            statusLabel.Text = statusStyle.Str;
-        }
-
-        private StatusStyle getStyleForSpeed(long? speed)
-        {
+            long? speed = _port?.Speed;
             if (speed == null)
                 return ST_UNKNOWN;
             if ((speed >= MIN_ZERO) && (speed <= MAX_ZERO))
