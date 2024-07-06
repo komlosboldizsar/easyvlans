@@ -76,11 +76,14 @@ namespace easyvlans
 
         private async static Task loadAsync(Config config)
         {
-            Task[] allReadVlansTask = new Task[config.Switches.Count];
+            Task[] allReadTask = new Task[config.Switches.Count *2];
             int i = 0;
             foreach (Switch @switch in config.Switches.Values)
-                allReadVlansTask[i++] = Task.Run(@switch.ReadVlanMembershipAsync);
-            await Task.WhenAll(allReadVlansTask);
+            {
+                allReadTask[i++] = Task.Run(@switch.ReadInterfaceStatusAsync);
+                allReadTask[i++] = Task.Run(@switch.ReadVlanMembershipAsync);
+            }
+            await Task.WhenAll(allReadTask);
         }
 
         private static void oneInstanceDataHandler(OneInstanceData oneInstanceData)
