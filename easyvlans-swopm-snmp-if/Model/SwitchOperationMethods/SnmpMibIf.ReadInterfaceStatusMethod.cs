@@ -43,54 +43,9 @@ namespace easyvlans.Model.SwitchOperationMethods
                         userPort.LastStatusChange = null;
                         continue;
                     }
-                    userPort.AdministrativeStatus = ADMINISTRATIVE_STATUS_VALUES.Convert(snmpPort.AdminStatus);
-                    userPort.AdministrativeStatusString = ADMINISTRATIVE_STATUS_STRINGS.Convert(snmpPort.AdminStatus); ;
-                    userPort.OperationalStatus = OPERATIONAL_STATUS_VALUES.Convert(snmpPort.OperStatus);
-                    userPort.OperationalStatusString = OPERATIONAL_STATUS_STRINGS.Convert(snmpPort.OperStatus);
-                    userPort.LastStatusChange = new DateTime(snmpPort.LastChange * 100L);
+                    UpdatePort(userPort, snmpPort.AdminStatus, snmpPort.OperStatus, new DateTime(snmpPort.LastChange * 100L));
                 }
             }
-
-            private const string STRING_DOWN = "down";
-            private const string STRING_UP = "up";
-            private const string STRING_TESTING = "testing";
-            private const string STRING_UNKNOWN = "unknown";
-
-            private readonly EnumConverter<int, PortStatus> ADMINISTRATIVE_STATUS_VALUES = new(PortStatus.Unknown)
-            {
-                { 1, PortStatus.Up },
-                { 2, PortStatus.Down },
-                { 3, PortStatus.Other }
-            };
-
-            private readonly EnumToStringConverter<int> ADMINISTRATIVE_STATUS_STRINGS = new(STRING_UNKNOWN)
-            {
-                { 1, STRING_UP },
-                { 2, STRING_DOWN },
-                { 3, STRING_TESTING }
-            };
-
-            private readonly EnumConverter<int, PortStatus> OPERATIONAL_STATUS_VALUES = new(PortStatus.Unknown)
-            {
-                { 1, PortStatus.Up },
-                { 2, PortStatus.Down },
-                { 3, PortStatus.Other },
-                { 4, PortStatus.Unknown },
-                { 5, PortStatus.Other },
-                { 6, PortStatus.Other },
-                { 7, PortStatus.Other }
-            };
-
-            private readonly EnumToStringConverter<int> OPERATIONAL_STATUS_STRINGS = new(STRING_UNKNOWN)
-            {
-                { 1, STRING_UP },
-                { 2, STRING_DOWN },
-                { 3, STRING_TESTING },
-                { 4, STRING_UNKNOWN },
-                { 5, "dormant" },
-                { 6, "not present" },
-                { 7, "lower layer down" }
-            };
 
         }
     }
