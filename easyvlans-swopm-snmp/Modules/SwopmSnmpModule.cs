@@ -9,6 +9,7 @@ namespace easyvlans.Modules
         {
             SwitchDeserializer.RegisterOperationMethodsDeserializer(new SnmpV1SwitchOperationMethodCollectionDeserializer());
             SwitchDeserializer.RegisterOperationMethodsDeserializer(new SnmpV2SwitchOperationMethodCollectionDeserializer());
+            MultiportTrapReceiver.Init();
         }
     }
 }

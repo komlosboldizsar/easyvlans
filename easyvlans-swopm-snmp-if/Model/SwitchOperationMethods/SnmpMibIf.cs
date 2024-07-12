@@ -27,9 +27,9 @@ namespace easyvlans.Model.SwitchOperationMethods
                 if (subscribeDown || subscribeUp)
                     trapSubscriber = new(snmpConnection);
                 if (subscribeDown)
-                    snmpConnection.SubscribeForTrap(trapSubscriber, new TrapEnterprise(OID_SNMP_TRAPS, TRAP_CODE_LINK_DOWN));
+                    snmpConnection.SubscribeForTrap(trapSubscriber, GenericTrapDescriptors.LINK_DOWN);
                 if (subscribeUp)
-                    snmpConnection.SubscribeForTrap(trapSubscriber, new TrapEnterprise(OID_SNMP_TRAPS, TRAP_CODE_LINK_UP));
+                    snmpConnection.SubscribeForTrap(trapSubscriber, GenericTrapDescriptors.LINK_UP);
             }
 
         }
@@ -39,10 +39,6 @@ namespace easyvlans.Model.SwitchOperationMethods
         private const string OID_IF_ADMIN_STATUS = $"{OID_IF_TABLE}.7";
         private const string OID_IF_OPER_STATUS = $"{OID_IF_TABLE}.8";
         private const string OID_IF_LAST_CHANGE = $"{OID_IF_TABLE}.9";
-
-        private const string OID_SNMP_TRAPS = "1.3.6.1.6.3.1.1.5.4";
-        private const int TRAP_CODE_LINK_DOWN = 3;
-        private const int TRAP_CODE_LINK_UP = 4;
 
         private const string TRAP_FILTER_LINK_UP = "link_up";
         private const string TRAP_FILTER_LINK_DOWN = "link_down";

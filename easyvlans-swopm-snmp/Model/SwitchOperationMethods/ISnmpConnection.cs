@@ -10,6 +10,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         Task<IList<Variable>> GetAsync(IEnumerable<string> objectIdentifierStrs);
         Task<List<Variable>> WalkAsync(string objectIdentifierStr);
         Task SetAsync(List<Variable> variables);
-        void SubscribeForTrap(ITrapSubscriber subscriber, TrapEnterprise enterprise);
+        void SubscribeForTrap(ITrapSubscriber subscriber, GenericCode v1GenericCode, int? v1SpecificCode, string v1EnterpriseFilter, ObjectIdentifier v2TrapOid);
+        void SubscribeForTrap(ITrapSubscriber subscriber, TrapDescriptor descriptor);
     }
 }

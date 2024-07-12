@@ -116,8 +116,10 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         protected abstract Task DoSetAsync(List<Variable> variables);
 
-        public void SubscribeForTrap(ITrapSubscriber subscriber, TrapEnterprise enterprise)
-            => _trapReceiver?.SubscribeForTrap(subscriber, enterprise, _trapVersionStrict ? VersionCode : null, _trapCommunityString);
+        public abstract void SubscribeForTrap(ITrapSubscriber subscriber, GenericCode v1GenericCode, int? v1SpecificCode, string v1EnterpriseFilter, ObjectIdentifier v2TrapOid);
+
+        public void SubscribeForTrap(ITrapSubscriber subscriber, TrapDescriptor descriptor)
+            => SubscribeForTrap(subscriber, descriptor.V1GenericCode, descriptor.V1SpecificCode, descriptor.V1EnterpriseFilter, descriptor.V2TrapOid);
 
         public abstract string Version { get; }
         public abstract VersionCode VersionCode { get; }

@@ -13,7 +13,7 @@ namespace easyvlans.Model.SwitchOperationMethods
     public class MultiportTrapReceiver
     {
 
-        private static readonly Dictionary<int, TrapReceiver> _receivers;
+        private static readonly Dictionary<int, TrapReceiver> _receivers = new();
 
         public static TrapReceiver GetForPort(int port)
         {
@@ -28,7 +28,7 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         private static bool _initialized = false;
 
-        public void Init()
+        public static void Init()
         {
             lock (_receivers)
             {
