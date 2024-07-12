@@ -28,64 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            backPanel = new System.Windows.Forms.Panel();
-            statusLabel = new System.Windows.Forms.Label();
-            containerPanel = new System.Windows.Forms.Panel();
-            backPanel.SuspendLayout();
-            containerPanel.SuspendLayout();
             SuspendLayout();
             // 
-            // backPanel
-            // 
-            backPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            backPanel.Controls.Add(statusLabel);
-            backPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            backPanel.Location = new System.Drawing.Point(2, 2);
-            backPanel.Margin = new System.Windows.Forms.Padding(0);
-            backPanel.Name = "backPanel";
-            backPanel.Size = new System.Drawing.Size(56, 23);
-            backPanel.TabIndex = 0;
-            // 
-            // statusLabel
-            // 
-            statusLabel.BackColor = System.Drawing.Color.Gold;
-            statusLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            statusLabel.ForeColor = System.Drawing.Color.Black;
-            statusLabel.Location = new System.Drawing.Point(0, 0);
-            statusLabel.Name = "statusLabel";
-            statusLabel.Size = new System.Drawing.Size(54, 21);
-            statusLabel.TabIndex = 0;
-            statusLabel.Text = "down";
-            statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            statusLabel.MouseEnter += statusLabel_MouseEnter;
-            statusLabel.MouseLeave += statusLabel_MouseLeave;
-            // 
-            // containerPanel
-            // 
-            containerPanel.Controls.Add(backPanel);
-            containerPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            containerPanel.Location = new System.Drawing.Point(0, 0);
-            containerPanel.Name = "containerPanel";
-            containerPanel.Padding = new System.Windows.Forms.Padding(2);
-            containerPanel.Size = new System.Drawing.Size(60, 27);
-            containerPanel.TabIndex = 1;
-            // 
-            // PortStatusDisplay
+            // PortSpeedDisplay
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            Controls.Add(containerPanel);
-            Name = "PortStatusDisplay";
-            Size = new System.Drawing.Size(60, 27);
-            backPanel.ResumeLayout(false);
-            containerPanel.ResumeLayout(false);
+            Name = "PortSpeedDisplay";
             ResumeLayout(false);
         }
 
         #endregion
-
-        private System.Windows.Forms.Panel backPanel;
-        private System.Windows.Forms.Label statusLabel;
-        private System.Windows.Forms.Panel containerPanel;
     }
 }

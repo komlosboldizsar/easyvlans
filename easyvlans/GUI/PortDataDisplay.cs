@@ -39,7 +39,7 @@ namespace easyvlans.GUI
 
         protected /*abstract*/ virtual StatusStyle getStyleFromData() => ST_UNKNOWN;
 
-        bool tooltipShown = true;
+        bool tooltipShown = false;
 
         private void label_MouseEnter(object sender, EventArgs e)
         {
@@ -53,7 +53,15 @@ namespace easyvlans.GUI
             toolTip.Hide(label);
         }
 
-        protected void showTooltip() => toolTip.Show(getTooltipText(), label);
+        protected void showTooltip()
+        {
+            if (label.InvokeRequired)
+            {
+                label.Invoke(() => showTooltip());
+                return;
+            }
+            toolTip.Show(getTooltipText(), label);
+        }
 
         protected void reshowTooltip()
         {
@@ -69,6 +77,11 @@ namespace easyvlans.GUI
 
         private void displayStyle(StatusStyle statusStyle)
         {
+            if (label.InvokeRequired)
+            {
+                label.Invoke(() => displayStyle(statusStyle));
+                return;
+            }
             label.BackColor = statusStyle.Background;
             label.ForeColor = statusStyle.Foreground;
             label.Text = statusStyle.StrFunc();

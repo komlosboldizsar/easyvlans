@@ -44,11 +44,11 @@ namespace easyvlans.GUI
             rowPortSwitch = new System.Windows.Forms.Label();
             rowPortPortLabel = new System.Windows.Forms.Label();
             rowPortPortIndex = new System.Windows.Forms.Label();
+            rowPortStatusDisplay = new PortStatusDisplay();
+            rowPortStatusSpeed = new PortSpeedDisplay();
             rowPortCurrentVlan = new System.Windows.Forms.Label();
             rowPortSetVlanTo = new System.Windows.Forms.ComboBox();
             rowPostStatusSetVlan = new System.Windows.Forms.Label();
-            rowPortStatusDisplay = new PortStatusDisplay();
-            rowPortStatusSpeed = new PortSpeedDisplay();
             logTextBox = new System.Windows.Forms.RichTextBox();
             portTableContainer = new System.Windows.Forms.Panel();
             switchTableContainer = new System.Windows.Forms.Panel();
@@ -264,6 +264,23 @@ namespace easyvlans.GUI
             rowPortPortIndex.Text = "21";
             rowPortPortIndex.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // rowPortStatusDisplay
+            // 
+            rowPortStatusDisplay.Dock = System.Windows.Forms.DockStyle.Left;
+            rowPortStatusDisplay.Location = new System.Drawing.Point(303, 38);
+            rowPortStatusDisplay.Name = "rowPortStatusDisplay";
+            rowPortStatusDisplay.Port = null;
+            rowPortStatusDisplay.Size = new System.Drawing.Size(75, 29);
+            rowPortStatusDisplay.TabIndex = 16;
+            // 
+            // rowPortStatusSpeed
+            // 
+            rowPortStatusSpeed.Location = new System.Drawing.Point(388, 38);
+            rowPortStatusSpeed.Name = "rowPortStatusSpeed";
+            rowPortStatusSpeed.Port = null;
+            rowPortStatusSpeed.Size = new System.Drawing.Size(75, 29);
+            rowPortStatusSpeed.TabIndex = 17;
+            // 
             // rowPortCurrentVlan
             // 
             rowPortCurrentVlan.AutoSize = true;
@@ -296,23 +313,6 @@ namespace easyvlans.GUI
             rowPostStatusSetVlan.TabIndex = 13;
             rowPostStatusSetVlan.Text = "In progress...";
             rowPostStatusSetVlan.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // rowPortStatusDisplay
-            // 
-            rowPortStatusDisplay.Dock = System.Windows.Forms.DockStyle.Left;
-            rowPortStatusDisplay.Location = new System.Drawing.Point(303, 38);
-            rowPortStatusDisplay.Name = "rowPortStatusDisplay";
-            rowPortStatusDisplay.Port = null;
-            rowPortStatusDisplay.Size = new System.Drawing.Size(75, 29);
-            rowPortStatusDisplay.TabIndex = 16;
-            // 
-            // rowPortStatusSpeed
-            // 
-            rowPortStatusSpeed.Location = new System.Drawing.Point(388, 38);
-            rowPortStatusSpeed.Name = "rowPortStatusSpeed";
-            rowPortStatusSpeed.Port = null;
-            rowPortStatusSpeed.Size = new System.Drawing.Size(75, 29);
-            rowPortStatusSpeed.TabIndex = 17;
             // 
             // logTextBox
             // 
