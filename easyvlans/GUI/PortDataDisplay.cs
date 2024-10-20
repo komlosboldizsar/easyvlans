@@ -27,6 +27,7 @@ namespace easyvlans.GUI
                 if (_port != null)
                     unsubscribeEvents();
                 _port = value;
+                update();
                 if (_port != null)
                     subscribeEvents();
             }
@@ -35,7 +36,7 @@ namespace easyvlans.GUI
         protected /*abstract*/ virtual void subscribeEvents() { }
         protected /*abstract*/ virtual void unsubscribeEvents() { }
 
-        protected void update() => displayStyle(getStyleFromData());
+        protected void update() => displayStyle((_port == null) ? ST_UNKNOWN : getStyleFromData());
 
         protected /*abstract*/ virtual StatusStyle getStyleFromData() => ST_UNKNOWN;
 
@@ -60,7 +61,7 @@ namespace easyvlans.GUI
                 label.Invoke(() => showTooltip());
                 return;
             }
-            toolTip.Show(getTooltipText(), label);
+            toolTip.Show((_port == null) ? "No associated port" : getTooltipText(), label);
         }
 
         protected void reshowTooltip()
