@@ -34,7 +34,7 @@ namespace easyvlans.Model.Deserializers
                 }
                 catch (Exception ex)
                 {
-                    throw new DeserializationException("An exception was thrown while deserializing configuration XML!", ex);
+                    throw new DeserializationException($"An exception was thrown while deserializing configuration XML!\r\n[{ex}]", ex);
                 }
             }
             else
