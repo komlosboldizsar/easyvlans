@@ -31,7 +31,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             => await Messenger.SetAsync(VersionCode.V2, _ipEndPoint, _writeCommunityString, variables);
 
         public override void SubscribeForTrap(ITrapSubscriber subscriber, GenericCode v1GenericCode, int? v1SpecificCode, string v1EnterpriseFilter, ObjectIdentifier v2TrapOid)
-            => _trapReceiver.SubscribeForV2Trap(subscriber, v2TrapOid, _trapCommunityString);
+            => _trapReceiver?.SubscribeForV2Trap(subscriber, v2TrapOid, _trapCommunityString);
 
     }
 }
