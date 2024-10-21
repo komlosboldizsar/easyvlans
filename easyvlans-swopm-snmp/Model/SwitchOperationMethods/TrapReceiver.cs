@@ -100,18 +100,18 @@ namespace easyvlans.Model.SwitchOperationMethods
         private void handleTrapV2Message(TrapV2Message message)
         {
             IList<Variable> variables = message.Variables();
-            if (variables.Count < 2)
+            /*if (variables.Count < 2)
                 return;
             if (variables[1].Id != SNMP_TRAP_OID)
                 return;
             if (variables[1].Data is not ObjectIdentifier snmpTrapOID)
+                return;*/
+            if (!_subscriptionsV2.TryGetValue(message.Enterprise, out List<SubscriptionV2> subscriptionsForTrap))
                 return;
-            if (!_subscriptionsV2.TryGetValue(snmpTrapOID, out List<SubscriptionV2> subscriptionsForTrap))
-                return;
-            checkSubscriptionsForMessage(message, subscriptionsForTrap, variables.Skip(2));
+            checkSubscriptionsForMessage(message, subscriptionsForTrap, variables);
         }
 
-        private static readonly ObjectIdentifier SNMP_TRAP_OID = new("1.3.6.1.6.3.1.1.5");
+        private static readonly ObjectIdentifier SNMP_TRAP_OID = new("1.3.6.1.6.3.1.1.4.1.0");
         #endregion
 
         private class MyLogger : ILogger
