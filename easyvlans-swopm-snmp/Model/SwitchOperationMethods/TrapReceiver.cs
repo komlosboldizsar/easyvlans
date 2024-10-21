@@ -48,12 +48,12 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             if ((e.Message.Version == VersionCode.V1) && (e.Message is TrapV1Message trapV1Message))
             {
-                handleTrapV1Message(trapV1Message);
+                handleTrapV1Message(trapV1Message, e.Sender.Address);
                 return;
             }
             if ((e.Message.Version == VersionCode.V2) && (e.Message is TrapV2Message trapV2Message))
             {
-                handleTrapV2Message(trapV2Message);
+                handleTrapV2Message(trapV2Message, e.Sender.Address);
                 return;
             }
         }
@@ -62,42 +62,43 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             ITrapSubscriber Subscriber { get; }
             string CommunityString { get; }
+            IPAddress IPAddress { get; }
         }
 
-        private static void checkSubscriptionsForMessage(ISnmpMessage message, IEnumerable<ISubscription> subscriptions, IEnumerable<Variable> variables)
+        private static void checkSubscriptionsForMessage(ISnmpMessage message, IPAddress remoteIpAddress, IEnumerable<ISubscription> subscriptions, IEnumerable<Variable> variables)
         {
             string userName = message.Parameters.UserName.ToString();
-            subscriptions.Where(s => s.CommunityString == userName).Foreach(s => s.Subscriber.TrapReceived(message, variables));
+            subscriptions.Where(s => ((s.IPAddress == remoteIpAddress) && (s.CommunityString == userName))).Foreach(s => s.Subscriber.TrapReceived(message, variables));
         }
 
         #region V1 traps
-        public void SubscribeForV1Trap(ITrapSubscriber subscriber, GenericCode genericCode, int? specificCode, string enterpriseFilter, string communityString)
+        public void SubscribeForV1Trap(ITrapSubscriber subscriber, GenericCode genericCode, int? specificCode, string enterpriseFilter, IPAddress ipAddress, string communityString)
         {
             if ((specificCode != null) && (genericCode != GenericCode.EnterpriseSpecific))
                 throw new ArgumentException("Specific code can only be defined when generic code is 'enterprise specific'.", nameof(genericCode));
-            _subscriptionsV1.GetAnyway(new(genericCode, specificCode)).Add(new SubscriptionV1(subscriber, communityString, enterpriseFilter));
+            _subscriptionsV1.GetAnyway(new(genericCode, specificCode)).Add(new SubscriptionV1(subscriber, ipAddress, communityString, enterpriseFilter));
         }
         
         private readonly Dictionary<TrapCodeV1, List<SubscriptionV1>> _subscriptionsV1 = new(TrapCodeV1.EQUALITY_COMPARER);
-        private record SubscriptionV1(ITrapSubscriber Subscriber, string CommunityString, string EnterpriseFilter) : ISubscription;
+        private record SubscriptionV1(ITrapSubscriber Subscriber, IPAddress IPAddress, string CommunityString, string EnterpriseFilter) : ISubscription;
 
-        private void handleTrapV1Message(TrapV1Message message)
+        private void handleTrapV1Message(TrapV1Message message, IPAddress remoteIpAddress)
         {
             if (!_subscriptionsV1.TryGetValue(new(message.Generic, message.Specific), out List<SubscriptionV1> subscriptionsForTrap))
                 return;
-            checkSubscriptionsForMessage(message, subscriptionsForTrap, message.Variables());
+            checkSubscriptionsForMessage(message, remoteIpAddress, subscriptionsForTrap, message.Variables());
         }
         #endregion
 
         #region V2 traps
-        public void SubscribeForV2Trap(ITrapSubscriber subscriber, ObjectIdentifier trapOid, string communityString)
-            => _subscriptionsV2.GetAnyway(trapOid).Add(new SubscriptionV2(subscriber, communityString));
+        public void SubscribeForV2Trap(ITrapSubscriber subscriber, ObjectIdentifier trapOid, IPAddress ipAddress, string communityString)
+            => _subscriptionsV2.GetAnyway(trapOid).Add(new SubscriptionV2(subscriber, ipAddress, communityString));
 
         private readonly Dictionary<ObjectIdentifier, List<SubscriptionV2>> _subscriptionsV2 = new();
 
-        private record SubscriptionV2(ITrapSubscriber Subscriber, string CommunityString) : ISubscription;
+        private record SubscriptionV2(ITrapSubscriber Subscriber, IPAddress IPAddress, string CommunityString) : ISubscription;
 
-        private void handleTrapV2Message(TrapV2Message message)
+        private void handleTrapV2Message(TrapV2Message message, IPAddress remoteIpAddress)
         {
             IList<Variable> variables = message.Variables();
             /*if (variables.Count < 2)
@@ -108,7 +109,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 return;*/
             if (!_subscriptionsV2.TryGetValue(message.Enterprise, out List<SubscriptionV2> subscriptionsForTrap))
                 return;
-            checkSubscriptionsForMessage(message, subscriptionsForTrap, variables);
+            checkSubscriptionsForMessage(message, remoteIpAddress, subscriptionsForTrap, variables);
         }
 
         private static readonly ObjectIdentifier SNMP_TRAP_OID = new("1.3.6.1.6.3.1.1.4.1.0");
