@@ -45,7 +45,7 @@ namespace easyvlans
                     OneInstanceGuard.Set("cabletracker", oneInstanceData.ID);
                 });
                 config = (new ConfigDeserializer()).LoadConfig(parsedArguments.ConfigFile ?? DEFAULT_CONFIG_FILE);
-                start = OneInstanceGuard.Init();
+                start = OneInstanceGuard.InitAnyway();
                 if (start && (config.Remotes != null))
                     foreach (IRemoteMethod remoteMethod in config.Remotes)
                         remoteMethod.Start();
