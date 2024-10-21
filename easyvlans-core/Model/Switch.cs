@@ -32,7 +32,10 @@ namespace easyvlans.Model
             => Ports.FirstOrDefault(p => p.Index == index);
 
         #region Method: Read interface status
-        public async Task ReadInterfaceStatusAsync()
+        public Task ReadInterfaceStatusAsync(Port port)
+            => ReadInterfaceStatusAsync(new Port[] { port });
+
+        public async Task ReadInterfaceStatusAsync(IEnumerable<Port> ports = null)
         {
             if (OperationMethodCollection?.ReadInterfaceStatusMethod == null)
             {
@@ -44,7 +47,7 @@ namespace easyvlans.Model
             LogDispatcher.V($"Method for reading interface statuses of switch [{Label}]: [{OperationMethodCollection.ReadInterfaceStatusMethod.DetailedCode}].");
             try
             {
-                await OperationMethodCollection.ReadInterfaceStatusMethod.DoAsync();
+                await OperationMethodCollection.ReadInterfaceStatusMethod.DoAsync(ports);
                 ReadVlanConfigStatus = Status.Successful;
                 LogDispatcher.I($"Reading interface statuses of switch [{Label}] ready.");
             }
