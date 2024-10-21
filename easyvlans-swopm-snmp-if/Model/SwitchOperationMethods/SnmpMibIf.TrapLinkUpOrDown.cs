@@ -10,8 +10,13 @@ namespace easyvlans.Model.SwitchOperationMethods
         internal class TrapLinkUpOrDown : SnmpTrapSubscriberBase
         {
 
-            public TrapLinkUpOrDown(ISnmpConnection snmpConnection)
-                : base(snmpConnection) { }
+            public TrapLinkUpOrDown(ISnmpConnection snmpConnection, CommonData commonData)
+                : base(snmpConnection)
+            {
+                _commonData = commonData;
+            }
+
+            private readonly CommonData _commonData;
 
             public override string MibName => MIB_NAME;
 
@@ -38,7 +43,12 @@ namespace easyvlans.Model.SwitchOperationMethods
                     return;
                 Port userPort = _snmpConnection.Switch.GetPort(ifIndex);
                 if (userPort != null)
-                    UpdatePort(userPort, adminStatus, operStatus);
+                {
+                    if (_commonData.FixPollStatusOnTrap)
+                        _ = Task.Run(() => userPort.Switch.ReadInterfaceStatusAsync(userPort));
+                    else
+                        UpdatePort(userPort, adminStatus, operStatus);
+                }
             }
 
         }

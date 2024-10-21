@@ -19,19 +19,32 @@ namespace easyvlans.Model.SwitchOperationMethods
             protected override IReadInterfaceStatusMethod createReadInterfaceStatusMethod(ISnmpConnection snmpConnection, object commonData)
                 => new ReadInterfaceStatusMethod(snmpConnection);
 
+            protected override object createCommonData(XmlNode xmlNode, DeserializationContext context)
+                => new CommonData()
+                {
+                    FixPollStatusOnTrap = (xmlNode.SelectNodes(DATA_TAG_FIX_POLL_STATUS_ON_TRAP).Count > 0),
+                };
+
+            public const string DATA_TAG_FIX_POLL_STATUS_ON_TRAP = "fix-poll-status-on-trap";
+
             protected override void subscribeTraps(ISnmpConnection snmpConnection, string[] trapFilter, object commonData)
             {
                 bool subscribeDown = trapFilter.NullOrContains(TRAP_FILTER_LINK_DOWN);
                 bool subscribeUp = trapFilter.NullOrContains(TRAP_FILTER_LINK_UP);
                 TrapLinkUpOrDown trapSubscriber = null;
                 if (subscribeDown || subscribeUp)
-                    trapSubscriber = new(snmpConnection);
+                    trapSubscriber = new(snmpConnection, (CommonData)commonData);
                 if (subscribeDown)
                     snmpConnection.SubscribeForTrap(trapSubscriber, GenericTrapDescriptors.LINK_DOWN);
                 if (subscribeUp)
                     snmpConnection.SubscribeForTrap(trapSubscriber, GenericTrapDescriptors.LINK_UP);
             }
 
+        }
+
+        internal class CommonData
+        {
+            public bool FixPollStatusOnTrap { get; init; }
         }
 
         private const string OID_IF_TABLE = "1.3.6.1.2.1.2.2.1";
