@@ -20,7 +20,8 @@ namespace easyvlans.Model.SwitchOperationMethods
                 int ifIndex =-1, adminStatus = 0, operStatus = 0;
                 foreach (Variable variable in variables)
                 {
-                    switch (variable.Id.ToString())
+                    SnmpVariableHelpers.IdParts idParts = variable.GetIdParts();
+                    switch (idParts.NodeId)
                     {
                         case OID_IF_INDEX:
                             variable.ToInt(i => ifIndex = i);
