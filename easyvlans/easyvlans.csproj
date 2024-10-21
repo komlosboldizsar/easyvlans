@@ -20,7 +20,6 @@
     <ProjectReference Include="..\btoolbox-gui-general\btoolbox-gui-general.csproj" />
     <ProjectReference Include="..\btoolbox-model-general\btoolbox-model-general.csproj" />
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
-    <ProjectReference Include="..\btoolbox-oneinstance\btoolbox-oneinstance.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="GUI\PortDataDisplay.cs">
