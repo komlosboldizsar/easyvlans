@@ -1,6 +1,6 @@
 ﻿using BToolbox.SNMP;
 using easyvlans.Helpers;
-using easyvlans.Logger;
+using BToolbox.Logger;
 using Lextm.SharpSnmpLib;
 using Lextm.SharpSnmpLib.Messaging;
 using System.Net;

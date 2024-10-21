@@ -29,7 +29,6 @@ namespace easyvlans.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             portTable = new System.Windows.Forms.TableLayoutPanel();
             titlePortPortLabel = new System.Windows.Forms.Label();
@@ -69,9 +68,6 @@ namespace easyvlans.GUI
             showVerboseLog = new System.Windows.Forms.CheckBox();
             portCollectionButtonContainer = new System.Windows.Forms.FlowLayoutPanel();
             portCollectionButton = new System.Windows.Forms.Button();
-            trayIcon = new System.Windows.Forms.NotifyIcon(components);
-            trayMenu = new System.Windows.Forms.ContextMenuStrip(components);
-            trayMenuExit = new System.Windows.Forms.ToolStripMenuItem();
             portCollectionButtonContainerContainer = new System.Windows.Forms.Panel();
             portTable.SuspendLayout();
             portTableContainer.SuspendLayout();
@@ -79,9 +75,12 @@ namespace easyvlans.GUI
             switchTable.SuspendLayout();
             bottomPanel.SuspendLayout();
             portCollectionButtonContainer.SuspendLayout();
-            trayMenu.SuspendLayout();
             portCollectionButtonContainerContainer.SuspendLayout();
             SuspendLayout();
+            // 
+            // trayIcon
+            // 
+            trayIcon.Icon = (System.Drawing.Icon)resources.GetObject("trayIcon.Icon");
             // 
             // portTable
             // 
@@ -323,7 +322,6 @@ namespace easyvlans.GUI
             logTextBox.Size = new System.Drawing.Size(1148, 106);
             logTextBox.TabIndex = 4;
             logTextBox.Text = "";
-            logTextBox.Resize += logTextBox_Resize;
             // 
             // portTableContainer
             // 
@@ -569,27 +567,6 @@ namespace easyvlans.GUI
             portCollectionButton.Text = "Collection 1";
             portCollectionButton.UseVisualStyleBackColor = true;
             // 
-            // trayIcon
-            // 
-            trayIcon.ContextMenuStrip = trayMenu;
-            trayIcon.Icon = (System.Drawing.Icon)resources.GetObject("trayIcon.Icon");
-            trayIcon.Text = "EasyVLANs";
-            trayIcon.DoubleClick += trayIcon_DoubleClick;
-            // 
-            // trayMenu
-            // 
-            trayMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
-            trayMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { trayMenuExit });
-            trayMenu.Name = "trayMenu";
-            trayMenu.Size = new System.Drawing.Size(179, 28);
-            // 
-            // trayMenuExit
-            // 
-            trayMenuExit.Name = "trayMenuExit";
-            trayMenuExit.Size = new System.Drawing.Size(178, 24);
-            trayMenuExit.Text = "Exit EasyVLANs";
-            trayMenuExit.Click += trayMenuExit_Click;
-            // 
             // portCollectionButtonContainerContainer
             // 
             portCollectionButtonContainerContainer.AutoSize = true;
@@ -619,7 +596,6 @@ namespace easyvlans.GUI
             Name = "MainForm";
             StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             Text = "EasyVLANs";
-            FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             portTable.ResumeLayout(false);
             portTable.PerformLayout();
@@ -633,7 +609,6 @@ namespace easyvlans.GUI
             bottomPanel.PerformLayout();
             portCollectionButtonContainer.ResumeLayout(false);
             portCollectionButtonContainer.PerformLayout();
-            trayMenu.ResumeLayout(false);
             portCollectionButtonContainerContainer.ResumeLayout(false);
             portCollectionButtonContainerContainer.PerformLayout();
             ResumeLayout(false);
@@ -676,9 +651,6 @@ namespace easyvlans.GUI
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label titleSwitchStatusPersist;
         private System.Windows.Forms.Label rowSwitchStatusPersist;
-        private System.Windows.Forms.NotifyIcon trayIcon;
-        private System.Windows.Forms.ContextMenuStrip trayMenu;
-        private System.Windows.Forms.ToolStripMenuItem trayMenuExit;
         private System.Windows.Forms.Panel portCollectionButtonContainerContainer;
         private System.Windows.Forms.Label titlePortStatus;
         private PortStatusDisplay rowPortStatusDisplay;

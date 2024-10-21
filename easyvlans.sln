@@ -33,7 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "btoolbox-oneinstance", "bto
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "btoolbox-model-general", "btoolbox-model-general\btoolbox-model-general.csproj", "{53FFD735-8D1A-4510-98D2-FA323AE56CDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyvlans-swopm-snmp-if", "easyvlans-swopm-snmp-if\easyvlans-swopm-snmp-if.csproj", "{FA73221F-EDF0-423B-B147-257D8E87BACB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-swopm-snmp-if", "easyvlans-swopm-snmp-if\easyvlans-swopm-snmp-if.csproj", "{FA73221F-EDF0-423B-B147-257D8E87BACB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "btoolbox-gui-general", "btoolbox-gui-general\btoolbox-gui-general.csproj", "{C6A29323-8170-46F5-B54C-834BA6B820FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{FA73221F-EDF0-423B-B147-257D8E87BACB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA73221F-EDF0-423B-B147-257D8E87BACB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA73221F-EDF0-423B-B147-257D8E87BACB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6A29323-8170-46F5-B54C-834BA6B820FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6A29323-8170-46F5-B54C-834BA6B820FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6A29323-8170-46F5-B54C-834BA6B820FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6A29323-8170-46F5-B54C-834BA6B820FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

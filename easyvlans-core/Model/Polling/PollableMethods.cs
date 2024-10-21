@@ -1,4 +1,4 @@
-﻿using easyvlans.Logger;
+﻿using BToolbox.Logger;
 using easyvlans.Model.SwitchOperationMethods;
 
 namespace easyvlans.Model.Polling

@@ -10,3 +10,6 @@
 [submodule "btoolbox-model-general"]
 	path = btoolbox-model-general
 	url = https://github.com/komlosboldizsar/btoolbox-model-general.git
+[submodule "btoolbox-gui-general"]
+	path = btoolbox-gui-general
+	url = https://github.com/komlosboldizsar/btoolbox-gui-general/

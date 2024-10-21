@@ -2,7 +2,7 @@
 using BToolbox.XmlDeserializer.Context;
 using BToolbox.XmlDeserializer.Exceptions;
 using BToolbox.XmlDeserializer.Helpers;
-using easyvlans.Logger;
+using BToolbox.Logger;
 using easyvlans.Model.SwitchOperationMethods;
 
 namespace easyvlans.Model.Deserializers
@@ -65,11 +65,11 @@ namespace easyvlans.Model.Deserializers
 
             configDeserializer.Register(RemoteMethodsDeserializer.Instance, (config, remotes) => config.Remotes = remotes);
 
-            SimpleDictionaryDeserializer<string, Switch, Config> switchesDeserializer = new(ConfigTagNames.SWITCHES, new SwitchDeserializer(), @switch => @switch.ID);
+            SimpleDictionaryDeserializer<string, Switch, Config> switchesDeserializer = new(ConfigTagNames.SWITCHES, new SwitchDeserializer(), (@switch, switchNode, context) => @switch.ID);
             configDeserializer.Register(switchesDeserializer, (config, switches) => config.Switches = switches);
 
-            SimpleDictionaryDeserializer<int, Vlan, Config> vlansDeserializer = new(ConfigTagNames.VLANS, new VlanDeserializer(), vlan => vlan.ID);
-            SimpleDictionaryDeserializer<string, Vlanset, Config> vlansetsDeserializer = new(ConfigTagNames.VLANS, new VlansetDeserializer(), vlanset => vlanset.ID);
+            SimpleDictionaryDeserializer<int, Vlan, Config> vlansDeserializer = new(ConfigTagNames.VLANS, new VlanDeserializer(), (vlan, vlanNode, context) => vlan.ID);
+            SimpleDictionaryDeserializer<string, Vlanset, Config> vlansetsDeserializer = new(ConfigTagNames.VLANS, new VlansetDeserializer(), (vlanset, vlansetNode, context) => vlanset.ID);
             MultiDeserializer<Config> vlansVlansetsDeserializer = new();
             var vlansDeserializerRegistration = vlansVlansetsDeserializer.Register(vlansDeserializer);
             var vlansetsDeserializerRegistration = vlansVlansetsDeserializer.Register(vlansetsDeserializer);

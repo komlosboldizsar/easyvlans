@@ -36,7 +36,7 @@ namespace easyvlans.Model.Deserializers
             };
         }
 
-        protected override void addElementToCollection(PortCollection portCollection, IPortOrPortCollection portOrPortCollection)
+        protected override void addElementToCollection(PortCollection portCollection, IPortOrPortCollection portOrPortCollection, XmlNode portNode, DeserializationContext context)
             => portCollection.Add(portOrPortCollection);
 
         private const string ATTR_TITLE = "title";

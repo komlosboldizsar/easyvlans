@@ -2,7 +2,7 @@
 using BToolbox.XmlDeserializer.Attributes;
 using BToolbox.XmlDeserializer.Context;
 using BToolbox.XmlDeserializer.Relations;
-using easyvlans.Logger;
+using BToolbox.Logger;
 using System.Text.RegularExpressions;
 using System.Xml;
 

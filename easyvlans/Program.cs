@@ -1,8 +1,8 @@
 using BToolbox.OneInstance;
 using BToolbox.XmlDeserializer.Exceptions;
+using BToolbox.Logger;
 using CommandLine;
 using easyvlans.GUI;
-using easyvlans.Logger;
 using easyvlans.Model;
 using easyvlans.Model.Deserializers;
 using easyvlans.Model.Polling;
@@ -25,49 +25,54 @@ namespace easyvlans
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            _ = new FileLogger(parsedArguments.VeryVerbose ? null : LogMessageSeverity.Verbose);
+            _ = new FileLogger()
+            {
+                MaxSeverity = parsedArguments.VeryVerbose ? null : LogMessageSeverity.Verbose
+            };
             LogDispatcher.I("Program started.");
             ModuleLoader.LoadAndInitModules();
             LogDispatcher.I($"Loaded and initialized {ModuleLoader.InitializedModuleCount} modules.");
             Config config = null;
             string parsingError = null;
-            bool dontStart = false;
+            bool start = true;
+            OneInstanceData oneInstanceData = null;
             try
             {
                 LogDispatcher.I("Loading configuration...");
-                ConfigDeserializer.Deserializer.Register(new OneInstanceDataDeserializer(), (config, oneInstanceData) => oneInstanceDataHandler(oneInstanceData));
+                ConfigDeserializer.Deserializer.Register(new OneInstanceDataDeserializer(), (config, oneInstDta) =>
+                {
+                    oneInstanceData = oneInstDta;
+                    OneInstanceGuard.Set("cabletracker", oneInstanceData.ID);
+                });
                 config = (new ConfigDeserializer()).LoadConfig(parsedArguments.ConfigFile ?? DEFAULT_CONFIG_FILE);
-                if (config.Remotes != null)
+                start = OneInstanceGuard.Init();
+                if (start && (config.Remotes != null))
                     foreach (IRemoteMethod remoteMethod in config.Remotes)
                         remoteMethod.Start();
             }
             catch (DeserializationException e)
             {
-                if (e.InnerException is OneInstanceAlreadyRunningException)
+                parsingError = e.Message;
+                LogDispatcher.E("XML configuration parsing error: " + e.Message);
+                Exception innerEx = e.InnerException;
+                while (innerEx != null)
                 {
-                    dontStart = true;
-                    OneInstancePipe.SignalOtherInstanceToShow(_oneInstanceData.ID);
-                }
-                else
-                {
-                    parsingError = e.Message;
-                    LogDispatcher.E("XML configuration parsing error: " + e.Message);
-                    if (e.InnerException != null)
-                        LogDispatcher.E("Inner exception: " + e.InnerException.Message);
+                    parsingError += $"\r\n--------\r\n{innerEx.Message}";
+                    LogDispatcher.E("Inner exception: " + e.InnerException.Message);
                 }
             }
-            if (!dontStart)
+            if (start)
             {
                 if (config != null)
                     Task.Run(() => loadAsync(config));
                 PollingDispatcher.Start();
                 LogDispatcher.I("Starting GUI...");
-                bool hideOnStartup = (_oneInstanceData?.StartVisible == false);
+                bool hideOnStartup = (oneInstanceData?.StartVisible == false);
                 if (parsedArguments.Hidden)
                     hideOnStartup = true;
                 if (parsedArguments.NotHidden)
                     hideOnStartup = false;
-                MainForm mainForm = new(config, parsingError, (_oneInstanceData != null), hideOnStartup);
+                MainForm mainForm = new(config, parsingError, (oneInstanceData != null), hideOnStartup);
                 Application.Run(mainForm);
             }
         }
@@ -88,24 +93,6 @@ namespace easyvlans
             await @switch.ReadInterfaceStatusAsync();
             await @switch.ReadVlanMembershipAsync();
         }
-
-        private static void oneInstanceDataHandler(OneInstanceData oneInstanceData)
-        {
-            _oneInstanceData = oneInstanceData;
-            string mutexId = ONE_INSTANCE_MUTEX_PREFIX;
-            if (oneInstanceData.ID != null)
-                mutexId += $"_{oneInstanceData.ID}";
-            _oneInstanceMutex = new(true, mutexId, out bool mutexResult);
-            if (!mutexResult)
-                throw new OneInstanceAlreadyRunningException();
-            OneInstancePipe.StartOneInstanceServer(oneInstanceData.ID);
-        }
-
-        private static OneInstanceData _oneInstanceData;
-#pragma warning disable IDE0052
-        private static Mutex _oneInstanceMutex;
-#pragma warning restore IDE0052
-        private const string ONE_INSTANCE_MUTEX_PREFIX = "_easyvlans_oneinstance";
 
     }
 }

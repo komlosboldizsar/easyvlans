@@ -3,7 +3,7 @@ using BToolbox.XmlDeserializer.Attributes;
 using BToolbox.XmlDeserializer.Context;
 using BToolbox.XmlDeserializer.Exceptions;
 using BToolbox.XmlDeserializer.Relations;
-using easyvlans.Logger;
+using BToolbox.Logger;
 using easyvlans.Model.Polling;
 using easyvlans.Model.SwitchOperationMethods;
 using System.Xml;
