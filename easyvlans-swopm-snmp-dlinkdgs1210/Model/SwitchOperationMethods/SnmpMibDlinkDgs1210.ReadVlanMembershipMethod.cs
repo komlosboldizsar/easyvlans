@@ -11,12 +11,12 @@ namespace easyvlans.Model.SwitchOperationMethods
             public ReadVlanMembershipMethod(ISnmpConnection snmpConnection, object commonData)
                 : base(snmpConnection, commonData) { }
 
-            public async Task DoAsync()
+            public async Task DoAsync(IEnumerable<Port> ports = null)
             {
                 Dictionary<int, Dgs1210SnmpVlan> snmpVlans = await readSnmpVlansAsync();
-                Dictionary<int, Dgs1210SnmpPort> snmpPorts = await readSnmpPortsAsync();
+                Dictionary<int, Dgs1210SnmpPort> snmpPorts = await readSnmpPortsAsync(ports);
                 bindUserToSnmpVlans(snmpVlans);
-                calculateSnmpPortVlanMemberships(snmpVlans, snmpPorts);
+                calculateSnmpPortVlanMemberships(snmpVlans, snmpPorts, ports);
             }
 
             private async Task<Dictionary<int, Dgs1210SnmpVlan>> readSnmpVlansAsync()
@@ -45,26 +45,35 @@ namespace easyvlans.Model.SwitchOperationMethods
                         snmpVlan.UserVlan = userVlan;
             }
 
-            private async Task<Dictionary<int, Dgs1210SnmpPort>> readSnmpPortsAsync()
+            private async Task<Dictionary<int, Dgs1210SnmpPort>> readSnmpPortsAsync(IEnumerable<Port> userPorts = null)
             {
                 Dictionary<int, Dgs1210SnmpPort> snmpPorts = new();
-                foreach (Variable portVlanTableRow in await _snmpConnection.WalkAsync(_oidsForModel.OID_DOT1Q_PORT_PVID))
+                void processDgs1210PortPvid(Dgs1210SnmpPort p, Variable v) => v.ToInt(i => p.PVID = i);
+                if (userPorts == null)
                 {
-                    SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
-                    Dgs1210SnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId, id => new Dgs1210SnmpPort(id));
-                    if (idParts.NodeId == _oidsForModel.OID_DOT1Q_PORT_PVID)
+                    await WalkAndProcess(_oidsForModel.OID_DOT1Q_PORT_PVID, snmpPorts, id => new(id), processDgs1210PortPvid);
+                }
+                else
+                {
+                    List<string> oids = new();
+                    foreach (Port userPort in userPorts)
+                        if (userPort.Switch == _snmpConnection.Switch)
+                            oids.Add($"{_oidsForModel.OID_DOT1Q_PORT_PVID}.{userPort.Index}");
+                    Action<string, Variable, Dgs1210SnmpPort> processDgs1210VlanPortTableRow = (nodeId, dgs1210PortTableRow, snmpPort) =>
                     {
-                        if (int.TryParse(portVlanTableRow.Data.ToString(), out int pvid))
-                            snmpPort.PVID = pvid;
-                    }
+                        if (nodeId == _oidsForModel.OID_DOT1Q_PORT_PVID)
+                            processDgs1210PortPvid(snmpPort, dgs1210PortTableRow);
+                    };
                 }
                 return snmpPorts;
             }
 
-            private void calculateSnmpPortVlanMemberships(Dictionary<int, Dgs1210SnmpVlan> snmpVlans, Dictionary<int, Dgs1210SnmpPort> snmpPorts)
+            private void calculateSnmpPortVlanMemberships(Dictionary<int, Dgs1210SnmpVlan> snmpVlans, Dictionary<int, Dgs1210SnmpPort> snmpPorts, IEnumerable<Port> userPorts = null)
             {
                 foreach (Port userPort in _snmpConnection.Switch.Ports)
                 {
+                    if ((userPorts != null) && !userPorts.Contains(userPort))
+                        continue;
                     if (!snmpPorts.TryGetValue(userPort.Index, out Dgs1210SnmpPort snmpPort))
                     {
                         userPort.CurrentVlan = null;

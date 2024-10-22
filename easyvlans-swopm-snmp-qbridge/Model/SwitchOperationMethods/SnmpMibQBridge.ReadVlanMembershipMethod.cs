@@ -11,12 +11,12 @@ namespace easyvlans.Model.SwitchOperationMethods
             public ReadVlanMembershipMethod(ISnmpConnection snmpConnection, object commonData)
                 : base(snmpConnection, commonData) { }
 
-            public async Task DoAsync()
+            public async Task DoAsync(IEnumerable<Port> ports = null)
             {
                 Dictionary<int, QBridgeSnmpVlan> snmpVlans = await readSnmpVlansAsync();
-                Dictionary<int, QBridgeSnmpPort> snmpPorts = await readSnmpPortsAsync();
+                Dictionary<int, QBridgeSnmpPort> snmpPorts = await readSnmpPortsAsync(ports);
                 bindUserToSnmpVlans(snmpVlans);
-                calculateSnmpPortVlanMemberships(snmpVlans, snmpPorts);
+                calculateSnmpPortVlanMemberships(snmpVlans, snmpPorts, ports);
             }
 
             public async Task<Dictionary<int, QBridgeSnmpVlan>> readSnmpVlansAsync()
@@ -46,28 +46,40 @@ namespace easyvlans.Model.SwitchOperationMethods
                         snmpVlan.UserVlan = userVlan;
             }
 
-            public async Task<Dictionary<int, QBridgeSnmpPort>> readSnmpPortsAsync()
+            public async Task<Dictionary<int, QBridgeSnmpPort>> readSnmpPortsAsync(IEnumerable<Port> userPorts = null)
             {
                 Dictionary<int, QBridgeSnmpPort> snmpPorts = new();
-                foreach (Variable portVlanTableRow in await _snmpConnection.WalkAsync(OID_DOT1Q_PORT_VLAN_TABLE))
+                void processQBridgePortPvid(QBridgeSnmpPort p, Variable v) => v.ToInt(i => p.PVID = i);
+                if (userPorts == null)
                 {
-                    SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
-                    QBridgeSnmpPort snmpPort = snmpPorts.GetAnyway(idParts.RowId, id => new QBridgeSnmpPort(id));
-                    switch (idParts.NodeId)
+                    await WalkAndProcess(OID_DOT1Q_PVID, snmpPorts, id => new(id), processQBridgePortPvid);
+                }
+                else
+                {
+                    List<string> oids = new();
+                    foreach (Port userPort in userPorts)
+                        if (userPort.Switch == _snmpConnection.Switch)
+                            oids.Add($"{OID_DOT1Q_PVID}.{userPort.Index}");
+                    Action<string, Variable, QBridgeSnmpPort> processQBridgePortVlanTableRow = (nodeId, qBridgePortVlanTableRow, snmpPort) =>
                     {
-                        case OID_DOT1Q_PVID:
-                            if (int.TryParse(portVlanTableRow.Data.ToString(), out int pvid))
-                                snmpPort.PVID = pvid;
-                            break;
-                    }
+                        switch (nodeId)
+                        {
+                            case OID_DOT1Q_PVID:
+                                processQBridgePortPvid(snmpPort, qBridgePortVlanTableRow);
+                                break;
+                        }
+                    };
+                    TableProcessHelpers.ProcessTableRows(await _snmpConnection.GetAsync(oids), snmpPorts, id => new QBridgeSnmpPort(id), processQBridgePortVlanTableRow);
                 }
                 return snmpPorts;
             }
 
-            public void calculateSnmpPortVlanMemberships(Dictionary<int, QBridgeSnmpVlan> snmpVlans, Dictionary<int, QBridgeSnmpPort> snmpPorts)
+            public void calculateSnmpPortVlanMemberships(Dictionary<int, QBridgeSnmpVlan> snmpVlans, Dictionary<int, QBridgeSnmpPort> snmpPorts, IEnumerable<Port> userPorts)
             {
                 foreach (Port userPort in _snmpConnection.Switch.Ports)
                 {
+                    if ((userPorts != null) && !userPorts.Contains(userPort))
+                        continue;
                     if (!snmpPorts.TryGetValue(userPort.Index, out QBridgeSnmpPort snmpPort))
                     {
                         userPort.CurrentVlan = null;

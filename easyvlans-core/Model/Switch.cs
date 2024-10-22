@@ -80,7 +80,10 @@ namespace easyvlans.Model
             private set => this.setProperty(ref _readVlanConfigStatusUpdateTime, value, ReadVlanConfigStatusUpdateTimeChanged);
         }
 
-        public async Task ReadVlanMembershipAsync()
+        public Task ReadVlanMembershipAsync(Port port)
+            => ReadVlanMembershipAsync(new Port[] { port });
+
+        public async Task ReadVlanMembershipAsync(IEnumerable<Port> ports = null)
         {
             if (OperationMethodCollection?.ReadVlanMembershipMethod == null)
             {
@@ -92,7 +95,7 @@ namespace easyvlans.Model
             LogDispatcher.V($"Method for reading VLAN memberships of switch [{Label}]: [{OperationMethodCollection.ReadVlanMembershipMethod.DetailedCode}].");
             try
             {
-                await OperationMethodCollection.ReadVlanMembershipMethod.DoAsync();
+                await OperationMethodCollection.ReadVlanMembershipMethod.DoAsync(ports);
                 ReadVlanConfigStatus = Status.Successful;
                 LogDispatcher.I($"Reading VLAN memberships of switch [{Label}] ready.");
             }

@@ -11,12 +11,12 @@ namespace easyvlans.Model.SwitchOperationMethods
             public ReadVlanMembershipMethod(ISnmpConnection snmpConnection, object commonData)
                 : base(snmpConnection, commonData) { }
 
-            public async Task DoAsync()
+            public async Task DoAsync(IEnumerable<Port> ports = null)
             {
                 Dictionary<int, TPLinkDot1qSnmpVlan> snmpVlans = await readSnmpVlansAsync();
-                Dictionary<int, TPLinkDot1qSnmpPort> snmpPorts = await readSnmpPortsAsync();
+                Dictionary<int, TPLinkDot1qSnmpPort> snmpPorts = await readSnmpPortsAsync(ports);
                 bindUserToSnmpVlans(snmpVlans);
-                calculateSnmpPortVlanMemberships(snmpVlans, snmpPorts);
+                calculateSnmpPortVlanMemberships(snmpVlans, snmpPorts, ports);
             }
 
             public async Task<Dictionary<int, TPLinkDot1qSnmpVlan>> readSnmpVlansAsync()
@@ -38,6 +38,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 }
                 return snmpVlans;
             }
+
             public void bindUserToSnmpVlans(Dictionary<int, TPLinkDot1qSnmpVlan> snmpVlans)
             {
                 foreach (Vlan userVlan in _snmpConnection.Switch.Config.Vlans.Values)
@@ -45,36 +46,50 @@ namespace easyvlans.Model.SwitchOperationMethods
                         snmpVlan.UserVlan = userVlan;
             }
 
-            public async Task<Dictionary<int, TPLinkDot1qSnmpPort>> readSnmpPortsAsync()
+            public async Task<Dictionary<int, TPLinkDot1qSnmpPort>> readSnmpPortsAsync(IEnumerable<Port> userPorts = null)
             {
                 Dictionary<int, TPLinkDot1qSnmpPort> snmpPorts = new();
-                foreach (Variable portVlanTableRow in await _snmpConnection.WalkAsync(OID_VLAN_PORT_CONFIG_TABLE))
+                void processTpLinkDot1qPortType(TPLinkDot1qSnmpPort p, Variable v) => v.ToInt(i => p.Type = (TPLinkDot1qSnmpPort.PortType)i);
+                void processTpLinkDot1qPortPvid(TPLinkDot1qSnmpPort p, Variable v) => v.ToInt(i => p.PVID = i);
+                if (userPorts == null)
                 {
-                    SnmpVariableHelpers.IdParts idParts = portVlanTableRow.GetIdParts();
-                    int? localIndex = _portMappings.LookupBySnmpIndex(idParts.RowId)?.SnmpIndexToLocalIndex(idParts.RowId);
-                    if (localIndex != null)
+                    await WalkAndProcess(OID_VLAN_PORT_TYPE, snmpPorts, id => new(id), processTpLinkDot1qPortType);
+                    await WalkAndProcess(OID_VLAN_PORT_PVID, snmpPorts, id => new(id), processTpLinkDot1qPortPvid);
+                }
+                else
+                {
+                    List<string> oids = new();
+                    foreach (Port userPort in userPorts)
                     {
-                        TPLinkDot1qSnmpPort snmpPort = snmpPorts.GetAnyway((int)localIndex, id => new TPLinkDot1qSnmpPort(id));
-                        switch (idParts.NodeId)
+                        if (userPort.Switch == _snmpConnection.Switch)
                         {
-                            case OID_VLAN_PORT_TYPE:
-                                if (int.TryParse(portVlanTableRow.Data.ToString(), out int type))
-                                    snmpPort.Type = (TPLinkDot1qSnmpPort.PortType)type;
-                                break;
-                            case OID_VLAN_PORT_PVID:
-                                if (int.TryParse(portVlanTableRow.Data.ToString(), out int pvid))
-                                    snmpPort.PVID = pvid;
-                                break;
+                            oids.Add($"{OID_VLAN_PORT_TYPE}.{userPort.Index}");
+                            oids.Add($"{OID_VLAN_PORT_PVID}.{userPort.Index}");
                         }
                     }
+                    Action<string, Variable, TPLinkDot1qSnmpPort> processTpLinkDot1qVlanPortConfigTableRow = (nodeId, tpLinkDot1QportRow, snmpPort) =>
+                    {
+                        switch (nodeId)
+                        {
+                            case OID_VLAN_PORT_TYPE:
+                                processTpLinkDot1qPortType(snmpPort, tpLinkDot1QportRow);
+                                break;
+                            case OID_VLAN_PORT_PVID:
+                                processTpLinkDot1qPortPvid(snmpPort, tpLinkDot1QportRow);
+                                break;
+                        }
+                    };
+                    TableProcessHelpers.ProcessTableRows(await _snmpConnection.GetAsync(oids), snmpPorts, id => new TPLinkDot1qSnmpPort(id), processTpLinkDot1qVlanPortConfigTableRow);
                 }
                 return snmpPorts;
             }
 
-            public void calculateSnmpPortVlanMemberships(Dictionary<int, TPLinkDot1qSnmpVlan> snmpVlans, Dictionary<int, TPLinkDot1qSnmpPort> snmpPorts)
+            public void calculateSnmpPortVlanMemberships(Dictionary<int, TPLinkDot1qSnmpVlan> snmpVlans, Dictionary<int, TPLinkDot1qSnmpPort> snmpPorts, IEnumerable<Port> userPorts = null)
             {
                 foreach (Port userPort in _snmpConnection.Switch.Ports)
                 {
+                    if ((userPorts != null) && !userPorts.Contains(userPort))
+                        continue;
                     if (!snmpPorts.TryGetValue(userPort.Index, out TPLinkDot1qSnmpPort snmpPort))
                     {
                         userPort.CurrentVlan = null;
