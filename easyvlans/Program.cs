@@ -42,7 +42,7 @@ namespace easyvlans
                 ConfigDeserializer.Deserializer.Register(new OneInstanceDataDeserializer(), (config, oneInstDta) =>
                 {
                     oneInstanceData = oneInstDta;
-                    OneInstanceGuard.Set("cabletracker", oneInstanceData.ID);
+                    OneInstanceGuard.Set("easyvlans", oneInstanceData.ID);
                 });
                 config = (new ConfigDeserializer()).LoadConfig(parsedArguments.ConfigFile ?? DEFAULT_CONFIG_FILE);
                 start = OneInstanceGuard.InitAnyway();
@@ -63,8 +63,8 @@ namespace easyvlans
             }
             if (start)
             {
-                if (config != null)
-                    Task.Run(() => loadAsync(config));
+                //if (config != null)
+                    //Task.Run(() => loadAsync(config));
                 PollingDispatcher.Start();
                 LogDispatcher.I("Starting GUI...");
                 bool hideOnStartup = (oneInstanceData?.StartVisible == false);
