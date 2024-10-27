@@ -13,10 +13,11 @@ namespace easyvlans.Model.Polling
 
         public void Set(string methodCode, int interval, int offset)
         {
+            PollingSchedule schedule = (interval > 0) ? new(interval, offset) : null;
             if (methodCode == null)
-                _defaultSchedule = new(interval, offset);
+                _defaultSchedule = schedule;
             else
-                _schedulesForMethods[methodCode] = new(interval, offset);
+                _schedulesForMethods[methodCode] = schedule;
         }
 
         public PollingSchedule Get(string methodCode)
@@ -32,7 +33,7 @@ namespace easyvlans.Model.Polling
             foreach (XmlNode pollNode in switchRootNode.SelectNodes(NODE_POLL))
             {
                 string methodCode = pollNode.AttributeAsString(ATTRIBUTE_METHOD, context).Get().Value;
-                int interval = (int)pollNode.AttributeAsInt(ATTRIBUTE_INTERVAL, context).Mandatory().Min(1).Get().Value;
+                int interval = (int)pollNode.AttributeAsInt(ATTRIBUTE_INTERVAL, context).Mandatory().Min(0).Get().Value;
                 int? offset = pollNode.AttributeAsInt(ATTRIBUTE_OFFSET, context).Default(0).Min(0).Get().Value;
                 if ((methodCode != null) && !POLLABLE_METHODS.Contains(methodCode))
                 {
