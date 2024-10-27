@@ -14,7 +14,7 @@ namespace easyvlans.Model.Polling
         public void Set(string methodCode, int interval, int offset)
         {
             if (methodCode == null)
-                _defaultSchedule = new(interval, 0);
+                _defaultSchedule = new(interval, offset);
             else
                 _schedulesForMethods[methodCode] = new(interval, offset);
         }
@@ -34,14 +34,10 @@ namespace easyvlans.Model.Polling
                 string methodCode = pollNode.AttributeAsString(ATTRIBUTE_METHOD, context).Get().Value;
                 int interval = (int)pollNode.AttributeAsInt(ATTRIBUTE_INTERVAL, context).Mandatory().Min(1).Get().Value;
                 int? offset = pollNode.AttributeAsInt(ATTRIBUTE_OFFSET, context).Default(0).Min(0).Get().Value;
-                if (methodCode != null && !POLLABLE_METHODS.Contains(methodCode))
+                if ((methodCode != null) && !POLLABLE_METHODS.Contains(methodCode))
                 {
                     context.Report(DeserializationReportSeverity.Warning, pollNode, $"Polling not possible for method '{methodCode}'.");
                     continue;
-                }
-                if (methodCode == null && offset != null)
-                {
-                    context.Report(DeserializationReportSeverity.Warning, pollNode, $"Polling offset not definiable for default case.");
                 }
                 pollingIntervals.Set(methodCode, interval, (int)offset);
             }
