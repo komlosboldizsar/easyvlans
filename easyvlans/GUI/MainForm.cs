@@ -1,4 +1,6 @@
 ﻿using BToolbox.GUI.Forms;
+using BToolbox.GUI.Helpers;
+using BToolbox.GUI.RecyclerTables;
 using BToolbox.Logger;
 using BToolbox.OneInstance;
 using easyvlans.GUI.Helpers;

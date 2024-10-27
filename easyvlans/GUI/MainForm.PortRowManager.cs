@@ -1,4 +1,5 @@
-﻿using easyvlans.GUI.Helpers;
+﻿using BToolbox.GUI.RecyclerTables;
+using easyvlans.GUI.Helpers;
 using easyvlans.GUI.Helpers.DropDowns;
 using easyvlans.Helpers;
 using easyvlans.Model;
