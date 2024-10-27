@@ -59,7 +59,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                     List<string> oids = new();
                     foreach (Port userPort in userPorts)
                         if (userPort.Switch == _snmpConnection.Switch)
-                            oids.Add($"{OID_DOT1Q_PVID}.{userPort.Index}");
+                            oids.Add($"{OID_DOT1Q_PVID}.{userPort.Index + _commonData.PortIndexOffset}");
                     Action<string, Variable, QBridgeSnmpPort> processQBridgePortVlanTableRow = (nodeId, qBridgePortVlanTableRow, snmpPort) =>
                     {
                         switch (nodeId)
@@ -80,12 +80,12 @@ namespace easyvlans.Model.SwitchOperationMethods
                 {
                     if ((userPorts != null) && !userPorts.Contains(userPort))
                         continue;
-                    if (!snmpPorts.TryGetValue(userPort.Index, out QBridgeSnmpPort snmpPort))
+                    if (!snmpPorts.TryGetValue(userPort.Index + _commonData.PortIndexOffset, out QBridgeSnmpPort snmpPort))
                     {
                         userPort.CurrentVlan = null;
                         continue;
                     }
-                    (int portByteIndex, int portBitIndex) = getByteBitIndex(userPort.Index);
+                    (int portByteIndex, int portBitIndex) = getByteBitIndex(userPort.Index + _commonData.PortIndexOffset);
                     int ownerVlans = 0;
                     QBridgeSnmpVlan lastOwnerSnmpVlan = null;
                     foreach (QBridgeSnmpVlan snmpVlan in snmpVlans.Values)

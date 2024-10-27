@@ -1,4 +1,5 @@
-﻿using BToolbox.XmlDeserializer.Context;
+﻿using BToolbox.XmlDeserializer.Attributes;
+using BToolbox.XmlDeserializer.Context;
 using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
@@ -32,11 +33,13 @@ namespace easyvlans.Model.SwitchOperationMethods
                 return new CommonData()
                 {
                     NoPvid = (xmlNode.SelectNodes(DATA_TAG_NO_PVID).Count > 0),
-                    SetMembershipVariant = setMembershipVariant
+                    SetMembershipVariant = setMembershipVariant,
+                    PortIndexOffset = xmlNode.SelectSingleNode(DATA_TAG_PORT_INDEX_OFFSET).InnerAsInt(context).Min(0).Get().Value ?? 0
                 };
             }
 
             public const string DATA_TAG_NO_PVID = "nopvid";
+            public const string DATA_TAG_PORT_INDEX_OFFSET = "port_index_offset";
             public const string DATA_TAG_SET_MEMBERSHIP_VARIANT = "set_membership_variant";
 
             protected override IReadVlanMembershipMethod createReadConfigMethod(ISnmpConnection snmpConnection, object commonData)
@@ -66,6 +69,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             public bool NoPvid { get; init; }
             public string SetMembershipVariant { get; init; }
+            public int PortIndexOffset { get; init; }
         }
 
         private const string OID_DOT1Q_VLAN_STATIC_TABLE = "1.3.6.1.2.1.17.7.1.4.3";
