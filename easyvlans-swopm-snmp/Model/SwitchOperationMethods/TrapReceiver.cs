@@ -68,7 +68,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         private static void checkSubscriptionsForMessage(ISnmpMessage message, IPAddress remoteIpAddress, IEnumerable<ISubscription> subscriptions, IEnumerable<Variable> variables)
         {
             string userName = message.Parameters.UserName.ToString();
-            subscriptions.Where(s => ((s.IPAddress == remoteIpAddress) && (s.CommunityString == userName))).Foreach(s => s.Subscriber.TrapReceived(message, variables));
+            subscriptions.Where(s => ((s.IPAddress.Equals(remoteIpAddress)) && (s.CommunityString == userName))).Foreach(s => s.Subscriber.TrapReceived(message, variables));
         }
 
         #region V1 traps
