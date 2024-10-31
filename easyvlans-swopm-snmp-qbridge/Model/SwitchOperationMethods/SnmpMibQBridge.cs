@@ -34,7 +34,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 {
                     NoPvid = (xmlNode.SelectNodes(DATA_TAG_NO_PVID).Count > 0),
                     SetMembershipVariant = setMembershipVariant,
-                    PortIndexOffset = xmlNode.SelectSingleNode(DATA_TAG_PORT_INDEX_OFFSET).InnerAsInt(context).Min(0).Get().Value ?? 0
+                    PortIndexOffset = xmlNode.SelectSingleNode(DATA_TAG_PORT_INDEX_OFFSET)?.InnerAsInt(context).Min(0).Get().Value ?? 0
                 };
             }
 
