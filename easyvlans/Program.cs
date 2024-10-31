@@ -58,13 +58,14 @@ namespace easyvlans
                 while (innerEx != null)
                 {
                     parsingError += $"\r\n--------\r\n{innerEx.Message}";
-                    LogDispatcher.E("Inner exception: " + e.InnerException.Message);
+                    LogDispatcher.E("Inner exception: " + innerEx.Message);
+                    innerEx = innerEx.InnerException;
                 }
             }
             if (start)
             {
-                //if (config != null)
-                    //Task.Run(() => loadAsync(config));
+                if (config != null)
+                    Task.Run(() => loadAsync(config));
                 PollingDispatcher.Start();
                 LogDispatcher.I("Starting GUI...");
                 bool hideOnStartup = (oneInstanceData?.StartVisible == false);
