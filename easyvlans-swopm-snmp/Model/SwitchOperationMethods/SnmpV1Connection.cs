@@ -19,7 +19,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         protected override async Task<IList<Variable>> DoGetAsync(IEnumerable<string> objectIdentifierStrs)
         {
             IList<Variable> variables = objectIdentifierStrs.Select(oid => new Variable(new ObjectIdentifier(oid))).ToList();
-            return await Messenger.GetAsync(VersionCode.V2, _ipEndPoint, _readCommunityString, variables);
+            return await Messenger.GetAsync(VersionCode.V1, _ipEndPoint, _readCommunityString, variables);
         }
 
         protected override async Task<List<Variable>> DoWalkAsync(string objectIdentifierStr)
