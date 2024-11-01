@@ -26,10 +26,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             relationBuilder = null;
 
             // Connection basics
-            XmlAttributeOrInnerData<string> ipAddressAttribute = elementNode.AttributeAsString(ATTR_IP, context).Mandatory().NotEmpty().Get();
-            string ip = ipAddressAttribute.Value;
-            if (!REGEXP_IP_ADDRESS.IsMatch(ip))
-                throw new AttributeOrInnerValueInvalidException($"Invalid IP address.", ipAddressAttribute.Attribute);
+            string ip = elementNode.AttributeAsIPv4(ATTR_IP, context).Mandatory().Get().Value;
             int port = (int)elementNode.AttributeAsInt(ATTR_PORT, context).Default(161).Min(1).Max(65535).Get().Value;
             string communityString = elementNode.AttributeAsString(ATTR_COMMUNITY_STRING, context).Mandatory().Get().Value;
             
@@ -70,8 +67,6 @@ namespace easyvlans.Model.SwitchOperationMethods
         private const string ATTR_TRAP_PORT = "trap_port";
         private const string ATTR_TRAP_COMMUNITY_STRING = "trap_community_string";
         private const string ATTR_TRAP_VERSION_STRICT = "trap_version_strict";
-
-        private readonly Regex REGEXP_IP_ADDRESS = new(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public static void RegisterMibDeserializer(IDeserializer<ISwitchOperationMethodCollection, Config> deserializer)
         {
