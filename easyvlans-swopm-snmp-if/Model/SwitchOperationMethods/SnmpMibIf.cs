@@ -17,15 +17,17 @@ namespace easyvlans.Model.SwitchOperationMethods
             public override string ElementName => MIB_NAME;
 
             protected override IReadInterfaceStatusMethod createReadInterfaceStatusMethod(ISnmpConnection snmpConnection, object commonData)
-                => new ReadInterfaceStatusMethod(snmpConnection);
+                => new ReadInterfaceStatusMethod(snmpConnection, (CommonData)commonData);
 
             protected override object createCommonData(XmlNode xmlNode, DeserializationContext context)
                 => new CommonData()
                 {
                     FixPollStatusOnTrap = (xmlNode.SelectNodes(DATA_TAG_FIX_POLL_STATUS_ON_TRAP).Count > 0),
+                    OnlyForPorts = (xmlNode.SelectNodes(DATA_TAG_ONLY_FOR_PORTS).Count > 0),
                 };
 
             public const string DATA_TAG_FIX_POLL_STATUS_ON_TRAP = "fix-poll-status-on-trap";
+            public const string DATA_TAG_ONLY_FOR_PORTS = "only-for-ports";
 
             protected override void subscribeTraps(ISnmpConnection snmpConnection, string[] trapFilter, object commonData)
             {
@@ -45,6 +47,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         internal class CommonData
         {
             public bool FixPollStatusOnTrap { get; init; }
+            public bool OnlyForPorts { get; init; }
         }
 
         private const string OID_IF_TABLE = "1.3.6.1.2.1.2.2.1";

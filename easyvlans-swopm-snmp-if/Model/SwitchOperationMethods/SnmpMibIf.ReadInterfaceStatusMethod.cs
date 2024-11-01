@@ -9,10 +9,12 @@ namespace easyvlans.Model.SwitchOperationMethods
         internal class ReadInterfaceStatusMethod : SnmpMethodBase, IReadInterfaceStatusMethod
         {
 
-            public ReadInterfaceStatusMethod(ISnmpConnection snmpConnection)
-                : base(snmpConnection) { }
+            public ReadInterfaceStatusMethod(ISnmpConnection snmpConnection, CommonData commonData)
+                : base(snmpConnection)
+                => _commonData = commonData;
 
             public override string MibName => MIB_NAME;
+            private readonly CommonData _commonData;
 
             public async Task DoAsync(IEnumerable<Port> ports = null)
             {
@@ -26,6 +28,8 @@ namespace easyvlans.Model.SwitchOperationMethods
                 void processIfAdminStatus(IfSnmpPort p, Variable v) => v.ToInt(i => p.AdminStatus = i);
                 void processIfOperStatus(IfSnmpPort p, Variable v) => v.ToInt(i => p.OperStatus = i);
                 void processIfLastChange(IfSnmpPort p, Variable v) => v.ToUInt(i => p.LastChange = i);
+                if ((userPorts == null) && _commonData.OnlyForPorts)
+                    userPorts = _snmpConnection.Switch.Ports;
                 if (userPorts == null)
                 {
                     async Task WaP(string oid, Action<IfSnmpPort, Variable> act) => await WalkAndProcess(oid, snmpPorts, id => new(id), act);
