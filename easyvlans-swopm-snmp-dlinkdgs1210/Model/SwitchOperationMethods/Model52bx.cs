@@ -3,6 +3,6 @@
     internal class Model52bx : Model
     {
         public override string Code { get; } = "52bx";
-        public override int MibSubtreeIndex { get; } = 17;
+        public override string MibSubtreeIndex { get; } = "17";
     }
 }
