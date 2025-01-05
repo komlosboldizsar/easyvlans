@@ -8,6 +8,7 @@
         private static Model[] knownModels = new Model[]
         {
             new Model24ax(),
+            new Model28cx(),
             new Model48ax(),
             new Model52bx(),
         };
