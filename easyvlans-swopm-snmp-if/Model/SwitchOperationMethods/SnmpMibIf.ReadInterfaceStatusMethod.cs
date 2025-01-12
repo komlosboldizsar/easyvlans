@@ -44,9 +44,9 @@ namespace easyvlans.Model.SwitchOperationMethods
                     {
                         if (userPort.Switch == _snmpConnection.Switch)
                         {
-                            oids.Add($"{OID_IF_ADMIN_STATUS}.{userPort.Index}");
-                            oids.Add($"{OID_IF_OPER_STATUS}.{userPort.Index}");
-                            oids.Add($"{OID_IF_OPER_STATUS}.{userPort.Index}");
+                            oids.Add($"{OID_IF_ADMIN_STATUS}.{userPort.Index + _commonData.PortIndexOffset}");
+                            oids.Add($"{OID_IF_OPER_STATUS}.{userPort.Index + _commonData.PortIndexOffset}");
+                            oids.Add($"{OID_IF_OPER_STATUS}.{userPort.Index + _commonData.PortIndexOffset}");
                         }
                     }
                     Action<string, Variable, IfSnmpPort> processIfTableRow = (nodeId, ifTableRow, snmpPort) =>
@@ -73,7 +73,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             {
                 foreach (Port userPort in userPorts ?? _snmpConnection.Switch.Ports)
                 {
-                    if (!snmpPorts.TryGetValue(userPort.Index, out IfSnmpPort snmpPort))
+                    if (!snmpPorts.TryGetValue(userPort.Index + _commonData.PortIndexOffset, out IfSnmpPort snmpPort))
                     {
                         userPort.AdministrativeStatus = PortStatus.Unknown;
                         userPort.AdministrativeStatusString = STRING_UNKNOWN;

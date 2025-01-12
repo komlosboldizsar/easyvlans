@@ -1,6 +1,7 @@
 ﻿using BToolbox.Helpers;
 using BToolbox.SNMP;
 using BToolbox.XmlDeserializer.Context;
+using BToolbox.XmlDeserializer.Attributes;
 using System.Xml;
 
 namespace easyvlans.Model.SwitchOperationMethods
@@ -24,10 +25,12 @@ namespace easyvlans.Model.SwitchOperationMethods
                 {
                     FixPollStatusOnTrap = (xmlNode.SelectNodes(DATA_TAG_FIX_POLL_STATUS_ON_TRAP).Count > 0),
                     OnlyForPorts = (xmlNode.SelectNodes(DATA_TAG_ONLY_FOR_PORTS).Count > 0),
+                    PortIndexOffset = xmlNode.SelectSingleNode(DATA_TAG_PORT_INDEX_OFFSET)?.InnerAsInt(context).Min(0).Get().Value ?? 0
                 };
 
-            public const string DATA_TAG_FIX_POLL_STATUS_ON_TRAP = "fix-poll-status-on-trap";
-            public const string DATA_TAG_ONLY_FOR_PORTS = "only-for-ports";
+            public const string DATA_TAG_FIX_POLL_STATUS_ON_TRAP = "fix_poll_status_on_trap";
+            public const string DATA_TAG_ONLY_FOR_PORTS = "only_for_ports";
+            public const string DATA_TAG_PORT_INDEX_OFFSET = "port_index_offset";
 
             protected override void subscribeTraps(ISnmpConnection snmpConnection, string[] trapFilter, object commonData)
             {
@@ -48,6 +51,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         {
             public bool FixPollStatusOnTrap { get; init; }
             public bool OnlyForPorts { get; init; }
+            public int PortIndexOffset { get; init; }
         }
 
         private const string OID_IF_TABLE = "1.3.6.1.2.1.2.2.1";
