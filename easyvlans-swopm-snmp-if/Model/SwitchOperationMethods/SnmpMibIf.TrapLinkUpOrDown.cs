@@ -41,7 +41,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 }
                 if (ifIndex == -1)
                     return;
-                Port userPort = _snmpConnection.Switch.GetPort(ifIndex);
+                Port userPort = _snmpConnection.Switch.GetPort(ifIndex - _commonData.PortIndexOffset);
                 if (userPort != null)
                 {
                     if (_commonData.FixPollStatusOnTrap)
