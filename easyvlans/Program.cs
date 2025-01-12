@@ -12,6 +12,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace easyvlans
 {
@@ -36,15 +37,15 @@ namespace easyvlans
             string parsingError = null;
             bool start = true;
             OneInstanceData oneInstanceData = null;
+            string configFilePath = getConfigFilePath(parsedArguments);
             try
             {
-                LogDispatcher.I("Loading configuration...");
                 ConfigDeserializer.Deserializer.Register(new OneInstanceDataDeserializer(), (config, oneInstDta) =>
                 {
                     oneInstanceData = oneInstDta;
                     OneInstanceGuard.Set("easyvlans", oneInstanceData.ID);
                 });
-                config = (new ConfigDeserializer()).LoadConfig(parsedArguments.ConfigFile ?? DEFAULT_CONFIG_FILE);
+                config = (new ConfigDeserializer()).LoadConfig(configFilePath);
                 start = OneInstanceGuard.InitAnyway();
                 if (start && (config.Remotes != null))
                     foreach (IRemoteMethod remoteMethod in config.Remotes)
@@ -93,6 +94,35 @@ namespace easyvlans
         {
             await @switch.ReadInterfaceStatusAsync();
             await @switch.ReadVlanMembershipAsync();
+        }
+
+        private static string getConfigFilePath(Arguments arguments)
+        {
+
+            // arguments
+            if (arguments.ConfigFile != null)
+            {
+                LogDispatcher.I($"Loading configuration defined by arguments: {arguments.ConfigFile}...");
+                return arguments.ConfigFile;
+            }
+
+            // registry
+            try
+            {
+                object configKeyValue = Registry.LocalMachine.OpenSubKey("SOFTWARE").OpenSubKey("easyvlans").GetValue("Config");
+                if (configKeyValue is string configKeyValueStr)
+                {
+                    LogDispatcher.I($"Loading configuration defined by registry: {configKeyValueStr}...");
+                    return configKeyValueStr;
+                }
+            }
+            catch
+            { }
+
+            // default
+            LogDispatcher.I($"Loading default configuration: {DEFAULT_CONFIG_FILE}...");
+            return DEFAULT_CONFIG_FILE;
+
         }
 
     }
