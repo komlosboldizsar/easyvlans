@@ -1,22 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <easyvlans>
+	<one_instance id="network1" start_visible="false" />
+	<remotes>
+		<snmp port="161" community_read="public" community_write="private" />
+	</remotes>
+	<vlans>
+		<vlan id="1" name="RED" />
+		<vlan id="2" name="BLUE" />
+		<vlan id="3" name="GREEN" />
+		<vlan id="99" name="MANAGEMENT" />
+		<vlanset id="color" vlans="1,2,3" />
+	</vlans>
 	<switches>
-		<switch id="maina" label="Main A" ip="192.168.10.1">
-			<telnet/>
+		<switch id="floor1" label="Switch 1st floor" remote_index="1">
+			<snmpv1 ip="10.253.0.1" port="161" community_string="private"
+				trap_port="162" trap_community_string="private" trap_version_strict="true">
+				<qbridge method_filter="read_vlan_membership">
+					<nopvid />
+					<set_membership_variant>cbs</set_membership_variant>
+					<port_index_offset>48</port_index_offset>
+				</qbridge>
+				<if trap_filter="link_up,link_down">
+					<port_index_offset>48</port_index_offset>
+					<only_for_ports />
+				</if>
+			</snmpv1>
+			<poll method="read_vlan_membership" interval="5" offset="2" />
 		</switch>
-		<switch id="mainb" label="Main B" ip="192.168.10.2">
-			<ssh username="root" privatekey="hello" <!--privatekeyfile="C:\ciscokey"--> />
+		<switch id="floor2" label="Switch 2nd floor" remote_index="2">
+			<snmpv2 ip="10.253.0.2" port="161" community_string="easyvlans" trap_port="162" trap_community_string="private">
+				<qbridge />
+				<if trap_filter="">
+					<fix_poll_status_on_trap />
+				</if>
+			</snmpv2>
+			<poll interval="5" />
+			<poll method="read_interface_status" interval="5" offset="1" />
+			<poll method="read_vlan_membership" interval="5" offset="3" />
 		</switch>
 	</switches>
-	<vlans>
-		<vlan id="1" name="Main LAN" />
-		<vlan id="4" name="Vutrix" />
-		<vlan id="11" name="NVISION" />
-	</vlans>
 	<ports>
-		<port label="DP B.21" switch="maina" index="Fa0/21" vlans="all" />
-		<port label="DP B.22" switch="maina" index="Fa0/22" vlans="4,1" />
-		<port label="DP B.23" switch="maina" index="Fa0/23" vlans="all,!11" />
-		<port label="DP C.14" switch="mainb" index="Gi0/14" vlans="all,!4,1" />
+		<page title="1st floor">
+			<port label="Lobby" switch="floor1" index="1" remote_index="101" />
+			<page title="ROOM 1">
+				<port label="ROOM 1:1" switch="floor1" index="5" remote_index="105" />
+				<port label="ROOM 1:2" switch="floor1" index="6" remote_index="106" />
+			</page>
+			<page title="ROOM 2">
+				<port label="ROOM 2:1" switch="floor1" index="7" remote_index="107" />
+				<port label="ROOM 2:2" switch="floor1" index="8" remote_index="108" />
+			</page>
+			<page title="MEETING ROOM" default="true">
+				<port label="DESK LEFT 1" switch="floor1" index="9" remote_index="109" />
+				<port label="DESK LEFT 2" switch="floor1" index="10" remote_index="110" />
+				<port label="DESK RIGHT 1" switch="floor1" index="11" remote_index="111" />
+				<port label="DESK RIGHT 2" switch="floor1" index="12" remote_index="112" />
+			</page>
+		</page>
+		<page title="2nd floor">
+		
+		</page>
 	</ports>
 </easyvlans>

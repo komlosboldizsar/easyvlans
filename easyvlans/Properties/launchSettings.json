@@ -2,7 +2,8 @@
   "profiles": {
     "easyvlans": {
       "commandName": "Project",
-      "workingDirectory": "..\\_OUTPUT_$(Configuration)"
+      "workingDirectory": "..\\_OUTPUT_$(Configuration)",
+      "commandLineArgs": "-n ..\\test_config.xml"
     }
   }
 }
