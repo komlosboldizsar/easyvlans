@@ -26,8 +26,8 @@ namespace easyvlans.Model.SwitchOperationMethods
                     untaggedToUnset = new(),
                     untaggedToSet = new();
                 if (!_commonData.NoPvid)
-                    pvidVariables.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index}"), new Gauge32(vlan.ID)));
-                (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index);
+                    pvidVariables.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index + _commonData.PortIndexOffset}"), new Gauge32(vlan.ID)));
+                (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index + _commonData.PortIndexOffset);
                 await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, egressToSet, egressToUnset);
                 await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, untaggedToSet, untaggedToUnset);
                 await _variant.SetVariables(_snmpConnection, pvidVariables, egressToUnset, egressToSet, untaggedToUnset, untaggedToSet);
