@@ -12,10 +12,14 @@ namespace easyvlans.Model.SwitchOperationMethods
                 public async Task SetVariables(ISnmpConnection snmpConnection, List<Variable> pvidVariables, List<Variable> egressToUnset, List<Variable> egressToSet, List<Variable> untaggedToUnset, List<Variable> untaggedToSet)
                 {
                     await snmpConnection.SetAsync(pvidVariables);
-                    untaggedToUnset.ForEach(async v => await snmpConnection.SetAsync(v));
-                    egressToSet.ForEach(async v => await snmpConnection.SetAsync(v));
-                    egressToUnset.ForEach(async v => await snmpConnection.SetAsync(v));
-                    untaggedToSet.ForEach(async v => await snmpConnection.SetAsync(v));
+                    foreach (Variable v in untaggedToUnset)
+                        await snmpConnection.SetAsync(v);
+                    foreach (Variable v in egressToSet)
+                        await snmpConnection.SetAsync(v);
+                    foreach (Variable v in egressToUnset)
+                        await snmpConnection.SetAsync(v);
+                    foreach (Variable v in untaggedToSet)
+                        await snmpConnection.SetAsync(v);
                 }
             }
         }

@@ -367,3 +367,6 @@ FodyWeavers.xsd
 # MIB cache files
 *.cds
 *.cmi
+
+# Test config file
+test_config.xml
