@@ -18,6 +18,7 @@ namespace easyvlans.Model.Polling
             switch (request.MethodCode)
             {
                 case MethodCodes.METHOD__READ_INTERFACE_STATUS:
+                    await @switch.ReadInterfaceStatusAsync();
                     break;
                 case MethodCodes.METHOD__READ_VLAN_MEMBERSHIP:
                     await @switch.ReadVlanMembershipAsync();

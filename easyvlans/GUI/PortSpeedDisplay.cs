@@ -61,6 +61,8 @@ namespace easyvlans.GUI
         protected override StatusStyle getStyleFromData()
         {
             long? speed = _port?.Speed;
+            if (_port?.OperationalStatus == PortStatus.Down)
+                return ST_UNKNOWN;
             if (speed == null)
                 return ST_UNKNOWN;
             if ((speed >= MIN_ZERO) && (speed <= MAX_ZERO))
