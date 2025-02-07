@@ -11,12 +11,12 @@ namespace easyvlans.Model.Remote.EmberPlus
     {
 
         public string ElementName => ELEMENT_NAME;
-        public const string ELEMENT_NAME = "snmp";
+        public const string ELEMENT_NAME = "emberplus";
 
         public IRemoteMethod Parse(XmlNode xmlNode, DeserializationContext context, out IRelationBuilder<Config> relationBuilder, object parent = null)
         {
-            int port = (int)xmlNode.AttributeAsInt(ATTR_PORT, context).Default(161).Min(1).Max(65535).Get().Value;
-            string identity = xmlNode.AttributeAsString(ATTR_IDENTITY, context).Get().Value;
+            int port = (int)xmlNode.AttributeAsInt(ATTR_PORT, context).Default(9000).Min(1).Max(65535).Get().Value;
+            string identity = xmlNode.AttributeAsString(ATTR_IDENTITY, context).Default("EasyVLANs").Get().Value;
             MyEmberPlusProvider agent = new(port, identity);
             relationBuilder = new RelationBuilder(agent);
             return agent;

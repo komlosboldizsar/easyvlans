@@ -11,5 +11,5 @@
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
     <ProjectReference Include="..\library-ember-plus-provider\src\EmberPlusProviderClassLib\EmberPlusProviderClassLib.csproj" />
   </ItemGroup>
-
+	<Import Project="..\easyvlans-core\CopyToOutput.csproj" />
 </Project>
