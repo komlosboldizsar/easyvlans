@@ -29,6 +29,7 @@ namespace easyvlans.GUI
             _startupError = parsingError;
             InitializeComponent();
             _logRTBManager = new(logTextBox);
+            trayIcon.Text = "EasyVLANs";
         }
 
         private LogRichTextBoxManager _logRTBManager;
