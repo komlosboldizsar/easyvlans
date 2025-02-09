@@ -12,7 +12,7 @@ namespace easyvlans.Model.SwitchOperationMethods
 
             public override string MibName => MIB_NAME;
 
-            public async Task DoAsync(Switch @switch)
+            public async Task DoAsync()
             {
                 IEnumerable<Variable> response = await _snmpConnection.GetAsync(new string[] { OID_SYS_UP_TIME });
                 Variable uptimeVariable = response.FirstOrDefault(v => v.Id.ToString() == OID_SYS_UP_TIME);
@@ -21,7 +21,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                 TimeTicks uptimeTicks = default;
                 if (!uptimeVariable.ToTimeTicks(t => uptimeTicks = t))
                     throw new Exception("'sysUpTime' object contained wrong type of value.");
-                @switch.Boottime = DateTime.Now - uptimeTicks.ToTimeSpan();
+                _snmpConnection.Switch.Boottime = DateTime.Now - uptimeTicks.ToTimeSpan();
             }
 
         }

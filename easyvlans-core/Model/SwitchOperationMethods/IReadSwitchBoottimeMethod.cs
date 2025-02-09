@@ -2,6 +2,6 @@
 {
     public interface IReadSwitchBoottimeMethod : ISwitchOperationMethod
     {
-        Task DoAsync(Switch @switch);
+        Task DoAsync();
     }
 }

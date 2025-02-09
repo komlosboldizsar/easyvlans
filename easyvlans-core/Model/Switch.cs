@@ -76,7 +76,7 @@ namespace easyvlans.Model
             LogDispatcher.V($"Method for reading uptime of switch [{Label}]: [{OperationMethodCollection.ReadSwitchBoottimeMethod.DetailedCode}].");
             try
             {
-                await OperationMethodCollection.ReadSwitchBoottimeMethod.DoAsync(this);
+                await OperationMethodCollection.ReadSwitchBoottimeMethod.DoAsync();
                 ReadBootimeStatus = Status.Successful;
                 LogDispatcher.I($"Reading boot time of switch [{Label}] ready.");
             }
