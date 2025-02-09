@@ -78,7 +78,11 @@ namespace easyvlans.Model.Remote.EmberPlus
               if (vlan == null)
                 return false;
 
-            _ = Task.Run(() => port.SetVlanTo(vlan));
+            _ = Task.Run(() => {
+                bool setted = port.SetVlanTo(vlan).Result;
+                if (provider.AutoPersist && setted)
+                    port.Switch.PersistChangesAsync();
+            });
               return false;
         }
 

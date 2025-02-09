@@ -16,6 +16,7 @@ namespace easyvlans.Model.Remote.EmberPlus
         private int _port;
         private EmberPlusProvider _tree;
         private string _identity;
+        private bool _autoPersist;
         public string Code => "ember";
         protected Dictionary<int, Vlan> _vlans;
         protected Dictionary<int, Port> _ports;
@@ -23,7 +24,7 @@ namespace easyvlans.Model.Remote.EmberPlus
         public Dictionary<int, Vlan> Vlans { get{ return _vlans; } }
         public Dictionary<int, Port> Ports { get { return _ports; } }
         public Dictionary<int, Switch> Switchs { get { return _switch; } }
-
+        public bool AutoPersist { get { return _autoPersist; } }
 
         public void Start() {
             _tree = new EmberPlusProvider(
@@ -40,14 +41,17 @@ namespace easyvlans.Model.Remote.EmberPlus
 
             EmberNode matricesNode = _tree.AddChildNode(2, "matrices");
             _ = new VlanToPortMatrix(this, 1, "vlan2port", matricesNode, _tree);
+            EmberNode switchesNode = _tree.AddChildNode(3, "switches");
+            _ = new SwitchesData(this, switchesNode, _tree);
 
         }
 
-    public MyEmberPlusProvider(int port, string? identity = null)
-    {
-        _port = port;
-        _identity = identity;
-    }
+        public MyEmberPlusProvider(int port, string identity, bool autoPersist)
+        {
+            _port = port;
+            _identity = identity;
+             _autoPersist = autoPersist;
+        }
            
         public void MeetConfig(Config config)
         {
@@ -59,7 +63,7 @@ namespace easyvlans.Model.Remote.EmberPlus
                 _vlans.Add(vlan.Value.ID, vlan.Value);
             }
             foreach (var @switch in config.Switches) {
-               if (@switch.Value.RemoteIndex != null)
+                if (@switch.Value.RemoteIndex != null)
                 {
                     _switch.Add(@switch.Value.RemoteIndex.Value, @switch.Value);
                 }
@@ -71,8 +75,6 @@ namespace easyvlans.Model.Remote.EmberPlus
                     _ports.Add(port.RemoteIndex.Value, port);
                 }
             }
-
-
         }
 
     }

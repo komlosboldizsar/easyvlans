@@ -17,7 +17,8 @@ namespace easyvlans.Model.Remote.EmberPlus
         {
             int port = (int)xmlNode.AttributeAsInt(ATTR_PORT, context).Default(9000).Min(1).Max(65535).Get().Value;
             string identity = xmlNode.AttributeAsString(ATTR_IDENTITY, context).Default("EasyVLANs").Get().Value;
-            MyEmberPlusProvider agent = new(port, identity);
+            bool autoPersist = xmlNode.AttributeAsBool(ATTR_AUTO_PERSIST, context).Default(true).Get().Value;
+            MyEmberPlusProvider agent = new(port, identity, autoPersist);
             relationBuilder = new RelationBuilder(agent);
             return agent;
         }
@@ -37,6 +38,7 @@ namespace easyvlans.Model.Remote.EmberPlus
 
         private const string ATTR_PORT = "port";
         private const string ATTR_IDENTITY = "identity";
+        private const string ATTR_AUTO_PERSIST = "auto-persist";
     }
 
 }
