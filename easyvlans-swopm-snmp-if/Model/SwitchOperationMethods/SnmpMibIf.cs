@@ -23,12 +23,10 @@ namespace easyvlans.Model.SwitchOperationMethods
             protected override object createCommonData(XmlNode xmlNode, DeserializationContext context)
                 => new CommonData()
                 {
-                    FixPollStatusOnTrap = (xmlNode.SelectNodes(DATA_TAG_FIX_POLL_STATUS_ON_TRAP).Count > 0),
                     OnlyForPorts = (xmlNode.SelectNodes(DATA_TAG_ONLY_FOR_PORTS).Count > 0),
                     PortIndexOffset = xmlNode.SelectSingleNode(DATA_TAG_PORT_INDEX_OFFSET)?.InnerAsInt(context).Min(0).Get().Value ?? 0
                 };
 
-            public const string DATA_TAG_FIX_POLL_STATUS_ON_TRAP = "fix_poll_status_on_trap";
             public const string DATA_TAG_ONLY_FOR_PORTS = "only_for_ports";
             public const string DATA_TAG_PORT_INDEX_OFFSET = "port_index_offset";
 
@@ -49,7 +47,6 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         internal class CommonData
         {
-            public bool FixPollStatusOnTrap { get; init; }
             public bool OnlyForPorts { get; init; }
             public int PortIndexOffset { get; init; }
         }

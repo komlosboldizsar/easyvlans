@@ -22,33 +22,15 @@ namespace easyvlans.Model.SwitchOperationMethods
 
             public override void TrapReceived(ISnmpMessage message, IEnumerable<Variable> variables)
             {
-                int ifIndex =-1, adminStatus = 0, operStatus = 0;
-                foreach (Variable variable in variables)
-                {
-                    SnmpVariableHelpers.IdParts idParts = variable.GetIdParts();
-                    switch (idParts.NodeId)
-                    {
-                        case OID_IF_INDEX:
-                            variable.ToInt(i => ifIndex = i);
-                            break;
-                        case OID_IF_ADMIN_STATUS:
-                            variable.ToInt(i => adminStatus = i);
-                            break;
-                        case OID_IF_OPER_STATUS:
-                            variable.ToInt(i => operStatus = i);
-                            break;
-                    }
-                }
-                if (ifIndex == -1)
+                Variable variableIfIndex = variables.Where(v => v.GetIdParts().NodeId == OID_IF_INDEX).FirstOrDefault();
+                if (variableIfIndex == null)
+                    return;
+                int ifIndex = -1;
+                if (!variableIfIndex.ToInt(i => ifIndex = i) || (ifIndex == -1))
                     return;
                 Port userPort = _snmpConnection.Switch.GetPort(ifIndex - _commonData.PortIndexOffset);
                 if (userPort != null)
-                {
-                    if (_commonData.FixPollStatusOnTrap)
-                        _ = Task.Run(() => userPort.Switch.ReadInterfaceStatusAsync(userPort));
-                    else
-                        UpdatePort(userPort, adminStatus, operStatus);
-                }
+                    _ = Task.Run(() => userPort.Switch.ReadInterfaceStatusAsync(userPort));
             }
 
         }
