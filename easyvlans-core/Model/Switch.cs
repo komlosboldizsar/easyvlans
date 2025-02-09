@@ -31,6 +31,51 @@ namespace easyvlans.Model
         public Port GetPort(int index)
             => Ports.FirstOrDefault(p => p.Index == index);
 
+        #region Method: Read switch uptime
+        public event PropertyChangedDelegate<Switch, Status> ReadUptimeStatusChanged;
+        private Status _readUptimeStatusChanged = Status.Unknown;
+        public Status ReadUptimeStatus
+        {
+            get => _readUptimeStatusChanged;
+            private set
+            {
+                if (this.setProperty(ref _readUptimeStatusChanged, value, ReadUptimeStatusChanged))
+                    ReadUptimeStatusUpdateTime = DateTime.Now;
+            }
+        }
+
+        public event PropertyChangedDelegate<Switch, DateTime> ReadUptimeStatusUpdateTimeChanged;
+        private DateTime _readUptimeStatusUpdateTime = DateTime.Now;
+        public DateTime ReadUptimeStatusUpdateTime
+        {
+            get => _readUptimeStatusUpdateTime;
+            private set => this.setProperty(ref _readUptimeStatusUpdateTime, value, ReadUptimeStatusUpdateTimeChanged);
+        }
+
+        public async Task ReadUptimeAsync()
+        {
+            if (OperationMethodCollection?.ReadSwitchUptimeMethod == null)
+            {
+                LogDispatcher.E($"Couldn't read interface statuses of switch [{Label}], because no method is associated.");
+                return;
+            }
+            ReadUptimeStatus = Status.Querying;
+            LogDispatcher.I($"Reading uptime of switch [{Label}]...");
+            LogDispatcher.V($"Method for reading uptime of switch [{Label}]: [{OperationMethodCollection.ReadSwitchUptimeMethod.DetailedCode}].");
+            try
+            {
+                await OperationMethodCollection.ReadSwitchUptimeMethod.DoAsync(this);
+                ReadUptimeStatus = Status.Successful;
+                LogDispatcher.I($"Reading uptime of switch [{Label}] ready.");
+            }
+            catch (Exception ex)
+            {
+                ReadUptimeStatus = Status.Unsuccessful;
+                LogDispatcher.E($"Unsuccessful reading of uptime of switch [{Label}]. Error message: [{ex.Message}]");
+            }
+        }
+        #endregion
+
         #region Method: Read interface status
         public Task ReadInterfaceStatusAsync(Port port)
             => ReadInterfaceStatusAsync(new Port[] { port });
