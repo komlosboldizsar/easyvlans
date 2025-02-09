@@ -1,4 +1,5 @@
-﻿using Lextm.SharpSnmpLib;
+﻿using easyvlans.Helpers;
+using Lextm.SharpSnmpLib;
 
 namespace easyvlans.Model.SwitchOperationMethods
 {
@@ -17,7 +18,10 @@ namespace easyvlans.Model.SwitchOperationMethods
                 Variable uptimeVariable = response.FirstOrDefault(v => v.Id.ToString() == OID_SYS_UP_TIME);
                 if (uptimeVariable == null)
                     throw new Exception("'sysUpTime' object was not in the response.");
-                // update sysuptime of switch
+                TimeTicks uptimeTicks = default;
+                if (!uptimeVariable.ToTimeTicks(t => uptimeTicks = t))
+                    throw new Exception("'sysUpTime' object contained wrong type of value.");
+                @switch.Boottime = DateTime.Now - uptimeTicks.ToTimeSpan();
             }
 
         }
