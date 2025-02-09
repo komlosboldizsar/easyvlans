@@ -28,7 +28,7 @@ namespace easyvlans.Model
             {
                 this.setProperty(ref _boottime, value, BoottimeChanged);
                 foreach (Port port in Ports)
-                    port.SwitchBoottimeChanged(value);
+                    port.SwitchBoottimeChanged();
             }
         }
 
