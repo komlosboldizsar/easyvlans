@@ -28,6 +28,8 @@ namespace easyvlans.Model.SwitchOperationMethods
                 void processIfAdminStatus(IfSnmpPort p, Variable v) => v.ToInt(i => p.AdminStatus = i);
                 void processIfOperStatus(IfSnmpPort p, Variable v) => v.ToInt(i => p.OperStatus = i);
                 void processIfLastChange(IfSnmpPort p, Variable v) => v.ToUInt(i => p.LastChange = i);
+                void processIfSpeed(IfSnmpPort p, Variable v) => v.ToUInt(i => p.InterfaceSpeed = i);
+
                 if ((userPorts == null) && _commonData.OnlyForPorts)
                     userPorts = _snmpConnection.Switch.Ports;
                 if (userPorts == null)
@@ -36,6 +38,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                     await WaP(OID_IF_ADMIN_STATUS, processIfAdminStatus);
                     await WaP(OID_IF_OPER_STATUS, processIfOperStatus);
                     await WaP(OID_IF_LAST_CHANGE, processIfLastChange);
+                    await WaP(OID_IF_SPEED, processIfSpeed);
                 }
                 else
                 {
@@ -47,6 +50,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                             oids.Add($"{OID_IF_ADMIN_STATUS}.{userPort.Index + _commonData.PortIndexOffset}");
                             oids.Add($"{OID_IF_OPER_STATUS}.{userPort.Index + _commonData.PortIndexOffset}");
                             oids.Add($"{OID_IF_OPER_STATUS}.{userPort.Index + _commonData.PortIndexOffset}");
+                            oids.Add($"{OID_IF_SPEED}.{userPort.Index + _commonData.PortIndexOffset}");
                         }
                     }
                     Action<string, Variable, IfSnmpPort> processIfTableRow = (nodeId, ifTableRow, snmpPort) =>
@@ -61,6 +65,9 @@ namespace easyvlans.Model.SwitchOperationMethods
                                 break;
                             case OID_IF_LAST_CHANGE:
                                 processIfLastChange(snmpPort, ifTableRow);
+                                break;
+                            case OID_IF_SPEED:
+                                processIfSpeed(snmpPort, ifTableRow);
                                 break;
                         }
                     };
@@ -80,9 +87,10 @@ namespace easyvlans.Model.SwitchOperationMethods
                         userPort.OperationalStatus = PortStatus.Unknown;
                         userPort.OperationalStatusString = STRING_UNKNOWN;
                         userPort.LastStatusChange = null;
+                        userPort.Speed = null; ;
                         continue;
                     }
-                    UpdatePort(userPort, snmpPort.AdminStatus, snmpPort.OperStatus, new DateTime(snmpPort.LastChange * 100L));
+                    UpdatePort(userPort, snmpPort.AdminStatus, snmpPort.OperStatus, snmpPort.InterfaceSpeed, new DateTime(snmpPort.LastChange * 100L));
                 }
             }
 

@@ -59,6 +59,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         private const string OID_IF_ADMIN_STATUS = $"{OID_IF_TABLE}.7";
         private const string OID_IF_OPER_STATUS = $"{OID_IF_TABLE}.8";
         private const string OID_IF_LAST_CHANGE = $"{OID_IF_TABLE}.9";
+        private const string OID_IF_SPEED = $"{OID_IF_TABLE}.5";
 
         private const string TRAP_FILTER_LINK_UP = "link_up";
         private const string TRAP_FILTER_LINK_DOWN = "link_down";
@@ -104,12 +105,13 @@ namespace easyvlans.Model.SwitchOperationMethods
             { 7, "lower layer down" }
         };
 
-        public static void UpdatePort(Port port, int adminStatus, int operStatus, DateTime? lastStatusChange = null)
+        public static void UpdatePort(Port port, int adminStatus, int operStatus, long? interfaceSpeed = null, DateTime? lastStatusChange = null)
         {
             port.AdministrativeStatus = ADMINISTRATIVE_STATUS_VALUES.Convert(adminStatus);
             port.AdministrativeStatusString = ADMINISTRATIVE_STATUS_STRINGS.Convert(adminStatus);
             port.OperationalStatus = OPERATIONAL_STATUS_VALUES.Convert(operStatus);
             port.OperationalStatusString = OPERATIONAL_STATUS_STRINGS.Convert(operStatus);
+            port.Speed = interfaceSpeed ?? port.Speed;
             port.LastStatusChange = lastStatusChange ?? DateTime.Now;
         }
 
