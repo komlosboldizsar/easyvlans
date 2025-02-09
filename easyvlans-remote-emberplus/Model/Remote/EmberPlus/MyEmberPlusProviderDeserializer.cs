@@ -38,7 +38,7 @@ namespace easyvlans.Model.Remote.EmberPlus
 
         private const string ATTR_PORT = "port";
         private const string ATTR_IDENTITY = "identity";
-        private const string ATTR_AUTO_PERSIST = "auto-persist";
+        private const string ATTR_AUTO_PERSIST = "auto_persist";
     }
 
 }

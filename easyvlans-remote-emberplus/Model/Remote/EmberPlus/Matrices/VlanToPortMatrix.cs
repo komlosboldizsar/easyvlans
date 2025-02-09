@@ -25,7 +25,8 @@ namespace easyvlans.Model.Remote.EmberPlus
             _vlans = new();
             _ports = new();
             provider = remoteModule;
-            for (int i = 1; i <= 4096; i++)
+            int max_vlan = remoteModule.Vlans.Keys.Max();
+            for (int i = 1; i <= max_vlan; i++)
             {
                 Vlan p;
                 string name = $"VLAN{i}";
@@ -35,7 +36,7 @@ namespace easyvlans.Model.Remote.EmberPlus
             for (int i = 1; i <= remoteModule.Ports.Max(i => i.Key); i++)
             {
                 Port p;
-                string name =  $"Port{i}";
+                string name = $"Port{i}";
                 _ports.Add(i, name);
             }
 
@@ -68,21 +69,21 @@ namespace easyvlans.Model.Remote.EmberPlus
                   return false;
               _ = Task.Run(() => ocp.SetNumberAsync(firstSource.Number + 1));
               return false*/
-             Signal firstSource = sources.FirstOrDefault();
-              if (firstSource == null)
-                  return false;
-              if (!provider.Ports.TryGetValue(target.Number, out Port? port))
-                  return false;
-              if (port == null || !provider.Vlans.TryGetValue(firstSource.Number, out Vlan? vlan))
+            Signal firstSource = sources.FirstOrDefault();
+            if (firstSource == null)
                 return false;
-              if (vlan == null)
+            if (!provider.Ports.TryGetValue(target.Number, out Port? port))
+                return false;
+            if (port == null || !provider.Vlans.TryGetValue(firstSource.Number, out Vlan? vlan))
+                return false;
+            if (vlan == null)
                 return false;
 
-            _ = Task.Run(() => {
-                bool setted = port.SetVlanTo(vlan).Result;
-                if (provider.AutoPersist && setted)
+            _ = Task.Run(() => { 
+                port.SetVlanTo(vlan).Wait();
+                if (provider.AutoPersist)
                     port.Switch.PersistChangesAsync();
-            });
+             });
               return false;
         }
 

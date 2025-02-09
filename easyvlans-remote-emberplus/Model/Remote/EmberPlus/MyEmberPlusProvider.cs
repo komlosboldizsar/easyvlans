@@ -30,7 +30,7 @@ namespace easyvlans.Model.Remote.EmberPlus
             _tree = new EmberPlusProvider(
                 _port,
                 "EasyVLANs",
-                "EasyVLANs controlling");
+                "EasyVLANs");
 
             _tree.CreateIdentityNode(
                 1,
@@ -42,7 +42,7 @@ namespace easyvlans.Model.Remote.EmberPlus
             EmberNode matricesNode = _tree.AddChildNode(2, "matrices");
             _ = new VlanToPortMatrix(this, 1, "vlan2port", matricesNode, _tree);
             EmberNode switchesNode = _tree.AddChildNode(3, "switches");
-            _ = new SwitchesData(this, switchesNode, _tree);
+            _ = new SwitchPersist(this, switchesNode, _tree);
 
         }
 

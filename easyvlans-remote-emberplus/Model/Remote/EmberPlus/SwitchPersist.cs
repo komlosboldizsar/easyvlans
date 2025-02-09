@@ -1,4 +1,5 @@
-﻿using EmberPlusProviderClassLib;
+﻿using BToolbox.Logger;
+using EmberPlusProviderClassLib;
 using EmberPlusProviderClassLib.EmberHelpers;
 using EmberPlusProviderClassLib.Model;
 using EmberPlusProviderClassLib.Model.Parameters;
@@ -11,13 +12,13 @@ using System.Threading.Tasks;
 
 namespace easyvlans.Model.Remote.EmberPlus
 {
-    class SwitchesData
+    class SwitchPersist
     {
         private MyEmberPlusProvider _module;
         private Dictionary<BooleanParameter, Switch> _switches;
         private EmberNode _node;
         private EmberPlusProvider _provider;
-        public SwitchesData(MyEmberPlusProvider provider, EmberNode node, EmberPlusProvider emberProvider)
+        public SwitchPersist(MyEmberPlusProvider provider, EmberNode node, EmberPlusProvider emberProvider)
         {
             _module = provider;
             _node = node;
@@ -26,22 +27,30 @@ namespace easyvlans.Model.Remote.EmberPlus
             foreach (KeyValuePair<int, Switch> @switch in provider.Switchs)
             {
                 EmberNode en = new EmberNode(@switch.Value.RemoteIndex.Value, node, @switch.Value.Label, _provider);
-                BooleanParameter bp = new(1, node, "Save Changes", _provider.dispatcher, true);
-                en.AddChild(bp);
+                BooleanParameter bp = new(1, en, "Save Changes", _provider.dispatcher, true, remoteSetter: saveItemSetted);
                 node.AddChild(en);
+                node.AddChild(bp);
                 _switches.Add(bp, @switch.Value);
             }
+        
         }
 
         private bool saveItemSetted(bool arg, BooleanParameter parameter)
         {
-            _ = new Task(() => {
-                Switch @switch;
-                _switches.TryGetValue(parameter, out @switch);
-                if (@switch != null)
-                    @switch.PersistChangesAsync();
-                parameter.SetValueRemote(false);
-            });
+            if(arg) { 
+                _ = Task.Run(() =>
+                {
+                    Switch @switch;
+                    _switches.TryGetValue(parameter, out @switch);
+                    if (@switch != null)
+                    {
+                        @switch.PersistChangesAsync();
+                    }
+                    
+                });
+                parameter.Value = false;
+            }
+           
             return false;
         }
     }
