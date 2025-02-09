@@ -172,5 +172,10 @@ namespace easyvlans.Model
 
         internal void ChangesPersisted() => PendingChanges = false;
 
+        internal void SwitchBoottimeChanged(DateTime value)
+        {
+            //throw new NotImplementedException();
+        }
+
     }
 }

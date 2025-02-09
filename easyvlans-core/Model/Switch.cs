@@ -19,8 +19,20 @@ namespace easyvlans.Model
         public readonly List<Port> Ports = new();
         private readonly List<Port> portsWithPendingChange = new();
 
-        public Config Config { get; set; }
+        public event PropertyChangedDelegate<Switch, DateTime> BoottimeChanged;
+        private DateTime _boottime;
+        public DateTime Boottime
+        {
+            get => _boottime;
+            set
+            {
+                this.setProperty(ref _boottime, value, BoottimeChanged);
+                foreach (Port port in Ports)
+                    port.SwitchBoottimeChanged(value);
+            }
+        }
 
+        public Config Config { get; set; }
 
         internal void AssociatePort(Port port)
         {
