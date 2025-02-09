@@ -11,8 +11,8 @@
 
             public override string ElementName => MIB_NAME;
 
-            protected override IReadSwitchUptimeMethod createReadSwitchUptimeMethod(ISnmpConnection snmpConnection, object commonData)
-                => new ReadSwitchUptimeMethod(snmpConnection);
+            protected override IReadSwitchBoottimeMethod createReadSwitchBoottimeMethod(ISnmpConnection snmpConnection, object commonData)
+                => new ReadSwitchBoottimeMethod(snmpConnection);
 
         }
 

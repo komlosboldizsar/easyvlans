@@ -21,7 +21,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             subscribeTraps(snmpConnection, trapFilters, commonData);
             return new MixedSwitchOperationMethodCollection()
             {
-                ReadSwitchUptimeMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__READ_SWITCH_UPTIME)) ? createReadSwitchUptimeMethod(snmpConnection, commonData) : null,
+                ReadSwitchBoottimeMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__READ_SWITCH_BOOTTIME)) ? createReadSwitchBoottimeMethod(snmpConnection, commonData) : null,
                 ReadInterfaceStatusMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__READ_INTERFACE_STATUS)) ? createReadInterfaceStatusMethod(snmpConnection, commonData) : null,
                 ReadVlanMembershipMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__READ_VLAN_MEMBERSHIP)) ? createReadConfigMethod(snmpConnection, commonData) : null,
                 SetPortToVlanMethod = (noMethodFilter || methodFilters.Contains(MethodCodes.METHOD__SET_PORT_TO_VLAN)) ? createSetPortToVlanMethod(snmpConnection, commonData) : null,
@@ -35,7 +35,7 @@ namespace easyvlans.Model.SwitchOperationMethods
         protected virtual object createCommonData(XmlNode xmlNode, DeserializationContext context)
             => null;
 
-        protected virtual IReadSwitchUptimeMethod createReadSwitchUptimeMethod(ISnmpConnection snmpConnection, object commonData)
+        protected virtual IReadSwitchBoottimeMethod createReadSwitchBoottimeMethod(ISnmpConnection snmpConnection, object commonData)
             => null;
 
         protected virtual IReadInterfaceStatusMethod createReadInterfaceStatusMethod(ISnmpConnection snmpConnection, object commonData)

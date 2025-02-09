@@ -3,7 +3,7 @@
     public class MixedSwitchOperationMethodCollection : ISwitchOperationMethodCollection
     {
 
-        public IReadSwitchUptimeMethod ReadSwitchUptimeMethod { get; init; }
+        public IReadSwitchBoottimeMethod ReadSwitchBoottimeMethod { get; init; }
         public IReadInterfaceStatusMethod ReadInterfaceStatusMethod { get; init; }
         public IReadVlanMembershipMethod ReadVlanMembershipMethod { get; init; }
         public ISetPortToVlanMethod SetPortToVlanMethod { get; init; }
@@ -11,15 +11,15 @@
 
         public static MixedSwitchOperationMethodCollection Create(IEnumerable<ISwitchOperationMethodCollection> operationMethods, out MethodCounts methodCounts)
         {
-            List<IReadSwitchUptimeMethod> readSwitchUptimeMethods = new();
+            List<IReadSwitchBoottimeMethod> readSwitchBoottimeMethods = new();
             List<IReadInterfaceStatusMethod> readInterfaceStatusMethods = new();
             List<IReadVlanMembershipMethod> readVlanMembershipMethods = new();
             List<ISetPortToVlanMethod> setPortToVlanMethods = new();
             List<IPersistChangesMethod> persistChangesMethods = new();
             foreach (ISwitchOperationMethodCollection cm in operationMethods)
             {
-                if (cm.ReadSwitchUptimeMethod != null)
-                    readSwitchUptimeMethods.Add(cm.ReadSwitchUptimeMethod);
+                if (cm.ReadSwitchBoottimeMethod != null)
+                    readSwitchBoottimeMethods.Add(cm.ReadSwitchBoottimeMethod);
                 if (cm.ReadInterfaceStatusMethod != null)
                     readInterfaceStatusMethods.Add(cm.ReadInterfaceStatusMethod);
                 if (cm.ReadVlanMembershipMethod != null)
@@ -31,7 +31,7 @@
             }
             methodCounts = new()
             {
-                ReadSwitchUptimeMethodCount = readSwitchUptimeMethods.Count,
+                ReadSwitchBoottimeMethodCount = readSwitchBoottimeMethods.Count,
                 ReadInterfaceStatusMethodCount = readInterfaceStatusMethods.Count,
                 ReadVlanMembershipMethodCount = readVlanMembershipMethods.Count,
                 SetPortToVlanMethodCount = setPortToVlanMethods.Count,
@@ -39,7 +39,7 @@
             };
             return new MixedSwitchOperationMethodCollection()
             {
-                ReadSwitchUptimeMethod = readSwitchUptimeMethods.FirstOrDefault(),
+                ReadSwitchBoottimeMethod = readSwitchBoottimeMethods.FirstOrDefault(),
                 ReadInterfaceStatusMethod = readInterfaceStatusMethods.FirstOrDefault(),
                 ReadVlanMembershipMethod = readVlanMembershipMethods.FirstOrDefault(),
                 SetPortToVlanMethod = setPortToVlanMethods.FirstOrDefault(),
@@ -49,7 +49,7 @@
 
         public struct MethodCounts
         {
-            public int ReadSwitchUptimeMethodCount { get; init; }
+            public int ReadSwitchBoottimeMethodCount { get; init; }
             public int ReadInterfaceStatusMethodCount { get; init; }
             public int ReadVlanMembershipMethodCount { get; init; }
             public int SetPortToVlanMethodCount { get; init; }

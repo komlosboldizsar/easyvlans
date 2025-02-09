@@ -4,10 +4,10 @@ namespace easyvlans.Model.SwitchOperationMethods
 {
     internal sealed partial class SnmpMibRfc1213
     {
-        internal class ReadSwitchUptimeMethod : SnmpMethodBase, IReadSwitchUptimeMethod
+        internal class ReadSwitchBoottimeMethod : SnmpMethodBase, IReadSwitchBoottimeMethod
         {
 
-            public ReadSwitchUptimeMethod(ISnmpConnection snmpConnection) : base(snmpConnection) { }
+            public ReadSwitchBoottimeMethod(ISnmpConnection snmpConnection) : base(snmpConnection) { }
 
             public override string MibName => MIB_NAME;
 

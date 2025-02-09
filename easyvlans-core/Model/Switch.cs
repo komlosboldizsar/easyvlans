@@ -31,47 +31,47 @@ namespace easyvlans.Model
         public Port GetPort(int index)
             => Ports.FirstOrDefault(p => p.Index == index);
 
-        #region Method: Read switch uptime
-        public event PropertyChangedDelegate<Switch, Status> ReadUptimeStatusChanged;
-        private Status _readUptimeStatusChanged = Status.Unknown;
-        public Status ReadUptimeStatus
+        #region Method: Read switch boottime
+        public event PropertyChangedDelegate<Switch, Status> ReadBoottimeStatusChanged;
+        private Status _readBoottimeStatusChanged = Status.Unknown;
+        public Status ReadBootimeStatus
         {
-            get => _readUptimeStatusChanged;
+            get => _readBoottimeStatusChanged;
             private set
             {
-                if (this.setProperty(ref _readUptimeStatusChanged, value, ReadUptimeStatusChanged))
-                    ReadUptimeStatusUpdateTime = DateTime.Now;
+                if (this.setProperty(ref _readBoottimeStatusChanged, value, ReadBoottimeStatusChanged))
+                    ReadBoottimeStatusUpdateTime = DateTime.Now;
             }
         }
 
-        public event PropertyChangedDelegate<Switch, DateTime> ReadUptimeStatusUpdateTimeChanged;
-        private DateTime _readUptimeStatusUpdateTime = DateTime.Now;
-        public DateTime ReadUptimeStatusUpdateTime
+        public event PropertyChangedDelegate<Switch, DateTime> ReadBoottimeStatusUpdateTimeChanged;
+        private DateTime _readBoottimeStatusUpdateTime = DateTime.Now;
+        public DateTime ReadBoottimeStatusUpdateTime
         {
-            get => _readUptimeStatusUpdateTime;
-            private set => this.setProperty(ref _readUptimeStatusUpdateTime, value, ReadUptimeStatusUpdateTimeChanged);
+            get => _readBoottimeStatusUpdateTime;
+            private set => this.setProperty(ref _readBoottimeStatusUpdateTime, value, ReadBoottimeStatusUpdateTimeChanged);
         }
 
-        public async Task ReadUptimeAsync()
+        public async Task ReadBoottimeAsync()
         {
-            if (OperationMethodCollection?.ReadSwitchUptimeMethod == null)
+            if (OperationMethodCollection?.ReadSwitchBoottimeMethod == null)
             {
-                LogDispatcher.E($"Couldn't read interface statuses of switch [{Label}], because no method is associated.");
+                LogDispatcher.E($"Couldn't read boot time of switch [{Label}], because no method is associated.");
                 return;
             }
-            ReadUptimeStatus = Status.Querying;
-            LogDispatcher.I($"Reading uptime of switch [{Label}]...");
-            LogDispatcher.V($"Method for reading uptime of switch [{Label}]: [{OperationMethodCollection.ReadSwitchUptimeMethod.DetailedCode}].");
+            ReadBootimeStatus = Status.Querying;
+            LogDispatcher.I($"Reading boot time of switch [{Label}]...");
+            LogDispatcher.V($"Method for reading uptime of switch [{Label}]: [{OperationMethodCollection.ReadSwitchBoottimeMethod.DetailedCode}].");
             try
             {
-                await OperationMethodCollection.ReadSwitchUptimeMethod.DoAsync(this);
-                ReadUptimeStatus = Status.Successful;
-                LogDispatcher.I($"Reading uptime of switch [{Label}] ready.");
+                await OperationMethodCollection.ReadSwitchBoottimeMethod.DoAsync(this);
+                ReadBootimeStatus = Status.Successful;
+                LogDispatcher.I($"Reading boot time of switch [{Label}] ready.");
             }
             catch (Exception ex)
             {
-                ReadUptimeStatus = Status.Unsuccessful;
-                LogDispatcher.E($"Unsuccessful reading of uptime of switch [{Label}]. Error message: [{ex.Message}]");
+                ReadBootimeStatus = Status.Unsuccessful;
+                LogDispatcher.E($"Unsuccessful reading of boot time of switch [{Label}]. Error message: [{ex.Message}]");
             }
         }
         #endregion

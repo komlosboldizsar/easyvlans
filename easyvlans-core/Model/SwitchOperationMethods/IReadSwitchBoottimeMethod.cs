@@ -1,6 +1,6 @@
 ﻿namespace easyvlans.Model.SwitchOperationMethods
 {
-    public interface IReadSwitchUptimeMethod : ISwitchOperationMethod
+    public interface IReadSwitchBoottimeMethod : ISwitchOperationMethod
     {
         Task DoAsync(Switch @switch);
     }

@@ -2,7 +2,7 @@
 {
     public interface ISwitchOperationMethodCollection
     {
-        IReadSwitchUptimeMethod ReadSwitchUptimeMethod { get; }
+        IReadSwitchBoottimeMethod ReadSwitchBoottimeMethod { get; }
         IReadInterfaceStatusMethod ReadInterfaceStatusMethod { get; }
         IReadVlanMembershipMethod ReadVlanMembershipMethod { get; }
         ISetPortToVlanMethod SetPortToVlanMethod { get; }
