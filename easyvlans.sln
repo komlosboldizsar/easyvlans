@@ -46,6 +46,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmberLib.Glow", "library-ember-plus-provider\src\EmberLib.net\EmberLib.Glow\EmberLib.Glow.csproj", "{A504D561-F15F-40A8-964E-ED0DE17BCED6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BerLib", "library-ember-plus-provider\src\EmberLib.net\BerLib\BerLib.csproj", "{303BFD4E-DAB6-493B-AC0F-DDC69126E4D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyvlans-swopm-snmp-rfc1213", "easyvlans-swopm-snmp-rfc1213\easyvlans-swopm-snmp-rfc1213.csproj", "{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -141,6 +142,10 @@ Global
 		{303BFD4E-DAB6-493B-AC0F-DDC69126E4D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{303BFD4E-DAB6-493B-AC0F-DDC69126E4D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{303BFD4E-DAB6-493B-AC0F-DDC69126E4D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

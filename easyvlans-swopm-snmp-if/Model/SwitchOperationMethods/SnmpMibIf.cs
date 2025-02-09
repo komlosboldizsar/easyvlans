@@ -23,12 +23,10 @@ namespace easyvlans.Model.SwitchOperationMethods
             protected override object createCommonData(XmlNode xmlNode, DeserializationContext context)
                 => new CommonData()
                 {
-                    FixPollStatusOnTrap = (xmlNode.SelectNodes(DATA_TAG_FIX_POLL_STATUS_ON_TRAP).Count > 0),
                     OnlyForPorts = (xmlNode.SelectNodes(DATA_TAG_ONLY_FOR_PORTS).Count > 0),
                     PortIndexOffset = xmlNode.SelectSingleNode(DATA_TAG_PORT_INDEX_OFFSET)?.InnerAsInt(context).Min(0).Get().Value ?? 0
                 };
 
-            public const string DATA_TAG_FIX_POLL_STATUS_ON_TRAP = "fix_poll_status_on_trap";
             public const string DATA_TAG_ONLY_FOR_PORTS = "only_for_ports";
             public const string DATA_TAG_PORT_INDEX_OFFSET = "port_index_offset";
 
@@ -49,7 +47,6 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         internal class CommonData
         {
-            public bool FixPollStatusOnTrap { get; init; }
             public bool OnlyForPorts { get; init; }
             public int PortIndexOffset { get; init; }
         }
@@ -64,6 +61,18 @@ namespace easyvlans.Model.SwitchOperationMethods
         private const string TRAP_FILTER_LINK_UP = "link_up";
         private const string TRAP_FILTER_LINK_DOWN = "link_down";
 
+        private const int ADMINISTRATIVE_STATUS_UP = 1;
+        private const int ADMINISTRATIVE_STATUS_DOWN = 2;
+        private const int ADMINISTRATIVE_STATUS_OTHER = 3;
+
+        private const int OPERATIVE_STATUS_UP = 1;
+        private const int OPERATIVE_STATUS_DOWN = 2;
+        private const int OPERATIVE_STATUS_TESTING = 3;
+        private const int OPERATIVE_STATUS_UNKNOWN = 4;
+        private const int OPERATIVE_STATUS_DORMANT = 5;
+        private const int OPERATIVE_STATUS_NOTPRESENT = 6;
+        private const int OPERATIVE_STATUS_LOWERLAYERDOWN = 7;
+
         private const string STRING_DOWN = "down";
         private const string STRING_UP = "up";
         private const string STRING_TESTING = "testing";
@@ -71,38 +80,38 @@ namespace easyvlans.Model.SwitchOperationMethods
 
         private static readonly EnumConverter<int, PortStatus> ADMINISTRATIVE_STATUS_VALUES = new(PortStatus.Unknown)
         {
-            { 1, PortStatus.Up },
-            { 2, PortStatus.Down },
-            { 3, PortStatus.Other }
+            { ADMINISTRATIVE_STATUS_UP, PortStatus.Up },
+            { ADMINISTRATIVE_STATUS_DOWN, PortStatus.Down },
+            { ADMINISTRATIVE_STATUS_OTHER, PortStatus.Other }
         };
 
         private static readonly EnumToStringConverter<int> ADMINISTRATIVE_STATUS_STRINGS = new(STRING_UNKNOWN)
         {
-            { 1, STRING_UP },
-            { 2, STRING_DOWN },
-            { 3, STRING_TESTING }
+            { ADMINISTRATIVE_STATUS_UP, STRING_UP },
+            { ADMINISTRATIVE_STATUS_DOWN, STRING_DOWN },
+            { ADMINISTRATIVE_STATUS_OTHER, STRING_TESTING }
         };
 
         private static readonly EnumConverter<int, PortStatus> OPERATIONAL_STATUS_VALUES = new(PortStatus.Unknown)
         {
-            { 1, PortStatus.Up },
-            { 2, PortStatus.Down },
-            { 3, PortStatus.Other },
-            { 4, PortStatus.Unknown },
-            { 5, PortStatus.Other },
-            { 6, PortStatus.Other },
-            { 7, PortStatus.Other }
+            { OPERATIVE_STATUS_UP, PortStatus.Up },
+            { OPERATIVE_STATUS_DOWN, PortStatus.Down },
+            { OPERATIVE_STATUS_TESTING, PortStatus.Other },
+            { OPERATIVE_STATUS_UNKNOWN, PortStatus.Unknown },
+            { OPERATIVE_STATUS_DORMANT, PortStatus.Other },
+            { OPERATIVE_STATUS_NOTPRESENT, PortStatus.Other },
+            { OPERATIVE_STATUS_LOWERLAYERDOWN, PortStatus.Other }
         };
 
         private static readonly EnumToStringConverter<int> OPERATIONAL_STATUS_STRINGS = new(STRING_UNKNOWN)
         {
-            { 1, STRING_UP },
-            { 2, STRING_DOWN },
-            { 3, STRING_TESTING },
-            { 4, STRING_UNKNOWN },
-            { 5, "dormant" },
-            { 6, "not present" },
-            { 7, "lower layer down" }
+            { OPERATIVE_STATUS_UP, STRING_UP },
+            { OPERATIVE_STATUS_DOWN, STRING_DOWN },
+            { OPERATIVE_STATUS_TESTING, STRING_TESTING },
+            { OPERATIVE_STATUS_UNKNOWN, STRING_UNKNOWN },
+            { OPERATIVE_STATUS_DORMANT, "dormant" },
+            { OPERATIVE_STATUS_NOTPRESENT, "not present" },
+            { OPERATIVE_STATUS_LOWERLAYERDOWN, "lower layer down" }
         };
 
         public static void UpdatePort(Port port, int adminStatus, int operStatus, long? interfaceSpeed = null, DateTime? lastStatusChange = null)
@@ -111,7 +120,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             port.AdministrativeStatusString = ADMINISTRATIVE_STATUS_STRINGS.Convert(adminStatus);
             port.OperationalStatus = OPERATIONAL_STATUS_VALUES.Convert(operStatus);
             port.OperationalStatusString = OPERATIONAL_STATUS_STRINGS.Convert(operStatus);
-            port.Speed = interfaceSpeed ?? port.Speed;
+            port.Speed = ((operStatus == OPERATIVE_STATUS_UP) || (operStatus == OPERATIVE_STATUS_TESTING)) ? interfaceSpeed : null;
             port.LastStatusChange = lastStatusChange ?? DateTime.Now;
         }
 

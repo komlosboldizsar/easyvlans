@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>easyvlans</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Lextm.SharpSnmpLib" Version="12.5.2" />
+    <PackageReference Include="SharpSnmpLib.Engine" Version="12.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
+    <ProjectReference Include="..\easyvlans-swopm-snmp\easyvlans-swopm-snmp.csproj" />
+  </ItemGroup>
+  <Import Project="..\easyvlans-core\CopyToOutput.csproj" />
+</Project>

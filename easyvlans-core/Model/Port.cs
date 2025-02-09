@@ -71,6 +71,24 @@ namespace easyvlans.Model
             get => _lastStatusChange;
             set => this.setProperty(ref _lastStatusChange, value, LastStatusChangeChanged);
         }
+
+        private void updateLastStatusChangeByBootTime()
+            => LastStatusChange = Switch.Boottime + _lastStatusChangeSinceBoot;
+        #endregion
+
+        #region Property: LastStatusChangeSinceBoot
+        private TimeSpan? _lastStatusChangeSinceBoot;
+        public TimeSpan? LastStatusChangeSinceBoot
+        {
+            get => _lastStatusChangeSinceBoot;
+            set
+            {
+                if (value == _lastStatusChangeSinceBoot)
+                    return;
+                _lastStatusChangeSinceBoot = value;
+                updateLastStatusChangeByBootTime();
+            }
+        }
         #endregion
 
         #region Vlans
@@ -170,7 +188,11 @@ namespace easyvlans.Model
             return true;
         }
 
-        internal void ChangesPersisted() => PendingChanges = false;
+        internal void ChangesPersisted()
+            => PendingChanges = false;
+
+        internal void SwitchBoottimeChanged()
+            => updateLastStatusChangeByBootTime();
 
     }
 }
