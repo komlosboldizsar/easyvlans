@@ -14,19 +14,23 @@ namespace easyvlans.Model.Remote.EmberPlus
 {
     class SwitchPersist
     {
+
         private MyEmberPlusProvider _module;
         private Dictionary<BooleanParameter, Switch> _switches;
         private EmberNode _node;
         private EmberPlusProvider _provider;
+
         public SwitchPersist(MyEmberPlusProvider provider, EmberNode node, EmberPlusProvider emberProvider)
         {
+
             _module = provider;
             _node = node;
             _provider = emberProvider;
             _switches = new();
-            foreach (KeyValuePair<int, Switch> @switch in provider.Switchs)
+
+            foreach (KeyValuePair<int, Switch> @switch in provider.Switches)
             {
-                EmberNode en = new EmberNode(@switch.Value.RemoteIndex.Value, node, @switch.Value.Label, _provider);
+                EmberNode en = new(@switch.Value.RemoteIndex.Value, node, @switch.Value.Label, _provider);
                 BooleanParameter bp = new(1, en, "Save Changes", _provider.dispatcher, true, remoteSetter: saveItemSetted);
                 node.AddChild(en);
                 node.AddChild(bp);
@@ -37,22 +41,18 @@ namespace easyvlans.Model.Remote.EmberPlus
 
         private bool saveItemSetted(bool arg, BooleanParameter parameter)
         {
-            if(arg) { 
-                _ = Task.Run(() =>
+            if (arg) { 
+                _ = Task.Run(async () =>
                 {
-                    Switch @switch;
-                    _switches.TryGetValue(parameter, out @switch);
+                    _switches.TryGetValue(parameter, out Switch @switch);
                     if (@switch != null)
-                    {
-                        @switch.PersistChangesAsync();
-                    }
-                    
+                        await @switch.PersistChangesAsync();
                 });
                 parameter.Value = false;
             }
-           
             return false;
         }
+
     }
 
 }
