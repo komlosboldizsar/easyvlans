@@ -86,11 +86,11 @@ namespace easyvlans.Model.SwitchOperationMethods
                         userPort.AdministrativeStatusString = STRING_UNKNOWN;
                         userPort.OperationalStatus = PortStatus.Unknown;
                         userPort.OperationalStatusString = STRING_UNKNOWN;
-                        userPort.LastStatusChange = null;
+                        userPort.LastStatucChangeUpdateBootimeRelative(null);
                         userPort.Speed = null;
                         continue;
                     }
-                    UpdatePort(userPort, snmpPort.AdminStatus, snmpPort.OperStatus, snmpPort.InterfaceSpeed, new DateTime(snmpPort.LastChange * 100L));
+                    UpdatePort(userPort, snmpPort.AdminStatus, snmpPort.OperStatus, snmpPort.InterfaceSpeed, snmpPort.LastChange);
                 }
             }
 

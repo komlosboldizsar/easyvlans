@@ -114,14 +114,15 @@ namespace easyvlans.Model.SwitchOperationMethods
             { OPERATIVE_STATUS_LOWERLAYERDOWN, "lower layer down" }
         };
 
-        public static void UpdatePort(Port port, int adminStatus, int operStatus, long? interfaceSpeed = null, DateTime? lastStatusChange = null)
+        public static void UpdatePort(Port port, int adminStatus, int operStatus, long? interfaceSpeed = null, uint? lastStatusChange = null)
         {
             port.AdministrativeStatus = ADMINISTRATIVE_STATUS_VALUES.Convert(adminStatus);
             port.AdministrativeStatusString = ADMINISTRATIVE_STATUS_STRINGS.Convert(adminStatus);
             port.OperationalStatus = OPERATIONAL_STATUS_VALUES.Convert(operStatus);
             port.OperationalStatusString = OPERATIONAL_STATUS_STRINGS.Convert(operStatus);
             port.Speed = ((operStatus == OPERATIVE_STATUS_UP) || (operStatus == OPERATIVE_STATUS_TESTING)) ? interfaceSpeed : null;
-            port.LastStatusChange = lastStatusChange ?? DateTime.Now;
+            if (lastStatusChange != null)
+                port.LastStatucChangeUpdateBootimeRelative((lastStatusChange != null) ? (new TimeSpan((uint)lastStatusChange * 100L)) : null);
         }
 
     }
