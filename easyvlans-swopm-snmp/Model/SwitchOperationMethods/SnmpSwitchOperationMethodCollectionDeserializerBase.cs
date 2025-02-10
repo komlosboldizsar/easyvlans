@@ -41,6 +41,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             // MIBs
             List<ISwitchOperationMethodCollection> operationMethods = operationMethodsDeserializer.ParseWithGivenParent(elementNode, context, out IRelationBuilder<Config> _, snmpConnection);
             ISwitchOperationMethodCollection finalOperationMethodCollection = MixedSwitchOperationMethodCollection.Create(operationMethods, out MixedSwitchOperationMethodCollection.MethodCounts methodCounts);
+            reportMethodCount(elementNode, context, methodCounts.ReadSwitchBoottimeMethodCount, "reading switch boot time");
             reportMethodCount(elementNode, context, methodCounts.ReadInterfaceStatusMethodCount, "reading interface status");
             reportMethodCount(elementNode, context, methodCounts.ReadVlanMembershipMethodCount, "reading VLAN membership");
             reportMethodCount(elementNode, context, methodCounts.SetPortToVlanMethodCount, "setting VLAN membership");

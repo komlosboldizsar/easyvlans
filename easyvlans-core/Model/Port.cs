@@ -64,13 +64,39 @@ namespace easyvlans.Model
         #endregion
 
         #region Property: LastStatusChange
-        public event PropertyChangedDelegate<Port, DateTime?> LastStatusChangeChanged;
-        private DateTime? _lastStatusChange;
-        public DateTime? LastStatusChange
+        public event PropertyChangedDelegate<Port, LastStatusChangeData> LastStatusChangeChanged;
+        private LastStatusChangeData _lastStatusChange;
+        public LastStatusChangeData LastStatusChange
         {
             get => _lastStatusChange;
-            set => this.setProperty(ref _lastStatusChange, value, LastStatusChangeChanged);
+            private set => this.setProperty(ref _lastStatusChange, value, LastStatusChangeChanged);
         }
+
+        public record LastStatusChangeData(DateTime? Timestamp, LastStatusChangeSourceType Source);
+
+        public enum LastStatusChangeSourceType
+        {
+            Absolute,
+            BoottimeRelative
+        }
+
+        public void LastStatusChangeUpdateAbsolute(DateTime timestamp)
+            => LastStatusChange = new(timestamp, LastStatusChangeSourceType.Absolute);
+
+        private void calculateLastStatusChangeByBoottime()
+            => LastStatusChange = new(Switch.Boottime + _lastStatusChangeSinceBoot, LastStatusChangeSourceType.BoottimeRelative);
+
+        private TimeSpan? _lastStatusChangeSinceBoot;
+        public void LastStatucChangeUpdateBootimeRelative(TimeSpan? relativeToBoot)
+        {
+            if (relativeToBoot == _lastStatusChangeSinceBoot)
+                return;
+            _lastStatusChangeSinceBoot = relativeToBoot;
+            calculateLastStatusChangeByBoottime();
+        }
+
+        internal void SwitchBoottimeChanged()
+            => calculateLastStatusChangeByBoottime();
         #endregion
 
         #region Vlans
@@ -170,7 +196,8 @@ namespace easyvlans.Model
             return true;
         }
 
-        internal void ChangesPersisted() => PendingChanges = false;
+        internal void ChangesPersisted()
+            => PendingChanges = false;
 
     }
 }

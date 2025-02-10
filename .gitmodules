@@ -10,3 +10,6 @@
 [submodule "btoolbox-gui-general"]
 	path = btoolbox-gui-general
 	url = https://github.com/komlosboldizsar/btoolbox-gui-general/
+[submodule "library-ember-plus-provider"]
+	path = library-ember-plus-provider
+	url = https://github.com/komlosboldizsar/library-ember-plus-provider.git
