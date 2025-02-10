@@ -35,18 +35,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-swopm-snmp-if", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "btoolbox-gui-general", "btoolbox-gui-general\btoolbox-gui-general.csproj", "{C6A29323-8170-46F5-B54C-834BA6B820FC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "easyvlans-remote-emberplus", "easyvlans-remote-emberplus\easyvlans-remote-emberplus.csproj", "{0EBAA53B-B08A-42D9-8FA4-65CFC82B7450}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmberPlusProviderClassLib", "library-ember-plus-provider\src\EmberPlusProviderClassLib\EmberPlusProviderClassLib.csproj", "{863C7173-E501-4224-BDAB-BD29FD98F72E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmberLib", "library-ember-plus-provider\src\EmberLib.net\EmberLib\EmberLib.csproj", "{367A7119-24CB-4F48-AF22-21044C29B5A6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmberLib.Framing", "library-ember-plus-provider\src\EmberLib.net\EmberLib.Framing\EmberLib.Framing.csproj", "{51BB48E9-F1FE-4CFF-BD65-C1F3AD2AE282}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmberLib.Glow", "library-ember-plus-provider\src\EmberLib.net\EmberLib.Glow\EmberLib.Glow.csproj", "{A504D561-F15F-40A8-964E-ED0DE17BCED6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BerLib", "library-ember-plus-provider\src\EmberLib.net\BerLib\BerLib.csproj", "{303BFD4E-DAB6-493B-AC0F-DDC69126E4D4}"
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "easyvlans-swopm-snmp-rfc1213", "easyvlans-swopm-snmp-rfc1213\easyvlans-swopm-snmp-rfc1213.csproj", "{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -118,34 +106,6 @@ Global
 		{C6A29323-8170-46F5-B54C-834BA6B820FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6A29323-8170-46F5-B54C-834BA6B820FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6A29323-8170-46F5-B54C-834BA6B820FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0EBAA53B-B08A-42D9-8FA4-65CFC82B7450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EBAA53B-B08A-42D9-8FA4-65CFC82B7450}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0EBAA53B-B08A-42D9-8FA4-65CFC82B7450}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0EBAA53B-B08A-42D9-8FA4-65CFC82B7450}.Release|Any CPU.Build.0 = Release|Any CPU
-		{863C7173-E501-4224-BDAB-BD29FD98F72E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{863C7173-E501-4224-BDAB-BD29FD98F72E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{863C7173-E501-4224-BDAB-BD29FD98F72E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{863C7173-E501-4224-BDAB-BD29FD98F72E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{367A7119-24CB-4F48-AF22-21044C29B5A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{367A7119-24CB-4F48-AF22-21044C29B5A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{367A7119-24CB-4F48-AF22-21044C29B5A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{367A7119-24CB-4F48-AF22-21044C29B5A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51BB48E9-F1FE-4CFF-BD65-C1F3AD2AE282}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51BB48E9-F1FE-4CFF-BD65-C1F3AD2AE282}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51BB48E9-F1FE-4CFF-BD65-C1F3AD2AE282}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51BB48E9-F1FE-4CFF-BD65-C1F3AD2AE282}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A504D561-F15F-40A8-964E-ED0DE17BCED6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A504D561-F15F-40A8-964E-ED0DE17BCED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A504D561-F15F-40A8-964E-ED0DE17BCED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A504D561-F15F-40A8-964E-ED0DE17BCED6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{303BFD4E-DAB6-493B-AC0F-DDC69126E4D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{303BFD4E-DAB6-493B-AC0F-DDC69126E4D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{303BFD4E-DAB6-493B-AC0F-DDC69126E4D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{303BFD4E-DAB6-493B-AC0F-DDC69126E4D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D7D9796-7D16-45ED-8EE0-58DFA32399F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
