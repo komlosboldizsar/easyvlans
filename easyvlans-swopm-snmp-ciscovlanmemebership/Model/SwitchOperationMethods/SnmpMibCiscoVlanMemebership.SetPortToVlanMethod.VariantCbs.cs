@@ -9,17 +9,10 @@ namespace easyvlans.Model.SwitchOperationMethods
             internal class VariantCbs : IVariant
             {
                 public string Name => "cbs";
-                public async Task SetVariables(ISnmpConnection snmpConnection, List<Variable> pvidVariables, List<Variable> egressToUnset, List<Variable> egressToSet, List<Variable> untaggedToUnset, List<Variable> untaggedToSet)
+                public async Task SetVariables(ISnmpConnection snmpConnection, List<Variable> switchportMode, List<Variable> accesVlan)
                 {
-                    await snmpConnection.SetAsync(pvidVariables);
-                    foreach (Variable v in untaggedToUnset)
-                        await snmpConnection.SetAsync(v);
-                    foreach (Variable v in egressToSet)
-                        await snmpConnection.SetAsync(v);
-                    foreach (Variable v in egressToUnset)
-                        await snmpConnection.SetAsync(v);
-                    foreach (Variable v in untaggedToSet)
-                        await snmpConnection.SetAsync(v);
+                    await snmpConnection.SetAsync(switchportMode);
+                    await snmpConnection.SetAsync(accesVlan);
                 }
             }
         }

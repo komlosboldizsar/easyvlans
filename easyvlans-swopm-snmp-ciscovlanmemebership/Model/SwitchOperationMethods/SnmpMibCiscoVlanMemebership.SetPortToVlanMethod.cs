@@ -20,34 +20,14 @@ namespace easyvlans.Model.SwitchOperationMethods
 
             public async Task<bool> DoAsync(Port port, Vlan vlan)
             {
-                List<Variable> pvidVariables = new(),
-                    egressToUnset = new(),
-                    egressToSet = new(),
-                    untaggedToUnset = new(),
-                    untaggedToSet = new();
-                if (!_commonData.NoPvid)
-                    pvidVariables.Add(new Variable(new ObjectIdentifier($"{OID_DOT1Q_PVID}.{port.Index + _commonData.PortIndexOffset}"), new Gauge32(vlan.ID)));
-                (int portByteIndex, int portBitIndex) = getByteBitIndex(port.Index + _commonData.PortIndexOffset);
-                await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_EGRESS_PORTS, vlan.ID, portByteIndex, portBitIndex, egressToSet, egressToUnset);
-                await getVlansBitfieldsForPort(OID_DOT1Q_VLAN_STATIC_UNTAGGED_PORTS, vlan.ID, portByteIndex, portBitIndex, untaggedToSet, untaggedToUnset);
-                await _variant.SetVariables(_snmpConnection, pvidVariables, egressToUnset, egressToSet, untaggedToUnset, untaggedToSet);
+                List<Variable> switchportMode = new(),
+                    accesVlan = new();
+                switchportMode.Add(new Variable(new ObjectIdentifier($"{OID_CISCOVLANMEMEBERSHIP_TABLE_TYPE}{port.Index + _commonData.PortIndexOffset}"), new Integer32(1)));
+                accesVlan.Add(new Variable(new ObjectIdentifier($"{OID_CISCOVLANMEMEBERSHIP_TABLE_VLAN}.{port.Index + _commonData.PortIndexOffset}"), new Integer32(vlan.ID)));
+                await _variant.SetVariables(_snmpConnection, switchportMode, accesVlan);
                 return true;
             }
 
-            private async Task getVlansBitfieldsForPort(string tableObjectIdentifier, int targetVlanId, int portByteIndex, int portBitIndex, List<Variable> variablesToSet, List<Variable> variablesToUnset)
-            {
-                foreach (Variable oldRow in await _snmpConnection.WalkAsync(tableObjectIdentifier))
-                {
-                    SnmpVariableHelpers.IdParts idParts = oldRow.GetIdParts();
-                    if (idParts.RowId == 1)
-                        continue;
-                    bool valueToSet = idParts.RowId == targetVlanId;
-                    byte[] snmpDataBytes = (oldRow.Data as OctetString).GetRaw();
-                    snmpDataBytes.SetBit(portByteIndex, portBitIndex, valueToSet);
-                    Variable newRow = new(oldRow.Id, new OctetString(snmpDataBytes));
-                    (valueToSet ? variablesToSet : variablesToUnset).Add(newRow);
-                }
-            }
 
             #region Variants
             private static readonly IVariant[] VARIANTS_TO_REGISTER = new IVariant[]

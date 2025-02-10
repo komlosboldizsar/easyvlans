@@ -9,7 +9,7 @@ namespace easyvlans.Model.SwitchOperationMethods
             internal interface IVariant
             {
                 string Name { get; }
-                Task SetVariables(ISnmpConnection snmpConnection, List<Variable> pvidVariables, List<Variable> egressToUnset, List<Variable> egressToSet, List<Variable> untaggedToUnset, List<Variable> untaggedToSet);
+                Task SetVariables(ISnmpConnection snmpConnection, List<Variable> switchportMode, List<Variable> accesVlan);
             }
         }
     }
