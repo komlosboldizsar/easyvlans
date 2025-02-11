@@ -1,11 +1,13 @@
-# Wiki
+# Wiki  
 
-You can find a wiki about the configuration and usage at Bálint's fork: https://github.com/hallabalint/easyvlans/wiki
+You can find the [wiki](https://github.com/komlosboldizsar/easyvlans/wiki) for configuration and usage.  
 
-# For developers
+# For Developers  
 
-The build artifacts (EXE, DLL, etc.) are copied to the `\_OUTPUT\_(ConfigName)_` (e.g. `\_OUTPUT\_Debug`) folder and run from there. The [launch settings](easyvlans/Properties/launchSettings.json) are configured to load the test_config.xml file as configuration when starting the EXE from Visual Studio, so make a copy of the [sample configuration](easyvlans/sample_config.xml) to the root directory (same level as this README) and name it test_config.xml!
+The build artifacts (EXE, DLL, etc.) are copied to the `\_OUTPUT\_(ConfigName)_` folder (e.g., `\_OUTPUT\_Debug`) and run from there. The [launch settings](easyvlans/Properties/launchSettings.json) are configured to load the `test_config.xml` file as the configuration when starting the EXE from Visual Studio.  
 
-# For users
+To set this up, make a copy of the [sample configuration](easyvlans/sample_config.xml), place it in the root directory (at the same level as this README), and rename it to `test_config.xml`.  
 
-Check the [sample configuration](easyvlans/sample_config.xml)! Not all the options are listed at the moment and there is no explanation for them :) Wiki coming soon.
+# For Users  
+
+Check out the [sample configuration](easyvlans/sample_config.xml)! Not all options are listed in the configuration, but you can find more details in the wiki. :)
