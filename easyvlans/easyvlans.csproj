@@ -27,5 +27,15 @@
     </Compile>
     <Compile Update="GUI\PortSpeedDisplay.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="GUI\MainForm.RowManagerBase.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MainForm.RowManagerBase.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="GUI\MainForm.SwitchRowManager.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MainForm.SwitchRowManager.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="..\easyvlans-core\CopyToOutput.csproj" />
 </Project>
