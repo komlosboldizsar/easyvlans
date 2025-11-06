@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using static easyvlans.Model.Port;
 
 namespace easyvlans.GUI
 {
@@ -28,7 +29,7 @@ namespace easyvlans.GUI
             reshowTooltip();
         }
 
-        private void portLastStatusChangeChangedHandler(Port item, DateTime? newValue)
+        private void portLastStatusChangeChangedHandler(Port item, LastStatusChangeData? newValue)
             => reshowTooltip();
 
         protected override string getTooltipText()
@@ -46,7 +47,7 @@ namespace easyvlans.GUI
                 }
             }
             string toolTipText = "Bits per second: " + speedStr;
-            string lastChangeStr = _port.LastStatusChange?.ToString("yyyy.MM.dd. HH:mm:ss") ?? string.Empty;
+            string lastChangeStr = _port.LastStatusChange.Timestamp?.ToString("yyyy.MM.dd. HH:mm:ss") ?? string.Empty;
             toolTipText += $"\r\nLast change: {lastChangeStr}";
             return toolTipText;
         }
