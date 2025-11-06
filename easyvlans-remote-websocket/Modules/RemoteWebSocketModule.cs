@@ -6,7 +6,7 @@ namespace easyvlans.Modules
     {
         public void Init()
         {
-            RemoteMethodsDeserializer.Instance.Register(new WebSocketServerDeserializer());
+            RemoteMethodsDeserializer.Instance.Register(new MyWebSocketServerDeserializer());
         }
     }
 }

@@ -1,14 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>easyvlans_remote_websocket</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Json.Net" Version="1.0.33">
+    </PackageReference>
+    <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\easyvlans-core\easyvlans-core.csproj" />
+    <ProjectReference Include="..\easyvlans-remote-snmp\easyvlans-remote-snmp.csproj" />
   </ItemGroup>
 	<Import Project="..\easyvlans-core\CopyToOutput.csproj" />
 </Project>

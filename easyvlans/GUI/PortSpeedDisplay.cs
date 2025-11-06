@@ -47,7 +47,7 @@ namespace easyvlans.GUI
                 }
             }
             string toolTipText = "Bits per second: " + speedStr;
-            string lastChangeStr = _port.LastStatusChange.Timestamp?.ToString("yyyy.MM.dd. HH:mm:ss") ?? string.Empty;
+            string lastChangeStr = _port.LastStatusChange?.Timestamp?.ToString("yyyy.MM.dd. HH:mm:ss") ?? string.Empty;
             toolTipText += $"\r\nLast change: {lastChangeStr}";
             return toolTipText;
         }
