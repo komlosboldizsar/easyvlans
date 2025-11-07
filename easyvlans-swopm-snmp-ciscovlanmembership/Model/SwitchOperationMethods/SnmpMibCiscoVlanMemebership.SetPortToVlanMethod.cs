@@ -1,4 +1,5 @@
-﻿using easyvlans.Helpers;
+﻿using BToolbox.Logger;
+using easyvlans.Helpers;
 using Lextm.SharpSnmpLib;
 using static easyvlans.Model.SwitchOperationMethods.SnmpMibCiscoVlanMemebership.SetPortToVlanMethod;
 
@@ -21,9 +22,12 @@ namespace easyvlans.Model.SwitchOperationMethods
 
             public async Task<bool> DoAsync(Port port, Vlan vlan)
             {
-                ObjectIdentifier objectIdentifier = new($"{OID_CISCOVLANMEMEBERSHIP_TABLE_VLAN}.{ port.Index + _commonData.PortIndexOffset }");
-                Variable snmpVlanVariable = new(objectIdentifier, new Integer32(vlan.ID));
-                Variable snmpVlanTypeVariable = new(objectIdentifier, new Integer32(1));
+                ObjectIdentifier vlanobjectIdentifier = new($"{OID_CISCOVLANMEMEBERSHIP_TABLE_VLAN}.{ port.Index + _commonData.PortIndexOffset }");
+                ObjectIdentifier typeobjectIdentifier = new($"{OID_CISCOVLANMEMEBERSHIP_TABLE_TYPE}.{port.Index + _commonData.PortIndexOffset}");
+                Variable snmpVlanVariable = new(vlanobjectIdentifier, new Integer32(vlan.ID));
+                Variable snmpVlanTypeVariable = new(typeobjectIdentifier, new Integer32(1));
+
+
                
                 await _variant.SetVariables(_snmpConnection, snmpVlanVariable, snmpVlanTypeVariable);
                 return true;
