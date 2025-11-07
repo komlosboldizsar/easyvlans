@@ -71,7 +71,7 @@ namespace easyvlans.Model.SwitchOperationMethods
                     }
                   
                         userPort.CurrentVlan = getVlanById(snmpPort.ID);
-                        userPort.HasComplexMembership = snmpPort.TYPE == 1 && snmpPort.VLAN != 0 ? false : true;
+                        userPort.HasComplexMembership = snmpPort.TYPE != 1 || snmpPort.VLAN == 0 ? true : false;
                 }
             }
 
