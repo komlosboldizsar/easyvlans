@@ -22,17 +22,13 @@ namespace easyvlans.Model.SwitchOperationMethods
 
             public async Task<bool> DoAsync(Port port, Vlan vlan)
             {
-                ObjectIdentifier vlanobjectIdentifier = new($"{OID_CISCOVLANMEMEBERSHIP_TABLE_VLAN}.{ port.Index + _commonData.PortIndexOffset }");
+                ObjectIdentifier vlanobjectIdentifier = new($"{OID_CISCOVLANMEMEBERSHIP_TABLE_VLAN}.{port.Index + _commonData.PortIndexOffset}");
                 ObjectIdentifier typeobjectIdentifier = new($"{OID_CISCOVLANMEMEBERSHIP_TABLE_TYPE}.{port.Index + _commonData.PortIndexOffset}");
                 Variable snmpVlanVariable = new(vlanobjectIdentifier, new Integer32(vlan.ID));
-                Variable snmpVlanTypeVariable = new(typeobjectIdentifier, new Integer32(1));
-
-
-               
+                Variable snmpVlanTypeVariable = new(typeobjectIdentifier, new Integer32(TXCONV_VMVLANTYPE_STATIC));
                 await _variant.SetVariables(_snmpConnection, snmpVlanVariable, snmpVlanTypeVariable);
                 return true;
             }
-
 
             #region Variants
             private static readonly IVariant[] VARIANTS_TO_REGISTER = new IVariant[]

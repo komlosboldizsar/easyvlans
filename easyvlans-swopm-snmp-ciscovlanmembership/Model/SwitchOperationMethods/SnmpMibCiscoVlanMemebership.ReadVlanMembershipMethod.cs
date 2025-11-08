@@ -30,11 +30,13 @@ namespace easyvlans.Model.SwitchOperationMethods
                 {
                     List<string> oids = new();
                     foreach (Port userPort in userPorts)
+                    {
                         if (userPort.Switch == _snmpConnection.Switch)
                         {
                             oids.Add($"{OID_CISCOVLANMEMEBERSHIP_TABLE_VLAN}.{userPort.Index + _commonData.PortIndexOffset}");
                             oids.Add($"{OID_CISCOVLANMEMEBERSHIP_TABLE_TYPE}.{userPort.Index + _commonData.PortIndexOffset}");
                         }
+                    }
                     Action<string, Variable, CiscoVlanMemebershipSnmpPort> processCiscoVlanMembershipTableRow = (nodeId, ciscoVlanMembershipTableRow, snmpPort) =>
                     {
                         switch (nodeId)
@@ -69,9 +71,8 @@ namespace easyvlans.Model.SwitchOperationMethods
                         userPort.CurrentVlan = null;
                         continue;
                     }
-                  
-                        userPort.CurrentVlan = getVlanById(snmpPort.ID);
-                        userPort.HasComplexMembership = snmpPort.TYPE != 1 || snmpPort.VLAN == 0 ? true : false;
+                    userPort.CurrentVlan = getVlanById(snmpPort.ID);
+                    userPort.HasComplexMembership = (snmpPort.TYPE != TXCONV_VMVLANTYPE_STATIC || snmpPort.VLAN == 0);
                 }
             }
 

@@ -74,6 +74,9 @@ namespace easyvlans.Model.SwitchOperationMethods
         private const string OID_CISCOVLANMEMEBERSHIP_MEMBERSHIP_TABLE = "1.3.6.1.4.1.9.9.68.1.2.2";
         private const string OID_CISCOVLANMEMEBERSHIP_TABLE_TYPE = $"{OID_CISCOVLANMEMEBERSHIP_MEMBERSHIP_TABLE}.1.1";
         private const string OID_CISCOVLANMEMEBERSHIP_TABLE_VLAN = $"{OID_CISCOVLANMEMEBERSHIP_MEMBERSHIP_TABLE}.1.2";
+        private const int TXCONV_VMVLANTYPE_STATIC = 1;
+        private const int TXCONV_VMVLANTYPE_DYNAMIC = 2;
+        private const int TXCONV_VMVLANTYPE_MULTIVLAN = 3;
 
     }
 
